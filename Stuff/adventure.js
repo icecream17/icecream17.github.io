@@ -14,15 +14,16 @@ let gameInterval
 
 let playerDirectory = '' // Used in playerConsole parseInput
 
+// Player info works!
 const locations = [
    'Office (Dallas)'
-] // It works
+]
 
 let Player = {
    place: 0,
    actions: 0, // location is a thing. no overwrite or error
    lives: 10,
-   inventory: {test: 85}
+   inventory: {}
 }
 
 let messages = []
@@ -282,7 +283,7 @@ function updateInfo() {
       info += 'none'
    } else {
       for (let i of Object.keys(Player.inventory)) {
-         let keyInfo = `${i}: ${Player[i]} <br> `
+         let keyInfo = `${i}: ${Player.inventory[i]} <br> `
          info += keyInfo
       }
    }

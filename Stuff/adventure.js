@@ -311,7 +311,7 @@ function humanTime() {
       return `${min} minutes`
    }
 
-   let hrs = Math.floor(sec / 60)
+   let hrs = Math.floor(min / 60)
    min -= (hrs * 60)
 
    return `${hrs} hrs, ${min} minutes`

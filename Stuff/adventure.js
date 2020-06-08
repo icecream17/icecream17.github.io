@@ -91,13 +91,13 @@ function startGame() {
             </div>
          </div>
          <section id = 'playerInfoContainer'>
-            <h1 id = 'playerInfoHeader'></h1>
+            <h2 id = 'playerInfoHeader'></h1>
             <p id = 'playerInfo'></p>
          </section>
 
          <br>
          <section id = 'messageConsoleContainer'>
-            <h1 id = 'messageConsoleHeader'></h1>
+            <h2 id = 'messageConsoleHeader'></h1>
             <p id = 'messageConsole'></p>
          </section>
       </div>

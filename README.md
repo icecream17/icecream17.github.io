@@ -1,2 +1,7 @@
 # icecream17.github.io
-Website
+Website by icecream17
+
+Hi!
+
+## Stuff
+[Adventure](Stuff/adventure.html)

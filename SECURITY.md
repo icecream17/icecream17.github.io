@@ -13,6 +13,7 @@ currently being supported with security updates.
 ## Reporting a Vulnerability
 
 Simply go to "Issues" and explain the vulnerability
+
 I'm kinda new
 
 > Use this section to tell people how to report a vulnerability.

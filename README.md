@@ -4,4 +4,7 @@ Website by icecream17
 Hi!
 
 ## Stuff
-[Adventure](Stuff/adventure.html)
+* [Stuff](Stuff/Stuff/stuff.html)
+  * [Stuff readme](Stuff/Stuff/README.md)
+* [Adventure](Stuff/adventure/adventure.html)
+  * Adventure game

@@ -36,3 +36,8 @@ Note: Multiple "codes" can happen at the same time
 | Aargh         | Probably won't be closed for awhile... |
 | Working on it | TODO: |
 | Done          | Yas |
+
+## stuff/stuff folder
+
+If there's a problem in there, you can fix it yourself.
+See the folder readme for more information

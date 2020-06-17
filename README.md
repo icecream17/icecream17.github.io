@@ -4,9 +4,9 @@ Website by icecream17
 Hi!
 
 ## Stuff
-* [Stuff](Stuff/Stuff/stuff.html)
+* [Stuff](https://icecream17.github.io/Stuff/Stuff/stuff.html)
   * [Stuff readme](Stuff/Stuff/README.md)
-* [Adventure](Stuff/adventure/adventure.html)
+* [Adventure](https://icecream17.github.io/Stuff/adventure/adventure.html)
   * Adventure game
-* [chessall](Stuff/chessall/chessall.html)
+* [chessall](https://icecream17.github.io/Stuff/chessall/chessall.html)
   * [chessall readme](Stuff/Stuff/README.md)

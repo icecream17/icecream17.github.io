@@ -8,5 +8,5 @@ Hi!
   * [Stuff readme](Stuff/Stuff/README.md)
 * [Adventure](Stuff/adventure/adventure.html)
   * Adventure game
-* [chessall]{Stuff/chessall/chessall.html)
+* [chessall](Stuff/chessall/chessall.html)
   * [chessall readme](Stuff/Stuff/README.md)

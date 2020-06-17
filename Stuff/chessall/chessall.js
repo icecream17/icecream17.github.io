@@ -215,3 +215,4 @@ window.onload = function () {
    let currentGame = new Game
    currentGame.board.update();
 };
+

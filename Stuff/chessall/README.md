@@ -1,6 +1,6 @@
 # Chessall
 
-I'm writing this for easi_er_ use.
+I'm writing this for easi*er* use.
 
 Instead of figuring out how to use chess.js and chessboard.js can you simply use this!
 

@@ -47,18 +47,36 @@ class Move {
 function possibleOrthogonalMoves (row, column, piece) {
    let moves = [];
 
-   // up and down
-   for ( let i = 0; i < 8; i++ ) {
-      if (i !== row) {
-         moves.push( new Move (piece, i, column) );
-      }
+   // up
+   for ( let i = row - 1; i >= 0; i-- ) {
+      if (currentGame.board[i][column].piece.side === piece.side) {break;}
+      moves.push( new Move (piece, i, column) );
+
+      if (currentGame.board[i][column].piece.side !== null) {break;}
    }
 
-   // left and right
-   for ( let j = 0; j < 8; j++ ) {
-      if (j !== column) {
-         moves.push( new Move (piece, row, j) );
-      }
+   // down
+   for ( let i = row + 1; i <= 7; i++ ) {
+      if (currentGame.board[i][column].piece.side === piece.side) {break;}
+      moves.push( new Move (piece, i, column) );
+
+      if (currentGame.board[i][column].piece.side !== null) {break;}
+   }
+
+   // left
+   for ( let j = column - 1; j >= 0; i-- ) {
+      if (currentGame.board[row][j].piece.side === piece.side) {break;}
+      moves.push( new Move (piece, row, j) );
+
+      if (currentGame.board[row][j].piece.side !== null) {break;}
+   }
+
+   // right
+   for ( let j = column + 1; j <= 7; i++ ) {
+      if (currentGame.board[row][j].piece.side === piece.side) {break;}
+      moves.push( new Move (piece, row, j) );
+
+      if (currentGame.board[row][j].piece.side !== null) {break;}
    }
 
    return moves;
@@ -67,12 +85,17 @@ function possibleOrthogonalMoves (row, column, piece) {
 function possibleDiagonalMoves (row, column, piece) {
    let moves = [];
 
-   for (let offset = 1;; offset++) {
-      let rows = [row - offset, row + offset];
-      let columns = [column - offset, column + offset];
+   let newlyUnavailableDirections = [null, null, null, null];
 
-      let amountOffBounds = 0;
-      
+   for (let offset = 1; newlyUnavailableDirections.indexOf(null) !== -1; offset++) {
+      let rowPossibilities = [row - offset, row + offset];
+      let columnPossibilities = [column - offset, column + offset];
+
+      for (let i = 0; i < rowPossibilities.length; i++) {
+         if (rowPossibilities[i] < 0 || rowPossibilities[i] > 7) {
+
+         }
+      }
    }
 }
 
@@ -146,8 +169,18 @@ class Board {
 
 class Game {
    constructor (settings) {
-      this.settings = settings;
+      this.settings = settings
       this.board = new Board(settings.orientation);
+      this.moves = []
+   }
+
+   possibleMoves () {
+      let moves = [];
+      for (let row of this.board) {
+         for (let square of row) {
+            moves.push(...square.getMoves())
+         }
+      }
    }
 }
 
@@ -157,13 +190,24 @@ class Player {
    }
 }
 
+class Bot extends Player {
+   constructor (name, algorithm) {
+      super(name);
+      this.doMove = algorithm;
+   }
+}
+
+let RandomMove = new Bot('Random Move', () => {
+
+})
+
 class Person extends Player {
    constructor (name) {
       super(name);
 
       this.customGameSettings = {
          orientation: 'white',
-         players: [this, (new Random())]
+         players: [this, RandomMove]
       };
    }
 
@@ -173,7 +217,6 @@ class Person extends Player {
       this.players = players ?? this.players;
    }
 }
-
 
 
 window.onload = function () {
@@ -212,7 +255,6 @@ window.onload = function () {
       'Guest' + (Math.random() % 1)
    );
 
-   let currentGame = new Game
+   let currentGame = new Game(currentUser.customGameSettings);
    currentGame.board.update();
 };
-

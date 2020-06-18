@@ -64,7 +64,7 @@ function possibleOrthogonalMoves (row, column, piece) {
    }
 
    // left
-   for ( let j = column - 1; j >= 0; i-- ) {
+   for ( let j = column - 1; j >= 0; j-- ) {
       if (currentGame.board[row][j].piece.side === piece.side) {break;}
       moves.push( new Move (piece, row, j) );
 
@@ -72,7 +72,7 @@ function possibleOrthogonalMoves (row, column, piece) {
    }
 
    // right
-   for ( let j = column + 1; j <= 7; i++ ) {
+   for ( let j = column + 1; j <= 7; j++ ) {
       if (currentGame.board[row][j].piece.side === piece.side) {break;}
       moves.push( new Move (piece, row, j) );
 
@@ -85,18 +85,45 @@ function possibleOrthogonalMoves (row, column, piece) {
 function possibleDiagonalMoves (row, column, piece) {
    let moves = [];
 
-   let newlyUnavailableDirections = [null, null, null, null];
+   // maybe I should use the one I made at js.do/celiasnt/chess
 
-   for (let offset = 1; newlyUnavailableDirections.indexOf(null) !== -1; offset++) {
+   let newlyUnavailableDirections = [null, null, null, null];
+   // (row col) -> 0: 0 0, 1: 0 1, 2: 1 0, 3: 1 1
+
+   for (let offset = 1; newlyUnavailableDirections.includes(null); offset++) {
       let rowPossibilities = [row - offset, row + offset];
       let columnPossibilities = [column - offset, column + offset];
 
       for (let i = 0; i < rowPossibilities.length; i++) {
          if (rowPossibilities[i] < 0 || rowPossibilities[i] > 7) {
+            newlyUnavailableDirections[2 * i] = 7; // not null
+            newlyUnavailableDirections[2 * i + 1] = 7; // not null
+            continue;
+         }
 
+         for (let j = 0; j < columnPossibilities.length; j++) {
+            if (columnPossibilities[j] < 0 || columnPossibilities[j] > 7) {
+               newlyUnavailableDirections[j] = 7;
+               newlyUnavailableDirections[2 + j] = 7;
+               continue;
+            }
+
+            if (currentGame.board[i][j].piece.side === piece.side) {
+               newlyUnavailableDirections[2 * i + j] = 7;
+               continue;
+            }
+
+            moves.push( new Move (piece, row, j) );
+
+            if (currentGame.board[i][j].piece.side !== null) {
+               newlyUnavailableDirections[2 * i + j] = 7;
+               continue;
+            }
          }
       }
    }
+
+   return moves;
 }
 
 class Piece {
@@ -123,7 +150,8 @@ class Knight extends Piece {
    }
 
    getMoves() {
-      return [
+      // What a ridiculous return statement
+      return ([
          new Move(this, this.row - 2, this.column + 1),
          new Move(this, this.row - 2, this.column - 1),
          new Move(this, this.row - 1, this.column + 2),
@@ -132,10 +160,124 @@ class Knight extends Piece {
          new Move(this, this.row + 1, this.column - 2),
          new Move(this, this.row + 2, this.column + 1),
          new Move(this, this.row + 2, this.column - 1)
-      ];
+      ].filter(
+         // MDN "this". Also MDN "Arrow function expressions"
+         // arrow functions don't provide their own (this) binding,
+         // and so retains the (this) value of (knight) in this case
+
+         // Tested - success!
+         move => {
+            return (move.row >= 0 &&
+            move.row < 8 &&
+            move.column >= 0 &&
+            move.column < 8 &&
+            currentGame.board[move.row][move.column].piece.side !== this.side);
+         }
+      ));
    }
 }
 
+class Bishop extends Piece {
+   constructor (side, row, column) {
+      super(side, row, column);
+   }
+
+   getMoves() {
+      return possibleDiagonalMoves(this.row, this.column, this);
+   }
+}
+
+class Queen extends Piece {
+   constructor (side, row, column) {
+      super(side, row, column);
+   }
+
+   getMoves() {
+      // MDN Spread syntax (...)
+      return possibleOrthogonalMoves(this.row, this.column, this).push(
+         ...possibleDiagonalMoves(this.row, this.column, this)
+      );
+   }
+}
+
+class King extends Piece {
+   constructor (side, row, column) {
+      super(side, row, column);
+   }
+
+   getMoves() {
+      return ([
+         new Move(this, this.row - 1, this.column - 1),
+         new Move(this, this.row - 1, this.column),
+         new Move(this, this.row - 1, this.column + 1),
+         new Move(this, this.row, this.column - 1),
+         new Move(this, this.row, this.column + 1),
+         new Move(this, this.row + 1, this.column - 1),
+         new Move(this, this.row + 1, this.column),
+         new Move(this, this.row + 1, this.column + 1)
+      ].filter(
+         // MDN "this". Also MDN "Arrow function expressions"
+         // arrow functions don't provide their own (this) binding,
+         // and so retains the (this) value of (knight) in this case
+
+         // Tested - success!
+         move => {
+            return (move.row >= 0 &&
+            move.row < 8 &&
+            move.column >= 0 &&
+            move.column < 8 &&
+            currentGame.board[move.row][move.column].piece.side !== this.side);
+         }
+      ));
+   }
+}
+
+class Pawn extends Piece {
+   constructor (side, row, column) {
+      super(side, row, column);
+
+      this.hasMoved = false;
+   }
+
+   getMoves() {
+      // MDN Spread syntax (...)
+      let nonTakesToConsider = [currentGame.board[this.row - 1][this.column]];
+      let takesToConsider = [];
+
+      if (!this.hasMoved) {
+         nonTakesToConsider.push(currentGame.board[this.row - 2][this.column]);
+      }
+
+      if (this.column !== 0) {
+         takesToConsider.push(
+            currentGame.board[this.row - 1][this.column - 1]
+         );
+      } else if (this.column !== 7) {
+         takesToConsider.push(
+            currentGame.board[this.row - 1][this.column + 1]
+         );
+      }
+
+      nonTakesToConsider.filter(
+         square => square.piece.side === null
+      );
+
+      takesToConsider.filter(
+         square => square.piece.side === null
+      );
+
+      return [...nonTakesToConsider, ...takesToConsider]
+   }
+}
+
+class Nothing extends Piece {
+   constructor (row, column) {
+      // this.side = null
+      super(null, row, column);
+   }
+
+   getMoves() {return [];}
+}
 
 
 class Square {
@@ -155,11 +297,31 @@ class Board {
 
       // TODO: fill boards
       if (orientation === 'white') {
-         this[0][0] = new Square (new Rook ('black', 0, 0));
-         this[0][1] = new Square (new Knight ('black', 0, 1));
+         this[0] = [
+            new Square (new Rook ('black', 0, 0)),
+            new Square (new Knight ('black', 0, 1)),
+            new Square (new Bishop ('black', 0, 2)),
+            new Square (new Queen ('black', 0, 3)),
+            new Square (new King ('black', 0, 4)),
+            new Square (new Bishop ('black', 0, 5)),
+            new Square (new Knight ('black', 0, 6)),
+            new Square (new Rook ('black', 0, 7))
+         ];
       } else {
          // TODO: this too
       }
+
+      /* Board visualization helper - (regular, ARRAY)
+         8-0
+         7-1
+         6-2
+         5-3
+         4-4
+         3-5
+         2-6
+         1-7
+            a0 b1 c2 d3 e4 f5 g6 h7
+      */
    }
 
    update () {
@@ -169,18 +331,20 @@ class Board {
 
 class Game {
    constructor (settings) {
-      this.settings = settings
+      this.settings = settings;
       this.board = new Board(settings.orientation);
-      this.moves = []
+      this.moves = [];
    }
 
    possibleMoves () {
       let moves = [];
       for (let row of this.board) {
          for (let square of row) {
-            moves.push(...square.getMoves())
+            moves.push(...square.getMoves());
          }
       }
+
+      return moves;
    }
 }
 
@@ -198,8 +362,9 @@ class Bot extends Player {
 }
 
 let RandomMove = new Bot('Random Move', () => {
-
-})
+   let possibleMoves = Game.possibleMoves();
+   return possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+});
 
 class Person extends Player {
    constructor (name) {
@@ -211,7 +376,7 @@ class Person extends Player {
       };
    }
 
-   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator
+   // MDN "Nullish coalescing operator"
    updateCustomGameSettings (orientation, players) {
       this.orientation = orientation ?? this.orientation;
       this.players = players ?? this.players;
@@ -225,7 +390,7 @@ window.onload = function () {
    document.body.appendChild(table);
    table.id = 'chess-table';
 
-   // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody
+   // MDN "tbody" (html)
    let tbody = document.createElement('tbody');
    table.appendChild(tbody);
    tbody.id = 'chess-tbody';

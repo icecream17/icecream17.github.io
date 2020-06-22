@@ -3,6 +3,7 @@
 // for more details
 
 'use strict';
+let currentGame = null; // global, set in window.onload
 
 // In unicode order
 const HTMLpieces = {
@@ -258,15 +259,35 @@ class Pawn extends Piece {
          );
       }
 
-      nonTakesToConsider.filter(
+      let possibleNonTakes = nonTakesToConsider.filter(
          square => square.piece.side === null
       );
 
-      takesToConsider.filter(
-         square => square.piece.side === null
+      takesToConsider = takesToConsider.filter(
+         square => square.piece.side !== this.side
       );
 
-      return [...nonTakesToConsider, ...takesToConsider]
+      let possibleTakes = [];
+
+      for (let currentConsideration of takesToConsider) {
+         if (currentConsideration.piece.side !== null) {
+            possibleTakes.push(currentConsideration);
+            continue;
+         }
+
+         let enPassantIsPossible = (
+            this.row === 3 &&
+            currentGame[this.row][currentConsideration.column].side === (
+               this.side === 'white' ? 'black' : 'white'
+            )
+         );
+
+         if (enPassantIsPossible) {
+            possibleTakes.push(currentConsideration);
+         }
+      }
+
+      return [...possibleNonTakes, ...possibleTakes];
    }
 }
 
@@ -295,21 +316,7 @@ class Board {
    constructor (orientation) {
       this.orientation = orientation;
 
-      // TODO: fill boards
-      if (orientation === 'white') {
-         this[0] = [
-            new Square (new Rook ('black', 0, 0)),
-            new Square (new Knight ('black', 0, 1)),
-            new Square (new Bishop ('black', 0, 2)),
-            new Square (new Queen ('black', 0, 3)),
-            new Square (new King ('black', 0, 4)),
-            new Square (new Bishop ('black', 0, 5)),
-            new Square (new Knight ('black', 0, 6)),
-            new Square (new Rook ('black', 0, 7))
-         ];
-      } else {
-         // TODO: this too
-      }
+      fillBoard(this);
 
       /* Board visualization helper - (regular, ARRAY)
          8-0
@@ -326,6 +333,93 @@ class Board {
 
    update () {
 
+   }
+}
+
+function fillBoard (board) {
+   if (board.orientation === 'white') {
+      board[0] = [
+         new Square (new Rook ('black', 0, 0)),
+         new Square (new Knight ('black', 0, 1)),
+         new Square (new Bishop ('black', 0, 2)),
+         new Square (new Queen ('black', 0, 3)),
+         new Square (new King ('black', 0, 4)),
+         new Square (new Bishop ('black', 0, 5)),
+         new Square (new Knight ('black', 0, 6)),
+         new Square (new Rook ('black', 0, 7))
+      ];
+
+      board[1] = [];
+
+      for (let i = 0; i < 7; i++) {
+         board[1].push(new Pawn ('black', 1, i));
+      }
+
+      enterEmptyRows(board);
+
+      board[6] = [];
+
+      for (let i = 0; i < 7; i++) {
+         board[6].push(new Pawn ('white', 1, i));
+      }
+
+      board[7] = [
+         new Square (new Rook ('white', 7, 0)),
+         new Square (new Knight ('white', 7, 1)),
+         new Square (new Bishop ('white', 7, 2)),
+         new Square (new Queen ('white', 7, 3)),
+         new Square (new King ('white', 7, 4)),
+         new Square (new Bishop ('white', 7, 5)),
+         new Square (new Knight ('white', 7, 6)),
+         new Square (new Rook ('white', 7, 7))
+      ];
+
+   } else {
+      board[0] = [
+         new Square (new Rook ('white', 0, 0)),
+         new Square (new Knight ('white', 0, 1)),
+         new Square (new Bishop ('white', 0, 2)),
+         new Square (new Queen ('white', 0, 3)),
+         new Square (new King ('white', 0, 4)),
+         new Square (new Bishop ('white', 0, 5)),
+         new Square (new Knight ('white', 0, 6)),
+         new Square (new Rook ('white', 0, 7))
+      ];
+
+      board[1] = [];
+
+      for (let i = 0; i < 7; i++) {
+         board[1].push(new Pawn ('white', 1, i));
+      }
+
+      enterEmptyRows();
+
+      board[6] = [];
+
+      for (let i = 0; i < 7; i++) {
+         board[6].push(new Pawn ('black', 1, i));
+      }
+
+      board[7] = [
+         new Square (new Rook ('black', 7, 0)),
+         new Square (new Knight ('black', 7, 1)),
+         new Square (new Bishop ('black', 7, 2)),
+         new Square (new Queen ('black', 7, 3)),
+         new Square (new King ('black', 7, 4)),
+         new Square (new Bishop ('black', 7, 5)),
+         new Square (new Knight ('black', 7, 6)),
+         new Square (new Rook ('black', 7, 7))
+      ];
+   }
+}
+
+function enterEmptyRows (board) {
+   for (let i = 2; i < 6; i++) {
+      board[i] = [];
+      for (let j = 0; j < 8; j++) {
+         // https://stackoverflow.com/questions/21034662
+         board[i][j] = new Nothing (i, j);
+      }
    }
 }
 
@@ -417,9 +511,9 @@ window.onload = function () {
    }
 
    let currentUser = new Person(
-      'Guest' + (Math.random() % 1)
+      'Guest' + String(Math.random()).substring(2)
    );
 
-   let currentGame = new Game(currentUser.customGameSettings);
+   currentGame = new Game(currentUser.customGameSettings);
    currentGame.board.update();
 };

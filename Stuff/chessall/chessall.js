@@ -5,6 +5,8 @@
 'use strict';
 let currentGame = null; // global, set in window.onload
 
+let input = null;
+
 // In unicode order
 const HTMLpieces = {
    white: {
@@ -26,20 +28,97 @@ const HTMLpieces = {
 };
 
 class Move {
-   constructor (piece, row, column) {
+   constructor (piece, row, column, ...special) {
       this.piece = piece;
       this.row = row;
       this.column = column;
+      this.special = special;
+
+      this.turn = currentGame.turns.length;
    }
 
    makeMove () {
+      currentGame.board[this.piece.row][this.piece.column].piece = (
+         new Nothing(this.piece.row, this.piece.column)
+      );
 
+      this.piece.row = this.row;
+      this.piece.column = this.column;
+
+      currentGame.board[this.row][this.column].piece = this.piece;
+
+      currentGame.updateVisuals();
+
+      currentGame.switchTurns();
    }
 
    // algebraic notation
    // https://en.wikipedia.org/wiki/Algebraic_notation_(chess)
    getName () {
+      let name = '';
 
+      if (currentGame.notation === 'symbol') {
+         name += this.piece.toHTML();
+      } else {
+         // ....notation = 'letter'
+         // also see https://stackoverflow.com/questions/1249531/ and
+         // https://stackoverflow.com/questions/332422/
+
+         // WARNING: See links, minify can be bad.
+
+         switch (this.piece.constructor.name) {
+            case 'Pawn':
+               break;
+            case 'Rook':
+               name += 'R';
+               break;
+            case 'Bishop':
+               name += 'B';
+               break;
+            case 'Knight':
+               name += 'N';
+               break;
+            case 'Queen':
+               name += 'Q';
+               break;
+            case 'King':
+               name += 'K';
+               break;
+            default:
+               // enjoy
+               // https://stackoverflow.com/questions/7505623
+               console.error(
+                  `Uncaught %cImpossible Error:%c ` +
+                  `Unknown piece constructor name ` +
+                  `"%c${this.piece.constructor.name}%c"`,
+                  'font-style: italic;', 'color: dodgerblue;',
+                  'font-style: italic;', 'color: dodgerblue;'
+               );
+         }
+
+         // Amazing: b && b.constructor && b.constructor.name
+
+         // TODO: Disambiguate
+
+         if (this.special.includes('take')) {
+            name += 'x';
+         }
+
+         name += ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'][this.column];
+         name += 8 - this.row;
+
+         if (this.special.includes('castle')) {
+            name = this.special.castleNotation;
+         }
+
+         if (this.special.includes('mate')) {
+            name += '#';
+         } else if (this.special.includes('check')) {
+            name += '+';
+         }
+
+         return name;
+      }
    }
 }
 
@@ -132,7 +211,11 @@ class Piece {
       this.side = side;
       this.row = row;
       this.column = column;
+
+      this.moves = [];
    }
+
+   hasMoved() {return Boolean(this.moves.length);}
 }
 
 class Rook extends Piece {
@@ -142,6 +225,12 @@ class Rook extends Piece {
 
    getMoves() {
       return possibleOrthogonalMoves(this.row, this.column, this);
+   }
+
+   toHTML() {
+      return (
+         this.side === 'white' ? HTMLpieces.white.rook : HTMLpieces.black.rook
+      );
    }
 }
 
@@ -176,6 +265,14 @@ class Knight extends Piece {
          }
       ));
    }
+
+   toHTML() {
+      return (
+         this.side === 'white'
+            ? HTMLpieces.white.knight
+            : HTMLpieces.black.knight
+      );
+   }
 }
 
 class Bishop extends Piece {
@@ -185,6 +282,14 @@ class Bishop extends Piece {
 
    getMoves() {
       return possibleDiagonalMoves(this.row, this.column, this);
+   }
+
+   toHTML() {
+      return (
+         this.side === 'white'
+            ? HTMLpieces.white.bishop
+            : HTMLpieces.black.bishop
+      );
    }
 }
 
@@ -197,6 +302,14 @@ class Queen extends Piece {
       // MDN Spread syntax (...)
       return possibleOrthogonalMoves(this.row, this.column, this).push(
          ...possibleDiagonalMoves(this.row, this.column, this)
+      );
+   }
+
+   toHTML() {
+      return (
+         this.side === 'white'
+            ? HTMLpieces.white.queen
+            : HTMLpieces.black.queen
       );
    }
 }
@@ -229,15 +342,23 @@ class King extends Piece {
             move.column < 8 &&
             currentGame.board[move.row][move.column].piece.side !== this.side);
          }
-      ));
+      ).push(...this.getPossibleCastles()));
+   }
+
+   getPossibleCastles() {
+
+   }
+
+   toHTML() {
+      return (
+         this.side === 'white' ? HTMLpieces.white.king : HTMLpieces.black.king
+      );
    }
 }
 
 class Pawn extends Piece {
    constructor (side, row, column) {
       super(side, row, column);
-
-      this.hasMoved = false;
    }
 
    getMoves() {
@@ -245,7 +366,7 @@ class Pawn extends Piece {
       let nonTakesToConsider = [currentGame.board[this.row - 1][this.column]];
       let takesToConsider = [];
 
-      if (!this.hasMoved) {
+      if (!this.hasMoved()) {
          nonTakesToConsider.push(currentGame.board[this.row - 2][this.column]);
       }
 
@@ -268,6 +389,7 @@ class Pawn extends Piece {
       );
 
       let possibleTakes = [];
+      // let enPassantTakes = [];
 
       for (let currentConsideration of takesToConsider) {
          if (currentConsideration.piece.side !== null) {
@@ -287,7 +409,29 @@ class Pawn extends Piece {
          }
       }
 
-      return [...possibleNonTakes, ...possibleTakes];
+      let moves = [];
+
+      possibleNonTakes.forEach((possibleNonTake) => {
+         moves.push(
+            new Move (this, possibleNonTake.row, possibleNonTake.column)
+         );
+      });
+
+      possibleTakes.forEach((possibleTake) => {
+         moves.push(
+            new Move (this, possibleTake.row, possibleTake.column, 'take')
+         );
+      });
+
+
+      return moves;
+   }
+
+
+   toHTML() {
+      return (
+         this.side === 'white' ? HTMLpieces.white.pawn : HTMLpieces.black.pawn
+      );
    }
 }
 
@@ -298,8 +442,8 @@ class Nothing extends Piece {
    }
 
    getMoves() {return [];}
+   toHTML() {return ' ';}
 }
-
 
 class Square {
    constructor (piece) {
@@ -313,8 +457,9 @@ class Square {
 // a8 = board[7][0]
 
 class Board {
-   constructor (orientation) {
+   constructor (orientation, htmlBoard) {
       this.orientation = orientation;
+      this.htmlBoard = htmlBoard;
 
       fillBoard(this);
 
@@ -331,8 +476,14 @@ class Board {
       */
    }
 
-   update () {
-
+   updateVisuals () {
+      for (let i = 0; i < 8; i++) {
+         for (let j = 0; j < 8; j++) {
+            this.htmlBoard.children[i].children[j].innerHTML = (
+               this[i][j].piece.toHTML()
+            );
+         }
+      }
    }
 }
 
@@ -424,21 +575,43 @@ function enterEmptyRows (board) {
 }
 
 class Game {
-   constructor (settings) {
-      this.settings = settings;
-      this.board = new Board(settings.orientation);
-      this.moves = [];
+   constructor (notation, players, orientation, htmlBoard) {
+      this.notation = notation;
+      this.players = players;
+      this.board = new Board(orientation, htmlBoard);
+      this.turns = [];
+      this.currentSide = 'white';
    }
 
    possibleMoves () {
       let moves = [];
       for (let row of this.board) {
          for (let square of row) {
-            moves.push(...square.getMoves());
+            if (this.currentSide === square.piece.side) {
+               moves.push(...square.getMoves());
+            }
          }
       }
 
       return moves;
+   }
+
+   switchTurns () {
+
+      // switchSide before "doMove"
+      if (this.currentSide === 'white') {
+         this.currentSide = 'black';
+
+         if (this.players[1].constructor.name !== 'Person') {
+            this.players[1].doMove();
+         }
+      } else {
+         this.currentSide = 'white';
+
+         if (this.players[0].constructor.name !== 'Person') {
+            this.players[0].doMove();
+         }
+      }
    }
 }
 
@@ -466,7 +639,8 @@ class Person extends Player {
 
       this.customGameSettings = {
          orientation: 'white',
-         players: [this, RandomMove]
+         players: [this, RandomMove],
+         notation: 'symbol'
       };
    }
 
@@ -477,8 +651,8 @@ class Person extends Player {
    }
 }
 
-
 window.onload = function () {
+
    // usually tables are bad
    let table = document.createElement('table');
    document.body.appendChild(table);
@@ -506,6 +680,8 @@ window.onload = function () {
             .chess-cell-class-1 {background-color: #EFEFEF}
          */
 
+         currentCell.onClick = registerClick(i, j);
+
          currentRow.appendChild(currentCell);
       }
    }
@@ -514,6 +690,59 @@ window.onload = function () {
       'Guest' + String(Math.random()).substring(2)
    );
 
-   currentGame = new Game(currentUser.customGameSettings);
-   currentGame.board.update();
+   currentGame = new Game (
+      currentUser.customGameSettings.notation,
+      currentUser.customGameSettings.players,
+      currentUser.customGameSettings.orientation,
+      tbody
+   );
+
+   currentGame.board.updateVisuals();
 };
+
+function registerClick(i, j) {
+   let thingClicked = currentGame.board[i][j].piece;
+
+   if (input === null) {
+      if (thingClicked.side === currentGame.currentSide) {
+         input = thingClicked;
+      }
+   } else {
+      let secondClickResult = secondClickIsGood(i, j);
+      if (secondClickResult[0] !== undefined) {
+         secondClickResult.makeMove();
+      }
+
+      input = null;
+   }
+}
+
+function secondClickIsGood(i, j) {
+   return (
+      input.getMoves().filter((possibleMove) => {
+
+         // Horrible
+         let theMoveIsActuallyPossible = (
+            currentGame.possibleMoves().filter((actuallyPossibleMove) => {
+
+               // MDN Destructuring_assignment
+               // Shorter names
+               let [pieceMoved, actualPieceMoved] = [
+                  possibleMove.piece, actuallyPossibleMove.piece
+               ];
+
+               return (
+                  pieceMoved.row === actualPieceMoved.row &&
+                  pieceMoved.column === actualPieceMoved.column &&
+                  pieceMoved.toHTML() === actualPieceMoved.toHTML()
+               );
+            })
+         );
+
+         return (
+            possibleMove.row === i && possibleMove.column === j &&
+            theMoveIsActuallyPossible
+         );
+      })[0]
+   );
+}

@@ -503,7 +503,9 @@ function fillBoard (board) {
       board[1] = [];
 
       for (let i = 0; i < 7; i++) {
-         board[1].push(new Pawn ('black', 1, i));
+         board[1].push(
+            new Square (new Pawn ('black', 1, i))
+         );
       }
 
       enterEmptyRows(board);
@@ -511,7 +513,9 @@ function fillBoard (board) {
       board[6] = [];
 
       for (let i = 0; i < 7; i++) {
-         board[6].push(new Pawn ('white', 1, i));
+         board[6].push(
+            new Square (new Pawn ('white', 1, i))
+         );
       }
 
       board[7] = [
@@ -540,7 +544,9 @@ function fillBoard (board) {
       board[1] = [];
 
       for (let i = 0; i < 7; i++) {
-         board[1].push(new Pawn ('white', 1, i));
+         board[1].push(
+            new Square (new Pawn ('white', 1, i))
+         );
       }
 
       enterEmptyRows();
@@ -548,7 +554,9 @@ function fillBoard (board) {
       board[6] = [];
 
       for (let i = 0; i < 7; i++) {
-         board[6].push(new Pawn ('black', 1, i));
+         board[6].push(
+            new Square (new Pawn ('black', 1, i))
+         );
       }
 
       board[7] = [
@@ -569,7 +577,7 @@ function enterEmptyRows (board) {
       board[i] = [];
       for (let j = 0; j < 8; j++) {
          // https://stackoverflow.com/questions/21034662
-         board[i][j] = new Nothing (i, j);
+         board[i][j] = new Square (new Nothing (i, j));
       }
    }
 }

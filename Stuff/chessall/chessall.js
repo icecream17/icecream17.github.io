@@ -502,7 +502,7 @@ function fillBoard (board) {
 
       board[1] = [];
 
-      for (let i = 0; i < 7; i++) {
+      for (let i = 0; i < 8; i++) {
          board[1].push(
             new Square (new Pawn ('black', 1, i))
          );
@@ -512,7 +512,7 @@ function fillBoard (board) {
 
       board[6] = [];
 
-      for (let i = 0; i < 7; i++) {
+      for (let i = 0; i < 8; i++) {
          board[6].push(
             new Square (new Pawn ('white', 1, i))
          );
@@ -543,7 +543,7 @@ function fillBoard (board) {
 
       board[1] = [];
 
-      for (let i = 0; i < 7; i++) {
+      for (let i = 0; i < 8; i++) {
          board[1].push(
             new Square (new Pawn ('white', 1, i))
          );
@@ -553,7 +553,7 @@ function fillBoard (board) {
 
       board[6] = [];
 
-      for (let i = 0; i < 7; i++) {
+      for (let i = 0; i < 8; i++) {
          board[6].push(
             new Square (new Pawn ('black', 1, i))
          );

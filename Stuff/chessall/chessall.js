@@ -45,7 +45,13 @@ class Move {
       this.piece.row = this.row;
       this.piece.column = this.column;
 
-      currentGame.board[this.row][this.column].piece = this.piece;
+      if (this.special.includes('en passant')) {
+         currentGame.board[this.piece.row][this.column].piece = (
+            new Nothing (this.piece.row, this.piece.column)
+         );
+      } else {
+         currentGame.board[this.row][this.column].piece = this.piece;
+      }
 
       currentGame.updateVisuals();
 
@@ -97,28 +103,33 @@ class Move {
          }
 
          // Amazing: b && b.constructor && b.constructor.name
-
-         // TODO: Disambiguate
-
-         if (this.special.includes('take')) {
-            name += 'x';
-         }
-
-         name += ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'][this.column];
-         name += 8 - this.row;
-
-         if (this.special.includes('castle')) {
-            name = this.special.castleNotation;
-         }
-
-         if (this.special.includes('mate')) {
-            name += '#';
-         } else if (this.special.includes('check')) {
-            name += '+';
-         }
-
-         return name;
       }
+
+      // TODO: Disambiguate moves here
+
+      // the expression is 1 character too long
+      let thisMoveIsEatingSomething = (
+         this.special.includes('take') || this.special.includes('en passant')
+      );
+
+      if (thisMoveIsEatingSomething) {
+         name += 'x';
+      }
+
+      name += ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'][this.column];
+      name += 8 - this.row;
+
+      if (this.special.includes('castle')) {
+         name = this.special.castleNotation;
+      }
+
+      if (this.special.includes('mate')) {
+         name += '#';
+      } else if (this.special.includes('check')) {
+         name += '+';
+      }
+
+      return name;
    }
 }
 
@@ -130,33 +141,49 @@ function possibleOrthogonalMoves (row, column, piece) {
    // up
    for ( let i = row - 1; i >= 0; i-- ) {
       if (currentGame.board[i][column].piece.side === piece.side) {break;}
-      moves.push( new Move (piece, i, column) );
 
-      if (currentGame.board[i][column].piece.side !== null) {break;}
+      if (currentGame.board[i][column].piece.side === null) {
+         moves.push( new Move (piece, i, column) );
+      } else {
+         moves.push( new Move (piece, i, column, 'take') );
+         break;
+      }
    }
 
    // down
    for ( let i = row + 1; i <= 7; i++ ) {
       if (currentGame.board[i][column].piece.side === piece.side) {break;}
-      moves.push( new Move (piece, i, column) );
 
-      if (currentGame.board[i][column].piece.side !== null) {break;}
+      if (currentGame.board[i][column].piece.side === null) {
+         moves.push( new Move (piece, i, column) );
+      } else {
+         moves.push( new Move (piece, i, column, 'take') );
+         break;
+      }
    }
 
    // left
    for ( let j = column - 1; j >= 0; j-- ) {
-      if (currentGame.board[row][j].piece.side === piece.side) {break;}
-      moves.push( new Move (piece, row, j) );
+      if (currentGame.board[i][column].piece.side === piece.side) {break;}
 
-      if (currentGame.board[row][j].piece.side !== null) {break;}
+      if (currentGame.board[i][column].piece.side === null) {
+         moves.push( new Move (piece, i, column) );
+      } else {
+         moves.push( new Move (piece, i, column, 'take') );
+         break;
+      }
    }
 
    // right
    for ( let j = column + 1; j <= 7; j++ ) {
-      if (currentGame.board[row][j].piece.side === piece.side) {break;}
-      moves.push( new Move (piece, row, j) );
+      if (currentGame.board[i][column].piece.side === piece.side) {break;}
 
-      if (currentGame.board[row][j].piece.side !== null) {break;}
+      if (currentGame.board[i][column].piece.side === null) {
+         moves.push( new Move (piece, i, column) );
+      } else {
+         moves.push( new Move (piece, i, column, 'take') );
+         break;
+      }
    }
 
    return moves;
@@ -193,9 +220,10 @@ function possibleDiagonalMoves (row, column, piece) {
                continue;
             }
 
-            moves.push( new Move (piece, row, j) );
-
-            if (currentGame.board[i][j].piece.side !== null) {
+            if (currentGame.board[i][j].piece.side === null) {
+               moves.push( new Move (piece, row, j) );
+            } else {
+               moves.push( new Move (piece, row, j, 'take') );
                newlyUnavailableDirections[2 * i + j] = 7;
                continue;
             }
@@ -257,12 +285,20 @@ class Knight extends Piece {
 
          // Tested - success!
          move => {
-            return (move.row >= 0 &&
-            move.row < 8 &&
-            move.column >= 0 &&
-            move.column < 8 &&
-            currentGame.board[move.row][move.column].piece.side !== this.side);
+            return (
+               move.row >= 0 &&
+               move.row < 8 &&
+               move.column >= 0 &&
+               move.column < 8 &&
+               currentGame.board[move.row][move.column].piece.side !== this.side
+            );
          }
+      ).map(
+         move => (
+            currentGame.board[move.row][move.column].piece.side === null
+               ? move
+               : new Move (move.piece, move.row, move.column, 'take')
+         )
       ));
    }
 
@@ -336,17 +372,25 @@ class King extends Piece {
 
          // Tested - success!
          move => {
-            return (move.row >= 0 &&
-            move.row < 8 &&
-            move.column >= 0 &&
-            move.column < 8 &&
-            currentGame.board[move.row][move.column].piece.side !== this.side);
+            return (
+               move.row >= 0 &&
+               move.row < 8 &&
+               move.column >= 0 &&
+               move.column < 8 &&
+               currentGame.board[move.row][move.column].piece.side !== this.side
+            );
          }
+      ).map(
+         move => (
+            currentGame.board[move.row][move.column].piece.side === null
+               ? move
+               : new Move (move.piece, move.row, move.column, 'take')
+         )
       ).push(...this.getPossibleCastles()));
    }
 
    getPossibleCastles() {
-
+      // TODO: f getPossibleCastles()
    }
 
    toHTML() {
@@ -370,13 +414,21 @@ class Pawn extends Piece {
          nonTakesToConsider.push(currentGame.board[this.row - 2][this.column]);
       }
 
+      //TODO: promotion
+      let verticalUnit = 1
+      if (this.side !== currentGame.orientation) {
+         verticalUnit = -1
+      }
+
       if (this.column !== 0) {
          takesToConsider.push(
-            currentGame.board[this.row - 1][this.column - 1]
+            currentGame.board[this.row - verticalUnit][this.column - 1]
          );
-      } else if (this.column !== 7) {
+      }
+
+      if (this.column !== 7) {
          takesToConsider.push(
-            currentGame.board[this.row - 1][this.column + 1]
+            currentGame.board[this.row - verticalUnit][this.column + 1]
          );
       }
 
@@ -389,7 +441,7 @@ class Pawn extends Piece {
       );
 
       let possibleTakes = [];
-      // let enPassantTakes = [];
+      let enPassantTakes = [];
 
       for (let currentConsideration of takesToConsider) {
          if (currentConsideration.piece.side !== null) {
@@ -398,14 +450,14 @@ class Pawn extends Piece {
          }
 
          let enPassantIsPossible = (
-            this.row === 3 &&
+            this.row === (verticalUnit === 1 ? 3 : 4) &&
             currentGame[this.row][currentConsideration.column].side === (
                this.side === 'white' ? 'black' : 'white'
             )
          );
 
          if (enPassantIsPossible) {
-            possibleTakes.push(currentConsideration);
+            enPassantTakes.push(currentConsideration);
          }
       }
 
@@ -423,10 +475,16 @@ class Pawn extends Piece {
          );
       });
 
+      enPassantTakes.forEach((enPassantTake) => {
+         moves.push(
+            new Move (
+               this, enPassantTake.row, enPassantTake.column, 'en passant'
+            )
+         );
+      });
 
       return moves;
    }
-
 
    toHTML() {
       return (
@@ -514,7 +572,7 @@ function fillBoard (board) {
 
       for (let i = 0; i < 8; i++) {
          board[6].push(
-            new Square (new Pawn ('white', 1, i))
+            new Square (new Pawn ('white', 6, i))
          );
       }
 
@@ -555,7 +613,7 @@ function fillBoard (board) {
 
       for (let i = 0; i < 8; i++) {
          board[6].push(
-            new Square (new Pawn ('black', 1, i))
+            new Square (new Pawn ('black', 6, i))
          );
       }
 

@@ -688,7 +688,7 @@ window.onload = function () {
             .chess-cell-class-1 {background-color: #EFEFEF}
          */
 
-         currentCell.onClick = function() {registerClick(i, j)};
+         currentCell.onclick = function() {registerClick(i, j)};
 
          currentRow.appendChild(currentCell);
       }

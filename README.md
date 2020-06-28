@@ -9,4 +9,4 @@ Hi!
 * [Adventure](https://icecream17.github.io/Stuff/adventure/adventure.html)
   * Adventure game
 * [chessall](https://icecream17.github.io/Stuff/chessall/chessall.html)
-  * [chessall readme](Stuff/Stuff/README.md)
+  * [chessall readme](Stuff/chessall/README.md)

@@ -76,7 +76,6 @@ function startGame() {
    // Warning: HTML whitespace rules sacrificed for good JS whitespace
    document.body.innerHTML = (`
       <main id = 'storyDiv'>
-         <h1 id = 'storyHeader'>Story</h1>
          <p id = 'story'></p>
       </main>
       <div id = 'infoContainer'>

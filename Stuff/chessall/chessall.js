@@ -651,8 +651,10 @@ class Game {
 
    possibleMoves () {
       let moves = [];
-      for (let row of this.board) {
-         for (let square of row) {
+
+      // board is not iterable fixed
+      for (let i = 0; i < 8; i++) {
+         for (let square of this.board[i]) {
             if (this.currentSide === square.piece.side) {
                moves.push(...square.getMoves());
             }

@@ -656,7 +656,7 @@ class Game {
       for (let i = 0; i < 8; i++) {
          for (let square of this.board[i]) {
             if (this.currentSide === square.piece.side) {
-               moves.push(...square.getMoves());
+               moves.push(...square.piece.getMoves());
             }
          }
       }

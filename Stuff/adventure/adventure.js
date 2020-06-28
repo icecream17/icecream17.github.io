@@ -5,30 +5,31 @@
 "use strict";
 let time;
 
-let chapter = 0
-let storyLine = 1 // Now this is useless, but maybe I could reuse it
+let chapter = 0;
+let storyLine = 1; // Now this is useless, but maybe I could reuse it
 
 // Used in f startUpdate().
 // 1 frame = 77ms. 13 frames = 1001ms
-let gameInterval
+let gameInterval;
 
-let playerDirectory = '' // Used in playerConsole parseInput
+let playerDirectory = ''; // Used in playerConsole parseInput
 
 // Player info works!
 const locations = [
    'Office (Dallas)'
-]
+];
 
 let Player = {
    place: 0,
    actions: 0, // location is a thing. no overwrite or error
    lives: 10,
    inventory: {}
-}
+};
 
-let messages = []
+let messages = [];
 
-messages.start = `Σ<i class = "dogeblue">` +
+messages.start = (
+   `Σ<i class = "dogeblue">` +
    `"Hi. Welcome to SideQuest"</i>Σ` +
    ` says the director. \n` +
    `Σ<i class = "dogeblue">` +
@@ -46,6 +47,7 @@ messages.start = `Σ<i class = "dogeblue">` +
    `<li>Wait... they said to leave everything</li></ul>Σ` +
    `Σ<u>Test!</u>Σ \n\n` +
    `Σ<a class = "link" onClick = "storyAction(0)">An option</a>Σ`
+);
 
 /*
 Consider:
@@ -57,13 +59,15 @@ accessibility
    <a> (link) properties: title, accesskey
 */
 
-messages.welcome = 'Welcome!<br><br>' +
+messages.welcome = (
+   'Welcome!<br><br>' +
    'You can hover over the menu for instructions and settings and stuff. ' +
    'Click on one of the light blue links to start playing this adventure game'
+);
 
 // checkMenu variables
-let previousMenuDisplayState = "none"
-let menuDelayLeft = 0
+let previousMenuDisplayState = "none";
+let menuDelayLeft = 0;
 
 function startGame() {
    time = new Date();
@@ -72,6 +76,7 @@ function startGame() {
    // Warning: HTML whitespace rules sacrificed for good JS whitespace
    document.body.innerHTML = (`
       <main id = 'storyDiv'>
+         <h1 id = 'storyHeader'>Story</h1>
          <p id = 'story'></p>
       </main>
       <div id = 'infoContainer'>
@@ -104,22 +109,22 @@ function startGame() {
       <div id = 'playerConsoleContainer'>
          <p id = 'playerConsole' contenteditable = 'true'></p>
       </div>
-   `)
+   `);
 
    // Usually I like putting the => notation
    setTimeout( function() {
-      writeToStory(messages.start)
+      writeToStory(messages.start);
 
       setTimeout ( function() {
-         startUpdate()
-         $('#messageConsole').html(messages.welcome)
-         $('#playerConsole').html('<em>>&nbsp;</em>')
+         startUpdate();
+         $('#messageConsole').html(messages.welcome);
+         $('#playerConsole').html('<em>>&nbsp;</em>');
 
          $('#playerConsole').keydown(event => {
-            playerConsole(event)
-         })
-      }, 2000)
-   }, 5000)
+            playerConsole(event);
+         });
+      }, 2000);
+   }, 5000);
 
    // future self: https://www.w3schools.com/cssref/css3_pr_animation.asp
    $('body').css({
@@ -128,7 +133,7 @@ function startGame() {
       'animation-iteration-count': '1',
       'animation-fill-mode': 'forwards',
       'color': 'white'
-   })
+   });
 
    $('story').css({
       'animation-name': 'startGameBackgroundTransition',
@@ -136,23 +141,23 @@ function startGame() {
       'animation-iteration-count': '1',
       'animation-fill-mode': 'forwards',
       'color': 'white'
-   })
+   });
 }
 
 function continueGame() {
    if ($('#potato').length) {
-      $('#continue').remove()
-      colorLog('green', 'success?')
+      $('#continue').remove();
+      colorLog('green', 'success?');
    } else {
       $('#continue').after(
          '<p id = "potato">Sorry, this feature is currently unavailable</p>'
-      )
+      );
    }
 }
 
 // TODO: Make menu accessible
 function menu(elementID) {
-   let messageElement = $('#messageConsole')
+   let messageElement = $('#messageConsole');
 
    if (elementID === 'menuInstructions') {
       messageElement.html(
@@ -161,14 +166,14 @@ function menu(elementID) {
          'which is the "orange" box at the bottom with the <em>></em> symbol' +
          '<br><br>' +
          '(Afterwards press Enter)'
-      )
+      );
    } else if (elementID === 'menuSettings') {
       messageElement.html(
          'Type <em>settings</em> in the "console", ' +
          'the <i style = "orange">orange"</i> box at the bottom' +
          ' with the <em>></em> symbol<br><br>' +
          '(Afterwards press Enter)'
-      )
+      );
    } else if (elementID === 'menuCredits') {
       // TODO: Turn this into a list or table or something
       // TODO: Figure out copyright and stuff, maybe in a footer
@@ -194,15 +199,15 @@ function menu(elementID) {
          ' - - Example: console.log("%c Wow", "color: dodgerblue")<br>' +
          ' - accessibility<br>' +
          ' - CSS selectors, and Selector Combinators'
-      )
+      );
    } else {
       console.error(
          'Error Code 0: Invalid elementID in menu(elementID) function'
-      )
+      );
    }
 }
 
-console.clear() // So helpful
+console.clear(); // So helpful
 
 function messageToStory (...messages) {
    // wouldn't know how to write multiple things
@@ -210,54 +215,53 @@ function messageToStory (...messages) {
 
 function writeToStory (text, newline = '\n') {
    async function avoidEncryption() {
-      await writeCharacters(text + newline)
+      await writeCharacters(text + newline);
    }
 
    function writeCharacters(string) {
-      let characters = []
+      let characters = [];
 
-      let mode = false
-      let currentCharacter = ''
+      let mode = false;
+      let currentCharacter = '';
 
       for (let i = 0; i < string.length; i++) {
          if (mode) {
             // Σ = Alt + 2020
             if (string[i] === 'Σ') {
-               characters.push(currentCharacter)
-               currentCharacter = ''
-               mode = false
+               characters.push(currentCharacter);
+               currentCharacter = '';
+               mode = false;
             } else if (string[i] === '\n') {
-               currentCharacter += '<br>'
+               currentCharacter += '<br>';
             } else {
-               currentCharacter += string[i]
+               currentCharacter += string[i];
             }
          } else if (string[i] === '\n') {
-            characters.push('<br>')
+            characters.push('<br>');
          } else if (string[i] === 'Σ') {
-            mode = true
+            mode = true;
          } else {
-            characters.push(string[i])
+            characters.push(string[i]);
          }
       }
 
-      colorLog('green', 'writeToStory()\nStart:')
-      colorLog('dodgerblue', string)
+      colorLog('green', 'writeToStory()\nStart:');
+      colorLog('dodgerblue', string);
 
       return new Promise (
          resolve => {
-            let writeCharacterByCharacter = setInterval(
-               function () {
-                  let nextCharacter = characters.shift()
+            let writeCharacterByCharacter = setInterval( function () {
+               let nextCharacter = characters.shift();
 
-                  $('#story').append(nextCharacter)
+               $('#story').append(nextCharacter);
 
-                  if (characters.length === 0) {
-                     clearInterval(writeCharacterByCharacter)
-                     resolve('done!')
-                  }
-               }, 10)
+               if (characters.length === 0) {
+                  clearInterval(writeCharacterByCharacter);
+                  resolve('done!');
+               }
+            }, 10);
          }
-      )
+      );
    }
    // oh...
    // wow this is the longest return statement ever
@@ -268,69 +272,70 @@ function writeToStory (text, newline = '\n') {
    }
 
    // amazing
-   avoidEncryption()
+   avoidEncryption();
 }
 
 function updateInfo() {
    // Originally the info declaration at lives: and time: wasn't indented
 
-   let info = `location: ${locations[Player.place]} <br> ` +
+   let info = (
+      `location: ${locations[Player.place]} <br> ` +
       `lives: ${Player.lives} <br> actions: ${Player.actions} <br> ` +
       `time: ${humanTime()} <br><br> Inventory <br>`
+   );
 
    if (Object.keys(Player.inventory).length === 0) {
-      info += 'none'
+      info += 'none';
    } else {
       for (let i of Object.keys(Player.inventory)) {
-         let keyInfo = `${i}: ${Player.inventory[i]} <br> `
-         info += keyInfo
+         let keyInfo = `${i}: ${Player.inventory[i]} <br> `;
+         info += keyInfo;
       }
    }
 
-   $('#playerInfo').html(info)
+   $('#playerInfo').html(info);
 }
 
 // TODO: Finish time for longer periods, like days
 function humanTime() {
-   let ms = new Date() - time
+   let ms = new Date() - time;
 
-   let sec = Math.floor(ms / 1000)
-   ms -= (sec * 1000)
+   let sec = Math.floor(ms / 1000);
+   ms -= (sec * 1000);
 
    for (ms = String(ms); ms.length < 3; ms = '0' + ms) {/* empty */}
 
-   let min = Math.floor(sec / 60)
-   sec -= (min * 60)
+   let min = Math.floor(sec / 60);
+   sec -= (min * 60);
 
    if (min < 60) {
-      if (sec < 10) {sec = '0' + sec}
-
-      return `${min}:${sec}.${ms}`
+      if (sec < 10) {sec = '0' + sec;}
+      return `${min}:${sec}.${ms}`;
    } else if (min < 200) {
-      return `${min} minutes`
+      return `${min} minutes`;
    }
 
-   let hrs = Math.floor(min / 60)
-   min -= (hrs * 60)
+   let hrs = Math.floor(min / 60);
+   min -= (hrs * 60);
 
-   return `${hrs} hrs, ${min} minutes`
+   return `${hrs} hrs, ${min} minutes`;
 }
 
 // TODO: Different types of player info, and change the header accordingly
 function startUpdate() {
-   $('#playerInfoHeader').html('Player info')
-   $('#messageConsoleHeader').html('Game messages')
+   $('#playerInfoHeader').html('Player info');
+   $('#messageConsoleHeader').html('Game messages');
 
    gameInterval = setInterval(
       () => {
-         updateInfo()
-         checkMenu()
+         updateInfo();
+         checkMenu();
       }, 77
-   )
+   );
 }
 
 function storyAction(choiceID) {
-   colorLog('dodgerblue', 'storyAction: ' + choiceID)
+   colorLog('dodgerblue', 'storyAction: ' + choiceID);
 }
 
 function playerConsole (event) {
@@ -338,42 +343,46 @@ function playerConsole (event) {
 
       // Don't need to async since the timeout starts after everything.
 
-      let playerInput = $('#playerConsole').text()
-      const pathLength = playerDirectory.length + 2
+      let playerInput = $('#playerConsole').text();
+      const pathLength = playerDirectory.length + 2;
 
       // .substr() is legacy, and '\xa0' means 'nbsp;'
       if (playerInput === '>\xa0') {
-         visibleError('Huh?', `You didn't type anything.`)
+         visibleError('Huh?', `You didn't type anything.`);
       } else if (
          playerInput.substring(0, pathLength) !== playerDirectory + '> '
       ) {
-         visibleError('Error', 'Do not delete or change the start,<br>' +
+         visibleError('Error',
+            'Do not delete or change the start,<br>' +
             `where it's supposed to say "${playerDirectory + '>'}"`
-         )
+         );
       } else {
          // Put trim before if
-         playerInput = playerInput.substring(pathLength, playerInput.length).trim()
-         colorLog('dodgerblue', playerInput, playerInput.length)
+         playerInput = (
+            playerInput.substring(pathLength, playerInput.length)
+         ).trim();
+
+         colorLog('dodgerblue', playerInput, playerInput.length);
 
          if (playerInput.length === 0) {
             visibleError('Huh?',
                `You didn't type anything...<br>` +
                `Exiting the "${playerDirectory}" path`
-            )
+            );
 
             // 'help/how/why' => 'help/how'
             playerDirectory = playerDirectory.substring(
                0, playerDirectory.lastIndexOf('/')
-            )
+            );
          } else {
-            parseInput(playerInput)
+            parseInput(playerInput);
          }
       }
 
       // For some reason the setTimeout prevents a div from popping up.
       setTimeout( function() {
-         $('#playerConsole').html(`<em>${playerDirectory}>&nbsp;</em>`)
-      }, 25 )
+         $('#playerConsole').html(`<em>${playerDirectory}>&nbsp;</em>`);
+      }, 25 );
    }
 }
 
@@ -381,45 +390,45 @@ function visibleError(type, text) {
    if (type === 'Error') {
       $('#messageConsole').html(
          '<i class = "red">Error</i><br>' + text
-      )
+      );
    } else if (type === 'Warn') {
       $('#messageConsole').html(
          '<i class = "orange">Warning</i><br>' + text
-      )
+      );
    } else if (type === 'Huh?') {
       $('#messageConsole').html(
          '<i class = "dogeblue">Huh?</i><br>' + text
-      )
+      );
    } else {
-      console.error('Error Code 1: unsupported visibleError type: ' + type)
+      console.error('Error Code 1: unsupported visibleError type: ' + type);
    }
 }
 
 function parseInput (playerInput) {
    let startCommands = [
       'help', 'settings'
-   ]
+   ];
 
    if (playerInput === 'done') {
       $('messageConsole').html(
          '<i class = "green">ok ✓</i>'
-      )
+      );
    }
 
-   let standardNote = '(Type the number corresponding to the option you want)'
+   let standardNote = '(Type the number corresponding to the option you want)';
 
    if (playerDirectory === '') {
       if (startCommands.indexOf(playerInput) !== -1) {
-         parseStartCommand(playerInput)
-         playerDirectory = playerInput
+         parseStartCommand(playerInput);
+         playerDirectory = playerInput;
       } else {
          exitPathAndWarnPlayer(playerInput,
             `I don't actually talk english and ` +
             `so I have no idea what you mean by "${playerInput}"`
-         )
+         );
       }
    } else if (playerDirectory.substring(0, 4) === 'help') {
-      parseHelpCommand(playerInput)
+      parseHelpCommand(playerInput);
    }
 
    function parseStartCommand(command) {
@@ -432,7 +441,7 @@ function parseInput (playerInput) {
             `<li>How this console works</li>` +
             `<li>Winning the game</li>` +
             `<li>Something else</li></ol>` + standardNote
-         )
+         );
       }
    }
 
@@ -441,32 +450,34 @@ function parseInput (playerInput) {
          // isNaN() vs Number.isNaN()
          // isNaN() converts to Number automatically
 
-         let helpOptions = standardNote + `<br><ol>` +
-         `<li>How to play</li>` +
-         `<li>What this game is about</li>` +
-         `<li>What the boxes and stuff mean</li>` +
-         `<li>How this console works</li>` +
-         `<li>Winning the game</li>` +
-         `<li>Something else</li></ol>`
+         let helpOptions = (
+            standardNote + `<br><ol>` +
+            `<li>How to play</li>` +
+            `<li>What this game is about</li>` +
+            `<li>What the boxes and stuff mean</li>` +
+            `<li>How this console works</li>` +
+            `<li>Winning the game</li>` +
+            `<li>Something else</li></ol>`
+         );
 
          // NaN strings to NaN
-         command = extraNumberConvert(command.toLowercase())
+         command = extraNumberConvert(command.toLowercase());
 
          if (Number.isNaN(command)) {
             exitPathAndWarnPlayer(command,
                `Errr, sorry. You actually have to type in a number.<br>` +
                `Otherwise I don't really understand.` + helpOptions
-            )
+            );
          } else if (!Number.isInteger(command)) {
             visibleError('Warn',
                `${command}? <br>` +
                `That's like saying you want the "5.2"th cupcake.` +
                helpOptions
-            )
+            );
          } else if (command < 1) {
-            visibleError('Warn', `${command} is too small.` + helpOptions)
+            visibleError('Warn', `${command} is too small.` + helpOptions);
          } else if (command > 6) {
-            visibleError('Warn', `${command} is too big.` + helpOptions)
+            visibleError('Warn', `${command} is too big.` + helpOptions);
          } else {
             switch (command) {
                case 1:
@@ -488,7 +499,8 @@ function parseInput (playerInput) {
 
                   break;
                default:
-                  console.error()
+                  console.error('Error Code 2: Impossible error');
+                  console.stack();
             }
          }
       }
@@ -497,15 +509,15 @@ function parseInput (playerInput) {
    function exitPathAndWarnPlayer(playerInput, message) {
       visibleError('Warn',
          message + `<br><br>Exiting the "${playerDirectory}" path`
-      )
+      );
 
       // 'help/how/why' => 'help/how'
       playerDirectory = playerDirectory.substring(
          0, playerDirectory.lastIndexOf('/')
-      )
+      );
    }
 
-   let words = playerInput.split(' ')
+   let words = playerInput.split(' ');
 }
 
 function extraNumberConvert (string) {
@@ -516,81 +528,81 @@ function extraNumberConvert (string) {
       let numberLookup = [
          'zero', 'one', 'two', 'three', 'four', 'five',
          'six', 'seven', 'eight', 'nine', 'ten'
-      ]
+      ];
 
       if (numberLookup.includes(string)) {
-         return numberLookup.indexOf(string)
+         return numberLookup.indexOf(string);
       } else {
-         return NaN
+         return NaN;
       }
    } else {
-      return Number(string)
+      return Number(string);
    }
 }
 
 function colorLog (color, ...messages) {
 
    // WARNING: Do not use the variable name "arguments"
-   let logArguments = ['%c', 'color: ' + color]
+   let logArguments = ['%c', 'color: ' + color];
 
    for (let message of messages) {
-      logArguments[0] += ' '
+      logArguments[0] += ' ';
 
       switch (typeof message) {
          case "string":
-            logArguments[0] += message
+            logArguments[0] += message;
             break;
          case "number":
             if (Number.isInteger(message)) {
-               logArguments[0] += '%i'
+               logArguments[0] += '%i';
             } else {
-               logArguments[0] += '%f'
+               logArguments[0] += '%f';
             }
-            logArguments.push(message)
+            logArguments.push(message);
             break;
          case "object":
-            logArguments[0] += '%o'
-            logArguments.push(message)
+            logArguments[0] += '%o';
+            logArguments.push(message);
             break;
          default:
             console.error(
-               'Error Code 2: Unsupported colorLog message type: ' +
+               'Error Code 3: Unsupported colorLog message type: ' +
                (typeof message)
-            )
+            );
       }
    }
 
-   console.log(...logArguments)
+   console.log(...logArguments);
 }
 
 function checkMenu() {
-   let currentMenuDisplayState = $('.dropdownContent').css('display')
+   let currentMenuDisplayState = $('.dropdownContent').css('display');
 
    if (menuDelayLeft > 0) {
       menuDelayLeft--;
       if (menuDelayLeft === 0) {
          // Inline overrrides css file so set to nothing
-         $('.dropdownContent').css('display', '')
+         $('.dropdownContent').css('display', '');
 
-         console.timeEnd('Menu')
+         console.timeEnd('Menu');
 
          // fixed: Menu keeps popping up over and over again
-         previousMenuDisplayState = 'none'
-         currentMenuDisplayState = 'none'
+         previousMenuDisplayState = 'none';
+         currentMenuDisplayState = 'none';
       }
    }
 
    // Menu accessibility: 1001ms delay before menu disappears
    if (currentMenuDisplayState !== previousMenuDisplayState) {
       if (previousMenuDisplayState === 'block') {
-         menuDelayLeft = 13 // 13 * 77 = 1001 milliseconds
-         $('.dropdownContent').css('display', 'block')
+         menuDelayLeft = 13; // 13 * 77 = 1001 milliseconds
+         $('.dropdownContent').css('display', 'block');
 
-         console.time('Menu')
+         console.time('Menu');
       }
    }
 
-   previousMenuDisplayState = currentMenuDisplayState
+   previousMenuDisplayState = currentMenuDisplayState;
 }
 
 /*

@@ -1,5 +1,3 @@
-/*eslint-env jquery*/
-
 // WARNING: Script loads before HTML
 
 "use strict";

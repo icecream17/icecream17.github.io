@@ -26,28 +26,71 @@ let Player = {
    inventory: {}
 };
 
-let messages = [];
-
-messages.start = (
-   `Σ<i class = "dogeblue">` +
-   `"Hi. Welcome to SideQuest"</i>Σ` +
-   ` says the director. \n` +
-   `Σ<i class = "dogeblue">` +
-   `"There are only 3 challenges. Simple challenges, ` +
-   `but they somehow take up the whole year.\n\nGood luck"</i>Σ` +
-   `\n\n\nA TV lights up saying ` +
-   `Σ<i class = "gray">"First Challenge: Go to Rowlett"</i>Σ\n\n` +
-   `What? That's really easy. Just 15 miles-ish\n` +
-   `Σ<i class = "green">"SUPER FREE TREE APPLE!"</i>Σ` +
-   ` a kid outside yells. Σ<i class = "orange">gasp</i>Σ\n` +
-   `Your car is Σ<em>missing!</em>Σ ` +
-   `What used to be a crowded lot with no space\n` +
-   `is now replaced by an asteroid.\n\n` +
-   `Σ<ul><li>What a boring presentation</li>` +
-   `<li>Wait... they said to leave everything</li></ul>Σ` +
-   `Σ<u>Test!</u>Σ \n\n` +
-   `Σ<a class = "link" onClick = "storyAction(0)">An option</a>Σ`
-);
+let messages = {
+   start: (
+      `Σ<i class = "dogeblue">` +
+      `"Hi. Welcome to SideQuest"</i>Σ` +
+      ` says the director. \n` +
+      `Σ<i class = "dogeblue">` +
+      `"There are only 3 challenges. Simple challenges, ` +
+      `but they somehow take up the whole year.\n\nGood luck"</i>Σ` +
+      `\n\n\nA TV lights up saying ` +
+      `Σ<i class = "gray">"First Challenge: Go to Rowlett"</i>Σ\n\n` +
+      `What? That's really easy. Just 15 miles-ish\n` +
+      `Σ<i class = "green">"SUPER FREE TREE APPLE!"</i>Σ` +
+      ` a kid outside yells. Σ<i class = "orange">gasp</i>Σ\n` +
+      `Your car is Σ<em>missing!</em>Σ ` +
+      `What used to be a crowded lot with no space\n` +
+      `is now replaced by an asteroid.\n\n` +
+      `Σ<ul><li>What a boring presentation</li>` +
+      `<li>Wait... they said to leave everything</li></ul>Σ` +
+      `Σ<u>Test!</u>Σ \n\n` +
+      `Σ<a class = "link" onClick = "storyAction(0)">An option</a>Σ`
+   ),
+   welcome: (
+      'Welcome!<br><br>' +
+      'You can hover over the menu for instructions and settings and stuff. ' +
+      'Click on one of the light blue links to start playing this adventure game'
+   ),
+   menuInstructions: (
+      'Click on the text links to play.<br><br>' +
+      'You can also type <em>help</em> in the "console", ' +
+      'which is the "orange" box at the bottom with the <em>></em> symbol' +
+      '<br><br>' +
+      '(Afterwards press Enter)'
+   ),
+   menuSettings: (
+      `Type <em>settings</em> in the "console", ` +
+      'the <i style = "orange">orange"</i> box at the bottom' +
+      ' with the <em>></em> symbol<br><br>' +
+      '(Afterwards press Enter)'
+   ),
+      // TODO: Turn this into a list or table or something
+      // TODO: Figure out copyright and stuff, maybe in a footer
+   menuCredits: (
+      'Credits:<br><br>' +
+      'Me (icecream17)<br>' +
+      'Test - JS.do<br>' +
+      'Search - Google<br>' +
+      'Menu icon - Google<br>' +
+      'JQuery - JQuery Foundation (hosted by Google)<br>' +
+      '[everything] Understanding - ' +
+      'Stack Overflow, W3 Schools, MDN, Google<br>' +
+      ' - CSS Understanding<br>' +
+      ' - Animation Understanding<br>' +
+      ' - Menu Dropdown<br>' +
+      ' - Story scroll<br>' +
+      ' - Async attempt (Success?)<br>' +
+      ' - HTML whitespace (computerhope.com)<br>' +
+      ' - https://stackoverflow.com/questions/62054308/' +
+      'how-could-i-prevent-the-div-from-blocking-the-dropdown<br>' +
+      ' - nbsp; is not a space " " but rather "\xa0"<br>' +
+      ' - Custom console.log css <br>' +
+      ' - - Example: console.log("%c Wow", "color: dodgerblue")<br>' +
+      ' - accessibility<br>' +
+      ' - CSS selectors, and Selector Combinators'
+   )
+};
 
 /*
 Consider:
@@ -57,24 +100,26 @@ accessibility
       on hover it shows the title
    properties: tab-index
    <a> (link) properties: title, accesskey
-*/
 
-messages.welcome = (
-   'Welcome!<br><br>' +
-   'You can hover over the menu for instructions and settings and stuff. ' +
-   'Click on one of the light blue links to start playing this adventure game'
-);
+syntax--markup syntax--underline syntax--link syntax--https syntax--hyperlink
+*/
 
 // checkMenu variables
 let previousMenuDisplayState = "none";
 let menuDelayLeft = 0;
 
+// no jQuery anymore
+function getById(id) {return document.getElementById(id);}
+function getByClass(className) {
+   return document.getElementsByClassName(className);
+}
+
 function startGame() {
    time = new Date();
 
    // Is there a better way?
-   // Warning: HTML whitespace rules sacrificed for good JS whitespace
-   document.body.innerHTML = (`
+   // WOW: The JS whitespace AND the HTML whitespace are good!
+   document.body.innerHTML = `
       <main id = 'storyDiv'>
          <p id = 'story'></p>
       </main>
@@ -84,7 +129,9 @@ function startGame() {
                <span class = "material-icons">menu</span>
             </button>
             <div class = 'dropdownContent'>
-               <button id = 'menuInstructions' onClick = 'menu("menuInstructions")'>
+               <button id = 'menuInstructions'
+                  onClick = 'menu("menuInstructions")'
+               >
                Instructions </button>
 
                <button id = 'menuSettings' onClick = 'menu("menuSettings")'>
@@ -108,7 +155,7 @@ function startGame() {
       <div id = 'playerConsoleContainer'>
          <p id = 'playerConsole' contenteditable = 'true'></p>
       </div>
-   `);
+   `;
 
    // Usually I like putting the => notation
    setTimeout( function() {
@@ -116,89 +163,40 @@ function startGame() {
 
       setTimeout ( function() {
          startUpdate();
-         $('#messageConsole').html(messages.welcome);
-         $('#playerConsole').html('<em>>&nbsp;</em>');
+         getById('messageConsole').innerHTML = messages.welcome;
+         getById('playerConsole').innerHTML = `<em>>&nbsp;</em>`;
 
-         $('#playerConsole').keydown(event => {
-            playerConsole(event);
-         });
+         // MDN keydown event
+         getById('playerConsole').addEventListener('keydown', playerConsole);
       }, 2000);
    }, 5000);
 
    // future self: https://www.w3schools.com/cssref/css3_pr_animation.asp
-   $('body').css({
-      'animation-name': 'startGameBackgroundTransition',
-      'animation-duration': '7s',
-      'animation-iteration-count': '1',
-      'animation-fill-mode': 'forwards',
-      'color': 'white'
-   });
-
-   $('story').css({
-      'animation-name': 'startGameBackgroundTransition',
-      'animation-duration': '7s',
-      'animation-iteration-count': '1',
-      'animation-fill-mode': 'forwards',
-      'color': 'white'
-   });
+   document.body.classList.add('startGameBackgroundTransition');
+   getById('story').classList.add('startGameBackgroundTransition');
 }
 
 function continueGame() {
-   if ($('#potato').length) {
-      $('#continue').remove();
+   if (getById('potato') ?? false) {
+      getById('continue').parentNode.removeChild(getById('continue'));
       colorLog('green', 'success?');
    } else {
-      $('#continue').after(
-         '<p id = "potato">Sorry, this feature is currently unavailable</p>'
-      );
+      let notice = document.createElement('p');
+      notice.id = 'potato';
+      notice.innerHTML = 'Sorry, this feature is currently unavailable';
+
+      getById('continue').insertAdjacentElement('afterend', notice);
    }
 }
 
 // TODO: Make menu accessible
 function menu(elementID) {
-   let messageElement = $('#messageConsole');
+   let messageElement = getById('messageConsole');
 
-   if (elementID === 'menuInstructions') {
-      messageElement.html(
-         'Click on the text links to play.<br><br>' +
-         'You can also type <em>help</em> in the "console", ' +
-         'which is the "orange" box at the bottom with the <em>></em> symbol' +
-         '<br><br>' +
-         '(Afterwards press Enter)'
-      );
-   } else if (elementID === 'menuSettings') {
-      messageElement.html(
-         'Type <em>settings</em> in the "console", ' +
-         'the <i style = "orange">orange"</i> box at the bottom' +
-         ' with the <em>></em> symbol<br><br>' +
-         '(Afterwards press Enter)'
-      );
-   } else if (elementID === 'menuCredits') {
-      // TODO: Turn this into a list or table or something
-      // TODO: Figure out copyright and stuff, maybe in a footer
-      messageElement.html(
-         'Credits:<br><br>' +
-         'Me (icecream17)<br>' +
-         'Test - JS.do<br>' +
-         'Search - Google<br>' +
-         'Menu icon - Google<br>' +
-         'JQuery - JQuery Foundation (hosted by Google)<br>' +
-         '[everything] Understanding - ' +
-         'Stack Overflow, W3 Schools, MDN, Google<br>' +
-         ' - CSS Understanding<br>' +
-         ' - Animation Understanding<br>' +
-         ' - Menu Dropdown<br>' +
-         ' - Story scroll<br>' +
-         ' - Async attempt (Success?)<br>' +
-         ' - HTML whitespace (computerhope.com)<br>' +
-         ' - https://stackoverflow.com/questions/62054308/' +
-         'how-could-i-prevent-the-div-from-blocking-the-dropdown<br>' +
-         ' - nbsp; is not a space " " but rather "\xa0"<br>' +
-         ' - Custom console.log css <br>' +
-         ' - - Example: console.log("%c Wow", "color: dodgerblue")<br>' +
-         ' - accessibility<br>' +
-         ' - CSS selectors, and Selector Combinators'
-      );
+   const validElementIDs = ['menuInstructions', 'menuSettings', 'menuCredits'];
+
+   if (validElementIDs.includes(elementID)) {
+      messageElement.innerHTML = messages[elementID];
    } else {
       console.error(
          'Error Code 0: Invalid elementID in menu(elementID) function'
@@ -252,7 +250,8 @@ function writeToStory (text, newline = '\n') {
             let writeCharacterByCharacter = setInterval( function () {
                let nextCharacter = characters.shift();
 
-               $('#story').append(nextCharacter);
+               // Instead of appendChild becuase it's not an element
+               getById('story').innerHTML += nextCharacter;
 
                if (characters.length === 0) {
                   clearInterval(writeCharacterByCharacter);
@@ -292,7 +291,7 @@ function updateInfo() {
       }
    }
 
-   $('#playerInfo').html(info);
+   getById('playerInfo').innerHTML = info;
 }
 
 // TODO: Finish time for longer periods, like days
@@ -322,8 +321,8 @@ function humanTime() {
 
 // TODO: Different types of player info, and change the header accordingly
 function startUpdate() {
-   $('#playerInfoHeader').html('Player info');
-   $('#messageConsoleHeader').html('Game messages');
+   getById('playerInfoHeader').innerHTML = 'Player info';
+   getById('messageConsoleHeader').innerHTML = 'Game messages';
 
    gameInterval = setInterval(
       () => {
@@ -342,7 +341,7 @@ function playerConsole (event) {
 
       // Don't need to async since the timeout starts after everything.
 
-      let playerInput = $('#playerConsole').text();
+      let playerInput = getById('playerConsole').text();
       const pathLength = playerDirectory.length + 2;
 
       // .substr() is legacy, and '\xa0' means 'nbsp;'
@@ -380,22 +379,23 @@ function playerConsole (event) {
 
       // For some reason the setTimeout prevents a div from popping up.
       setTimeout( function() {
-         $('#playerConsole').html(`<em>${playerDirectory}>&nbsp;</em>`);
+         getById('playerConsole').innerHTML =
+            `<em>${playerDirectory}>&nbsp;</em>`;
       }, 25 );
    }
 }
 
 function visibleError(type, text) {
    if (type === 'Error') {
-      $('#messageConsole').html(
+      getById('messageConsole').html(
          '<i class = "red">Error</i><br>' + text
       );
    } else if (type === 'Warn') {
-      $('#messageConsole').html(
+      getById('messageConsole').html(
          '<i class = "orange">Warning</i><br>' + text
       );
    } else if (type === 'Huh?') {
-      $('#messageConsole').html(
+      getById('messageConsole').html(
          '<i class = "dogeblue">Huh?</i><br>' + text
       );
    } else {
@@ -409,7 +409,7 @@ function parseInput (playerInput) {
    ];
 
    if (playerInput === 'done') {
-      $('messageConsole').html(
+      getById('#messageConsole').html(
          '<i class = "green">ok ✓</i>'
       );
    }
@@ -432,7 +432,7 @@ function parseInput (playerInput) {
 
    function parseStartCommand(command) {
       if (command === 'help') {
-         $('#messageConsole').html(
+         getById('messageConsole').html(
             `What do you need help on?<br><ol>` +
             `<li>How to play</li>` +
             `<li>What this game is about</li>` +
@@ -480,7 +480,19 @@ function parseInput (playerInput) {
          } else {
             switch (command) {
                case 1:
-
+                  getById('messageConsole').innerHTML = (
+                     `This is an adventure story. <br>` +
+                     `You are presented with the current situation. <br>` +
+                     `Read (the story). Then look at the links. <br>` +
+                     `The links are choices, things you can do. <br>` +
+                     `When you click on a link, the story continues, <br>` +
+                     `as if you have done the choice. <br>` +
+                     `For example, if you click on the link "Eat"<br>` +
+                     `the story might continue with "It was delicious" <br>` +
+                     `or "It was poisoned!" <br>` +
+                     `or something else. This is an adventure. <br>` +
+                     `Explore the world`
+                  );
                   break;
                case 2:
 
@@ -575,13 +587,13 @@ function colorLog (color, ...messages) {
 }
 
 function checkMenu() {
-   let currentMenuDisplayState = $('.dropdownContent').css('display');
+   let currentMenuDisplayState = getByClass('dropdownContent')[0].style.display;
 
    if (menuDelayLeft > 0) {
       menuDelayLeft--;
       if (menuDelayLeft === 0) {
          // Inline overrrides css file so set to nothing
-         $('.dropdownContent').css('display', '');
+         getByClass('dropdownContent')[0].style.display = '';
 
          console.timeEnd('Menu');
 
@@ -595,7 +607,7 @@ function checkMenu() {
    if (currentMenuDisplayState !== previousMenuDisplayState) {
       if (previousMenuDisplayState === 'block') {
          menuDelayLeft = 13; // 13 * 77 = 1001 milliseconds
-         $('.dropdownContent').css('display', 'block');
+         getByClass('dropdownContent')[0].style.display = 'block';
 
          console.time('Menu');
       }
@@ -624,5 +636,7 @@ These are Used
 
 ✖ 33 problems (33 errors, 0 warnings)
 
+NOTES:
+The storyDiv / story's background doesn't fade like the rest of the elements.
 
 */

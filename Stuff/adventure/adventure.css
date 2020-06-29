@@ -9,18 +9,24 @@ Z-indexes
 
 */
 
+/*
+   The html and body css probably have a very similar effect
+   #story "inherits"
+*/
 
-/* Probably the "same" [effect], but oh well */
-/* Talking about the "html" and "body" */
-/* The textarea "inherits" */
-html, #story {
+html,
+#story {
    font-family: monospace;
    font-size: large;
 }
 
-@keyframes startGameBackgroundTransition {
-   from {background-color: white;}
-   to {background-color: black;}
+/* https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties */
+.startGameBackgroundTransition {
+   transition-property: background-color, color;
+   transition-duration: 7s;
+   transition-timing-function: linear;
+   background-color: black;
+   color: white;
 }
 
 body {
@@ -48,7 +54,7 @@ body {
    top: 10px;
    right: 10px;
    min-width: 160px;
-   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
    z-index: 3;
 }
 
@@ -62,14 +68,14 @@ body {
 }
 
 /* More accessibility */
-.dropdownContent button:hover {background-color: #ddd;}
-.dropdownContent button:focus {background-color: #ddd;}
+.dropdownContent button:hover { background-color: #ddd; }
+.dropdownContent button:focus { background-color: #ddd; }
 
-.dropdown:hover .dropdownContent {display: block;}
-#gameMenu:focus + .dropdownContent {display: block;}
+.dropdown:hover .dropdownContent { display: block; }
+#gameMenu:focus + .dropdownContent { display: block; }
 
-.dropdown:hover #gameMenu {background-color: #ddd;}
-#gameMenu:focus {background-color: #ddd;}
+#gameMenu:focus { background-color: #ddd; }
+.dropdown:hover #gameMenu { background-color: #ddd; }
 
 #menuInstructions:hover {
    cursor: help;
@@ -133,7 +139,7 @@ body {
    padding-left: 1%;
 }
 
-#playerConsoleContainer{
+#playerConsoleContainer {
    position: absolute;
    bottom: 2%;
    height: 22%;

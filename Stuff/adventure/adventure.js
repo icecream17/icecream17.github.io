@@ -339,7 +339,7 @@ function playerConsole (event) {
 
       // Don't need to async since the timeout starts after everything.
 
-      let playerInput = getById('playerConsole').text();
+      let playerInput = getById('playerConsole').innerText.trim();
       const pathLength = playerDirectory.length + 2;
 
       // .substr() is legacy, and '\xa0' means 'nbsp;'

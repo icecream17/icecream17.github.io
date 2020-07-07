@@ -25,7 +25,7 @@ html,
    transition-property: background-color, color;
    transition-duration: 7s;
    transition-timing-function: linear;
-   background-color: black;
+   background-color: #14161a;
    color: white;
 }
 
@@ -184,6 +184,16 @@ u {
    color: #ff654d;
 }
 
+button.link {
+   display: inline-block;
+   position: relative;
+   background-color: transparent;
+   cursor: pointer;
+   border: 0;
+   padding: 0;
+   font: inherit;
+}
+
 /* robot */
 .gray {
    color: #a1a1a1;
@@ -203,3 +213,32 @@ u {
 .red {
    color: red;
 }
+
+.regular {
+   color: white;
+}
+
+.purple {
+   color: #b186b1;
+}
+
+li {
+   /* Variables */
+   --color-one: white;
+   --color-two: cyan;
+   --color-three: orange;
+   --color-four: #e06c75;
+   --color-five: dodgerblue;
+   --color-six: #ff80ff; /* By lighten(purple, 50%) */
+   --color-seven: #98c379;
+   --color-eight: #ec0; /* #ffdc09 */
+}
+
+li.one { color: var(--color-one); }
+li.two { color: var(--color-two); }
+li.three { color: var(--color-three); }
+li.four { color: var(--color-four); }
+li.five { color: var(--color-five); }
+li.six { color: var(--color-six); }
+li.seven { color: var(--color-seven); }
+li.eight { color: var(--color-eight); }

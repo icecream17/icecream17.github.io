@@ -43,12 +43,13 @@ let messages = {
       `Σ<ul><li>What a boring presentation</li>` +
       `<li>Wait... they said to leave everything</li></ul>Σ` +
       `Σ<u>Test!</u>Σ \n\n` +
-      `Σ<a class = "link" onClick = "storyAction(0)">An option</a>Σ`
+      `Σ<button class = "link" onClick = "storyAction(0)">An option</button>Σ`
    ),
    welcome: (
       'Welcome!<br><br>' +
-      'You can hover over the menu for instructions and settings and stuff. ' +
-      'Click on one of the light blue links to start playing this adventure game'
+      'You can hover over the menu (at the top right)' +
+      'for instructions and settings and stuff. ' +
+      'Read the story and click on one of the light blue links to start playing.'
    ),
    menuInstructions: (
       'Click on the text links to play.<br><br>' +
@@ -86,7 +87,21 @@ let messages = {
       ' - Custom console.log css <br>' +
       ' - - Example: console.log("%c Wow", "color: dodgerblue")<br>' +
       ' - accessibility<br>' +
-      ' - CSS selectors, and Selector Combinators'
+      ' - CSS selectors, and Selector Combinators<br>' +
+      ' - CSS transitions, you don\'t have to use Jquery'
+   ),
+   helpOptions: (
+      `<li class = 'one'><i class = 'regular'>How to play</i></li>` +
+      `<li class = 'two'><i class = 'regular'>` +
+      `What this game is about</i></li>` +
+      `<li class = 'three'><i class = 'regular'>` +
+      `What the boxes and stuff mean</i></li>` +
+      `<li class = 'four'><i class = 'regular'>` +
+      `How this console works</i></li>` +
+      `<li class = 'five'><i class = 'regular'>` +
+      `Winning the game</i></li>` +
+      `<li class = 'six'><i class = 'regular'>` +
+      `Something else</i></li></ol>`
    )
 };
 
@@ -103,7 +118,7 @@ syntax--markup syntax--underline syntax--link syntax--https syntax--hyperlink
 */
 
 // checkMenu variables
-let previousMenuDisplayState = "none";
+let previousMenuDisplayState = 'none';
 let menuDelayLeft = 0;
 
 // no jQuery anymore
@@ -124,7 +139,7 @@ function startGame() {
       <div id = 'infoContainer'>
          <div class = 'dropdown'>
             <button id = 'gameMenu'>
-               <span class = "material-icons">menu</span>
+               <span class = 'material-icons'>menu</span>
             </button>
             <div class = 'dropdownContent'>
                <button id = 'menuInstructions'
@@ -292,6 +307,15 @@ function updateInfo() {
    getById('playerInfo').innerHTML = info;
 }
 
+/*
+This game is dedicated to:
+Everything!
+
+Easter egg to: You. Hi there =D
+Have some pi.
+
+*/
+
 // TODO: Finish time for longer periods, like days
 function humanTime() {
    let ms = new Date() - time;
@@ -340,10 +364,10 @@ function playerConsole (event) {
       // Don't need to async since the timeout starts after everything.
 
       let playerInput = getById('playerConsole').innerText.trim();
-      const pathLength = playerDirectory.length + 2;
+      const pathLength = playerDirectory.length + 2; // '> '.length
 
-      // .substr() is legacy, and '\xa0' means 'nbsp;'
-      if (playerInput === '>\xa0') {
+      // NOTE: It trims the space too.
+      if (playerInput === '>') {
          visibleError('Huh?', `You didn't type anything.`);
       } else if (
          playerInput.substring(0, pathLength) !== playerDirectory + '> '
@@ -353,7 +377,7 @@ function playerConsole (event) {
             `where it's supposed to say "${playerDirectory + '>'}"`
          );
       } else {
-         // Put trim before if
+         // Put another trim before if
          playerInput = (
             playerInput.substring(pathLength, playerInput.length)
          ).trim();
@@ -385,15 +409,15 @@ function playerConsole (event) {
 
 function visibleError(type, text) {
    if (type === 'Error') {
-      getById('messageConsole').html(
+      getById('messageConsole').innerHTML = (
          '<i class = "red">Error</i><br>' + text
       );
    } else if (type === 'Warn') {
-      getById('messageConsole').html(
+      getById('messageConsole').innerHTML = (
          '<i class = "orange">Warning</i><br>' + text
       );
    } else if (type === 'Huh?') {
-      getById('messageConsole').html(
+      getById('messageConsole').innerHTML = (
          '<i class = "dogeblue">Huh?</i><br>' + text
       );
    } else {
@@ -407,12 +431,22 @@ function parseInput (playerInput) {
    ];
 
    if (playerInput === 'done') {
-      getById('#messageConsole').html(
-         '<i class = "green">ok ✓</i>'
+      getById('messageConsole').innerHTML = (
+         '<i class = "green">ok ✓</i><br><br>' +
+         `Exiting the "${playerDirectory}" path`
       );
+
+      playerDirectory = playerDirectory.substring(
+         0, playerDirectory.lastIndexOf('/')
+      );
+
+      return;
    }
 
-   let standardNote = '(Type the number corresponding to the option you want)';
+   let standardNote = (
+      '(Type the number corresponding to the option you want)' +
+      '<br>(Unless you are done. Then type <em>done</em>.)'
+   );
 
    if (playerDirectory === '') {
       if (startCommands.indexOf(playerInput) !== -1) {
@@ -430,14 +464,9 @@ function parseInput (playerInput) {
 
    function parseStartCommand(command) {
       if (command === 'help') {
-         getById('messageConsole').html(
+         getById('messageConsole').innerHTML = (
             `What do you need help on?<br><ol>` +
-            `<li>How to play</li>` +
-            `<li>What this game is about</li>` +
-            `<li>What the boxes and stuff mean</li>` +
-            `<li>How this console works</li>` +
-            `<li>Winning the game</li>` +
-            `<li>Something else</li></ol>` + standardNote
+            messages.helpOptions + standardNote
          );
       }
    }
@@ -447,34 +476,32 @@ function parseInput (playerInput) {
          // isNaN() vs Number.isNaN()
          // isNaN() converts to Number automatically
 
-         let helpOptions = (
-            standardNote + `<br><ol>` +
-            `<li>How to play</li>` +
-            `<li>What this game is about</li>` +
-            `<li>What the boxes and stuff mean</li>` +
-            `<li>How this console works</li>` +
-            `<li>Winning the game</li>` +
-            `<li>Something else</li></ol>`
+         let helpOptionText = (
+            standardNote + `<br><ol>` + messages.helpOptions
          );
 
          // NaN strings to NaN
-         command = extraNumberConvert(command.toLowercase());
+         command = extraNumberConvert(command);
 
          if (Number.isNaN(command)) {
             exitPathAndWarnPlayer(command,
                `Errr, sorry. You actually have to type in a number.<br>` +
-               `Otherwise I don't really understand.` + helpOptions
+               `Otherwise I don't really understand.<br>` + helpOptionText
             );
          } else if (!Number.isInteger(command)) {
             visibleError('Warn',
                `${command}? <br>` +
                `That's like saying you want the "5.2"th cupcake.` +
-               helpOptions
+               helpOptionText
             );
          } else if (command < 1) {
-            visibleError('Warn', `${command} is too small.` + helpOptions);
+            visibleError(
+               'Warn', `${command} is too small.<br><br>` + helpOptionText
+            );
          } else if (command > 6) {
-            visibleError('Warn', `${command} is too big.` + helpOptions);
+            visibleError(
+               'Warn', `${command} is too big.<br><br>` + helpOptionText
+            );
          } else {
             switch (command) {
                case 1:
@@ -484,16 +511,31 @@ function parseInput (playerInput) {
                      `Read (the story). Then look at the links. <br>` +
                      `The links are choices, things you can do. <br>` +
                      `When you click on a link, the story continues, <br>` +
-                     `as if you have done the choice. <br>` +
-                     `For example, if you click on the link "Eat"<br>` +
-                     `the story might continue with "It was delicious" <br>` +
-                     `or "It was poisoned!" <br>` +
-                     `or something else. This is an adventure. <br>` +
-                     `Explore the world`
+                     `as if you have done the choice. <br><br>` +
+                     `For example, if you click on the link ` +
+                     `<button class = 'link'>"Eat"</button><br>` +
+                     `the story might continue with ` +
+                     `<i class = 'green'>"It was delicious"</i> <br>` +
+                     `or <i class = 'purple'>"It was poisoned!"</i>` +
+                     ` or something else.` +
+                     ` This is an adventure <br>` +
+                     `<i class = 'dogeblue'>Have fun</i><br><br><br>` +
+                     helpOptionText
                   );
                   break;
                case 2:
-
+                  getById('messageConsole').innerHTML = (
+                     `This is an adventure story. <br>` +
+                     `This is about exploring the story and stuff<br><br>` +
+                     `Okay, I know this is vague, ` +
+                     `but I can't just ruin the story. <br>` +
+                     `But if you look at the start, it says ` +
+                     `<i class = 'dogeblue'>"Hi. Welcome to SideQuest"</i>` +
+                     `, which tells you the title or theme of the story.<br>` +
+                     `<br><i class = 'dogeblue'>Just have fun</i><br>` +
+                     `What are games about, anyway?<br><br>` +
+                     helpOptionText
+                  );
                   break;
                case 3:
 
@@ -533,6 +575,7 @@ function extraNumberConvert (string) {
    if (isNaN(string)) {
       // TODO: Expand number lookup. Maybe multiple languages
       //       Also detect stuff like "1 + 2" and "2 + x = 3 + 7"
+      string = string.toLowerCase();
 
       let numberLookup = [
          'zero', 'one', 'two', 'three', 'four', 'five',
@@ -547,6 +590,46 @@ function extraNumberConvert (string) {
    } else {
       return Number(string);
    }
+}
+
+function checkMenu() {
+   let currentMenuDisplayState = (
+      getComputedStyle(getByClass('dropdownContent')[0]).display
+   );
+
+   // none or block
+
+   if (menuDelayLeft > 0) {
+      menuDelayLeft--;
+
+      colorLog(
+         'dodgerblue',
+         previousMenuDisplayState, currentMenuDisplayState,
+         menuDelayLeft
+      )
+
+      if (menuDelayLeft === 0) {
+         // Inline overrrides css file so set to nothing
+         getByClass('dropdownContent')[0].style.display = '';
+
+         console.timeEnd('Menu');
+
+         // fixed: Menu keeps popping up over and over again
+         previousMenuDisplayState = currentMenuDisplayState = 'none';
+      }
+   }
+
+   // Menu accessibility: 1001ms delay before menu disappears
+   if (currentMenuDisplayState !== previousMenuDisplayState) {
+      if (previousMenuDisplayState === 'block') {
+         menuDelayLeft = 13; // 13 * 77 = 1001 milliseconds
+         getByClass('dropdownContent')[0].style.display = 'block';
+
+         console.time('Menu');
+      }
+   }
+
+   previousMenuDisplayState = currentMenuDisplayState;
 }
 
 function colorLog (color, ...messages) {
@@ -582,36 +665,6 @@ function colorLog (color, ...messages) {
    }
 
    console.log(...logArguments);
-}
-
-function checkMenu() {
-   let currentMenuDisplayState = getByClass('dropdownContent')[0].style.display;
-
-   if (menuDelayLeft > 0) {
-      menuDelayLeft--;
-      if (menuDelayLeft === 0) {
-         // Inline overrrides css file so set to nothing
-         getByClass('dropdownContent')[0].style.display = '';
-
-         console.timeEnd('Menu');
-
-         // fixed: Menu keeps popping up over and over again
-         previousMenuDisplayState = 'none';
-         currentMenuDisplayState = 'none';
-      }
-   }
-
-   // Menu accessibility: 1001ms delay before menu disappears
-   if (currentMenuDisplayState !== previousMenuDisplayState) {
-      if (previousMenuDisplayState === 'block') {
-         menuDelayLeft = 13; // 13 * 77 = 1001 milliseconds
-         getByClass('dropdownContent')[0].style.display = 'block';
-
-         console.time('Menu');
-      }
-   }
-
-   previousMenuDisplayState = currentMenuDisplayState;
 }
 
 /*

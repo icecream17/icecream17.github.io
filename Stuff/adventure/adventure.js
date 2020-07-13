@@ -7,7 +7,7 @@ let chapter = 0;
 let storyLine = 1; // Now this is useless, but maybe I could reuse it
 
 // Used in f startUpdate().
-// 1 frame = 77ms. 13 frames = 1001ms
+// 1 frame = 77ms
 let gameInterval;
 
 let playerDirectory = ''; // Used in playerConsole parseInput
@@ -24,6 +24,10 @@ let Player = {
    inventory: {}
 };
 
+let UserSettings = {
+   gameMenuDelay: 13 // 13 frames = 1001ms
+};
+
 let messages = {
    start: (
       `Σ<i class = "dogeblue">` +
@@ -34,22 +38,25 @@ let messages = {
       `but they somehow take up the whole year.\n\nGood luck"</i>Σ` +
       `\n\n\nA TV lights up saying ` +
       `Σ<i class = "gray">"First Challenge: Go to Rowlett"</i>Σ\n\n` +
-      `What? That's really easy. Just 15 miles-ish\n` +
+      `What? That's really easy. Just 15 miles, ish.\n` +
       `Σ<i class = "green">"SUPER FREE TREE APPLE!"</i>Σ` +
       ` a kid outside yells. Σ<i class = "orange">gasp</i>Σ\n` +
       `Your car is Σ<em>missing!</em>Σ ` +
       `What used to be a crowded lot with no space\n` +
       `is now replaced by an asteroid.\n\n` +
-      `Σ<ul><li>What a boring presentation</li>` +
-      `<li>Wait... they said to leave everything</li></ul>Σ` +
-      `Σ<u>Test!</u>Σ \n\n` +
-      `Σ<button class = "link" onClick = "storyAction(0)">An option</button>Σ`
+      `Σ<ul><li>The presentation now seems useless as you stare\n` +
+      `at your now invisible car.</li>` +
+      `<li>They haven't really said anything important… right?</li>` +
+      `</ul>Σ\n\n` +
+      `Σ<button class = "link" onClick = "storyAction(0)" type = "button">` +
+      `An option</button>Σ`
    ),
    welcome: (
       'Welcome!<br><br>' +
-      'You can hover over the menu (at the top right)' +
+      'You can hover over the menu (at the top right) ' +
       'for instructions and settings and stuff. ' +
-      'Read the story and click on one of the light blue links to start playing.'
+      'Read the story and click on one of the light blue links to ' +
+      'start playing.'
    ),
    menuInstructions: (
       'Click on the text links to play.<br><br>' +
@@ -59,37 +66,38 @@ let messages = {
       '(Afterwards press Enter)'
    ),
    menuSettings: (
-      `Type <em>settings</em> in the "console", ` +
+      'Type <em>settings</em> in the "console", ' +
       'the <i style = "orange">orange"</i> box at the bottom' +
       ' with the <em>></em> symbol<br><br>' +
       '(Afterwards press Enter)'
    ),
-      // TODO: Turn this into a list or table or something
       // TODO: Figure out copyright and stuff, maybe in a footer
-   menuCredits: (
-      'Credits:<br><br>' +
-      'Me (icecream17)<br>' +
-      'Test - JS.do<br>' +
-      'Search - Google<br>' +
-      'Menu icon - Google<br>' +
-      'JQuery - JQuery Foundation (hosted by Google)<br>' +
-      '[everything] Understanding - ' +
-      'Stack Overflow, W3 Schools, MDN, Google<br>' +
-      ' - CSS Understanding<br>' +
-      ' - Animation Understanding<br>' +
-      ' - Menu Dropdown<br>' +
-      ' - Story scroll<br>' +
-      ' - Async attempt (Success?)<br>' +
-      ' - HTML whitespace (computerhope.com)<br>' +
-      ' - https://stackoverflow.com/questions/62054308/' +
-      'how-could-i-prevent-the-div-from-blocking-the-dropdown<br>' +
-      ' - nbsp; is not a space " " but rather "\xa0"<br>' +
-      ' - Custom console.log css <br>' +
-      ' - - Example: console.log("%c Wow", "color: dodgerblue")<br>' +
-      ' - accessibility<br>' +
-      ' - CSS selectors, and Selector Combinators<br>' +
-      ' - CSS transitions, you don\'t have to use Jquery'
-   ),
+   menuCredits: `
+      <article id = 'credits'>
+         <h3>Credits</h3>
+
+         <p>Created by me (icecream17)<p>
+
+         <section>
+            <h4>[everything] Understanding</h4>
+            <ul class = 'no-margin'>
+               <li>Google</li>
+               <li>MDN</li>
+               <li>Stack Overflow</li>
+               <li>W3 Schools</li>
+               <li>Youtube</li>
+            </ul>
+         </section>
+
+         <section class = 'no-p-margin'>
+            <h4>Other</h4>
+            <p>Me<i class = 'float-right'>favicon</i></p>
+            <p>Google<i class = 'float-right'>Menu icon</i></p>
+            <p>W3 Schools<i class = 'float-right'>Dropdown</i></p>
+            <p>js.do and jsbin<i class = 'float-right'>Testing</i></p>
+         </section>
+      </article>
+   `,
    helpOptions: (
       `<li class = 'one'><i class = 'regular'>How to play</i></li>` +
       `<li class = 'two'><i class = 'regular'>` +
@@ -138,19 +146,23 @@ function startGame() {
       </main>
       <div id = 'infoContainer'>
          <div class = 'dropdown'>
-            <button id = 'gameMenu'>
+            <button id = 'gameMenu' type = 'button'>
                <span class = 'material-icons'>menu</span>
             </button>
             <div class = 'dropdownContent'>
-               <button id = 'menuInstructions'
+               <button id = 'menuInstructions' type = 'button'
                   onClick = 'menu("menuInstructions")'
                >
                Instructions </button>
 
-               <button id = 'menuSettings' onClick = 'menu("menuSettings")'>
+               <button id = 'menuSettings' type = 'button'
+                  onClick = 'menu("menuSettings")'
+               >
                Settings </button>
 
-               <button id = 'menuCredits' onClick = 'menu("menuCredits")'>
+               <button id = 'menuCredits' type = 'button'
+                  onClick = 'menu("menuCredits")'
+               >
                Credits </button>
             </div>
          </div>
@@ -169,6 +181,8 @@ function startGame() {
          <p id = 'playerConsole' contenteditable = 'true'></p>
       </div>
    `;
+
+   getByClass('dropdownContent')[0].style.display = 'none';
 
    // Usually I like putting the => notation
    setTimeout( function() {
@@ -356,6 +370,10 @@ function startUpdate() {
 
 function storyAction(choiceID) {
    colorLog('dodgerblue', 'storyAction: ' + choiceID);
+   getById('messageConsole').innerHTML = `
+      <i class = 'dogeblue'>Lol</i><br>
+      It doesn't work yet!
+   `;
 }
 
 function playerConsole (event) {
@@ -513,7 +531,8 @@ function parseInput (playerInput) {
                      `When you click on a link, the story continues, <br>` +
                      `as if you have done the choice. <br><br>` +
                      `For example, if you click on the link ` +
-                     `<button class = 'link'>"Eat"</button><br>` +
+                     `<button class = 'link' type = 'button'>` +
+                     `"Eat"</button><br>` +
                      `the story might continue with ` +
                      `<i class = 'green'>"It was delicious"</i> <br>` +
                      `or <i class = 'purple'>"It was poisoned!"</i>` +
@@ -538,7 +557,20 @@ function parseInput (playerInput) {
                   );
                   break;
                case 3:
-
+                  getById('messageConsole').innerHTML = (
+                     `This is the "Game messages" box.<br>` +
+                     `The box above this one is called "Player info".<br>` +
+                     `<br>The text in the top left is the adventure game, ` +
+                     `<br>which is the story where you play.` +
+                     `And the box at the bottom is the player console.<br>` +
+                     `The player console box is where you can get help or ` +
+                     `change the settings. Hopefully "Player info" and ` +
+                     `"Game messages" is self-explanatory. <br><br>` +
+                     `By the way, inside the "Player info" box, <br>` +
+                     `"actions" is how many links you've clicked on, <br>` +
+                     `and "Inventory" is any stuff you have.`
+                     helpOptionText
+                  );
                   break;
                case 4:
 
@@ -600,13 +632,23 @@ function checkMenu() {
    // none or block
 
    if (menuDelayLeft > 0) {
-      menuDelayLeft--;
+      let isStillInFocus = (
+         ['menuInstructions', 'menuSettings', 'menuCredits'].includes(
+            document.activeElement.id
+         )
+      );
+
+      if (isStillInFocus) {
+         menuDelayLeft = 13;
+      } else {
+         menuDelayLeft--;
+      }
 
       colorLog(
          'dodgerblue',
          previousMenuDisplayState, currentMenuDisplayState,
          menuDelayLeft
-      )
+      );
 
       if (menuDelayLeft === 0) {
          // Inline overrrides css file so set to nothing
@@ -622,7 +664,7 @@ function checkMenu() {
    // Menu accessibility: 1001ms delay before menu disappears
    if (currentMenuDisplayState !== previousMenuDisplayState) {
       if (previousMenuDisplayState === 'block') {
-         menuDelayLeft = 13; // 13 * 77 = 1001 milliseconds
+         menuDelayLeft = UserSettings.gameMenuDelay;
          getByClass('dropdownContent')[0].style.display = 'block';
 
          console.time('Menu');
@@ -673,7 +715,7 @@ eslint:
 5:5   error  'chapter' is assigned a value but never used         no-unused-vars
 6:5   error  'storyLine' is assigned a value but never used       no-unused-vars
 
-8:5   error  'updateInterval' is assigned a value but never used  no-unused-vars
+8:5   error  'gameInterval' is assigned a value but never used  no-unused-vars
 58:10  error  'startGame' is defined but never used               no-unused-vars
 132:10  error  'continueGame' is defined but never used           no-unused-vars
 143:10  error  'menu' is defined but never used                   no-unused-vars
@@ -689,5 +731,14 @@ These are Used
 
 NOTES:
 The storyDiv / story's background doesn't fade like the rest of the elements.
+
+BUGS:
+When tabbing off the gameMenu into the dropdown, it selects:
+   0. button#menu
+   1. body
+   2. button#menu + (Instructions, 3. Settings, 4. Credits)
+
+IDEAS:
+Presentation words: https://www.youtube.com/watch?v=C-r8rUydKHo
 
 */

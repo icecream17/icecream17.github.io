@@ -29,8 +29,62 @@
       <script src = "adventure.js"></script>
    </head>
    <body>
-      <button onClick = "startGame()" type = "button" id = 'start'>Start game</button>
-      <button onClick = "continueGame()" type = "button" id = 'continue'>Continue</button>
+      <noscript>
+         <p>
+            This game doesn't really work without javascript.<br>
+            Here are <a href="https://www.enablejavascript.io/">
+               instructions on how to enable it.
+            </a>
+         </p>
+      </noscript>
+      <details id = "accessibilityNotes">
+         <summary>Accessibility (notes / stuff)</summary>
+         <details open>
+            <summary>General</summary>
+            <p>Hi there.</p>
+         </details>
+         <details>
+            <summary>Keyboard</summary>
+            <p>
+               I've tried to make everything tabbable.<br>
+               Note that the menu has a 1 second delay.
+            </p>
+            <p>
+               Well actually the menu updates every 77 milliseconds.<br>
+               I set it so that the menu waits 13 updates until it closes.<br>
+               That just happens to be 1.001 seconds, but you can change it here:<br>(Not done yet)
+            </p>
+         </details>
+         <details>
+            <summary>Colors</summary>
+            <p>
+               Currently contrast is high. You can change the colors here:
+               <br>(Not done yet) (For soft-contrast people, also others like colorblind or something.)
+            </p>
+         </details>
+      </details>
+      <details>
+         <summary>Browser (notes / stuff)</summary>
+         <p>
+            Please, if you have Internet Explorer, choose a different browser!
+            <br><i class = "dogeblue">
+               You are causing developers worldwide to suffer
+            <br></i>
+            <i class = "red">No, seriously.</i><br><br>
+            <strong>Also this game doesn't support it.</strong>
+         </p>
+      </details>
+      <br>
+      <button onClick = "startGame()" type = "button" id = 'start'>
+         Start game
+      </button>
+      <button onClick = "continueGame()" type = "button" id = 'continue'>
+         Continue
+      </button>
+      <h1 class = "centered-text dogeblue" id = "gameName">
+         <em>SideQuest</em>
+      </h1>
+      <h3 class = "centered-text dogeblue" id = "subTitle">Well hi there!</h3>
    </body>
    <noscript>Somehow you don't have JavaScript - sorry.</noscript>
 </html>

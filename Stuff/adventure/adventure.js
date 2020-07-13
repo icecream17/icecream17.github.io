@@ -568,7 +568,7 @@ function parseInput (playerInput) {
                      `"Game messages" is self-explanatory. <br><br>` +
                      `By the way, inside the "Player info" box, <br>` +
                      `"actions" is how many links you've clicked on, <br>` +
-                     `and "Inventory" is any stuff you have.`
+                     `and "Inventory" is any stuff you have.` + 
                      helpOptionText
                   );
                   break;

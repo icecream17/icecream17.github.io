@@ -33,6 +33,117 @@ body {
    background-color: white;
 }
 
+/* Before game is started */
+/* https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details */
+details {
+   border: 1px solid #aaa;
+   border-radius: 4px;
+   padding: 0.5em 0.5em 0;
+   background-color: #fbfffd; /* mintcream darkness / 2.5 */
+}
+
+summary {
+   font-weight: bold;
+   margin: -0.5em -0.5em 0;
+   padding: 0.5em;
+   background-color: white;
+}
+
+details[open] {
+   padding: 0.5em;
+}
+
+details[open] summary {
+   border-bottom: 1px solid #aaa;
+   margin-bottom: 0.5em;
+}
+
+/* So that nested details doesn't show details[open] summary style */
+details:not([open]) summary {
+   border-bottom: 0;
+   margin-bottom: 0;
+}
+
+details p {
+   margin-bottom: 0;
+   margin-top: 0.5em;
+}
+
+#accessibilityNotes,
+#start,
+#continue {
+   font-family: Helvetica;
+}
+
+@keyframes start-screen-button-animation {
+   0%   { background-color: #fff; }
+   1%   { background-color: #ffe; }
+   2%   { background-color: #fef; }
+   3%   { background-color: #eff; }
+   4%   { background-color: #fee; }
+
+   5%   { background-color: #efe; }
+   6%   { background-color: #eef; }
+   9%   { background-color: #eee; }
+   14%  { background-color: #ffd; }
+   15%  { background-color: #fdf; }
+
+   26%  { background-color: #dff; }
+   31%  { background-color: #dfe; }
+   35%  { background-color: #def; }
+   41%  { background-color: #edf; }
+   53%  { background-color: #fde; }
+
+   59%  { background-color: #fed; }
+   65%  { background-color: #efd; }
+   79%  { background-color: #dfd; }
+   89%  { background-color: #fdd; }
+   97%  { background-color: #ddf; }
+
+   100% { background-color: #def; }
+}
+
+@keyframes welcome-animation {
+   /* margin goes: top right bottom left */
+   0%   { margin: 1em 0; } /* top-bottom. this is default */
+   25%  { margin: 0 0 0 0; }
+   50%  { margin: -2em 1em 0 0; }
+   75%  { margin: -5em 4em 0 0; }
+   100% { margin: 1em 0; }
+}
+
+#start,
+#continue {
+   display: flex;
+   padding: 1em 6em; /* top-bottom, left-right */
+   justify-content: center;
+   font-size: large;
+   background-color: inherit;
+   border: outset;
+}
+
+#start {
+   /* duration | timing-function | delay | iteration-count | name */
+   animation: 6s ease-in -2s infinite start-screen-button-animation;
+}
+
+#continue {
+   /* duration | timing-function | iteration-count | direction | name */
+   animation: 10s ease-out infinite reverse start-screen-button-animation;
+}
+
+#gameName {
+   font-size: 2.1em;
+   text-shadow: 0 0 2px #fd5, 1px 1px 2px #1fbfff;
+}
+
+#subTitle {
+   /* duration | iteration-count | name*/
+   animation: 5s 1 welcome-animation;
+
+   padding-left: 7em;
+}
+
 /* "Why are you using camelCase ugh that's not what you're..." */
 #gameMenu {
    background-color: transparent;
@@ -86,8 +197,7 @@ body {
 /* So that the menu works = ugh */
 
 #story {
-   padding-left: 0.1%;
-   padding-top: 0.1%;
+   padding: 0.25%;
    margin: 0;
 }
 
@@ -137,6 +247,7 @@ body {
 #messageConsole {
    margin-bottom: 0;
    padding-left: 1%;
+   padding-right: 1%;
 }
 
 #playerConsoleContainer {
@@ -160,7 +271,7 @@ body {
 }
 
 /* misspelled */
-u {
+.misspell {
    text-decoration: #f00 wavy underline;
 }
 
@@ -214,10 +325,6 @@ button.link {
    color: red;
 }
 
-.regular {
-   color: white;
-}
-
 .purple {
    color: #b186b1;
 }
@@ -242,3 +349,28 @@ li.five { color: var(--color-five); }
 li.six { color: var(--color-six); }
 li.seven { color: var(--color-seven); }
 li.eight { color: var(--color-eight); }
+
+.regular {
+   color: white;
+}
+
+.centered-text {
+   text-align: center;
+}
+
+.float-right {
+   float: right;
+}
+
+.no-margin {
+   margin: 0;
+}
+
+.no-p-margin p {
+   margin: 0;
+}
+
+#credits h4 {
+   text-align: center;
+   margin-bottom: 0.5em;
+}

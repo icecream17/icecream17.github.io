@@ -30,8 +30,7 @@ let UserSettings = {
 
 let messages = {
    start: (
-      `Σ<i class = "dogeblue">` +
-      `"Hi. Welcome to SideQuest"</i>Σ` +
+      `Σ<i class = "dogeblue">"Hi. Welcome to SideQuest"</i>Σ` +
       ` says the director. \n` +
       `Σ<i class = "dogeblue">` +
       `"There are only 3 challenges. Simple challenges, ` +
@@ -66,10 +65,7 @@ let messages = {
       '(Afterwards press Enter)'
    ),
    menuSettings: (
-      'Type <em>settings</em> in the "console", ' +
-      'the <i style = "orange">orange"</i> box at the bottom' +
-      ' with the <em>></em> symbol<br><br>' +
-      '(Afterwards press Enter)'
+      'Error 4: This message should be impossible!!!!!'
    ),
       // TODO: Figure out copyright and stuff, maybe in a footer
    menuCredits: `
@@ -166,23 +162,23 @@ function startGame() {
                Credits </button>
             </div>
          </div>
-         <section id = 'playerInfoContainer'>
+         <aside id = 'playerInfoContainer'>
             <h2 id = 'playerInfoHeader'></h2>
             <p id = 'playerInfo'></p>
-         </section>
+         </aside>
 
          <br>
-         <section id = 'messageConsoleContainer'>
+         <aside id = 'messageConsoleContainer'>
             <h2 id = 'messageConsoleHeader'></h2>
             <p id = 'messageConsole'></p>
-         </section>
+         </aside>
       </div>
       <div id = 'playerConsoleContainer'>
          <p id = 'playerConsole' contenteditable = 'true'></p>
       </div>
    `;
 
-   getByClass('dropdownContent')[0].style.display = 'none';
+   // getByClass('dropdownContent')[0].style.display = 'none';
 
    // Usually I like putting the => notation
    setTimeout( function() {
@@ -197,6 +193,52 @@ function startGame() {
          getById('playerConsole').addEventListener('keydown', playerConsole);
       }, 2000);
    }, 5000);
+
+   // Keyboard navigation of menu
+   // With wraparound!
+   for (let id of [
+      'gameMenu', 'menuInstructions', 'menuSettings', 'menuCredits'
+   ]) {
+      getById(id).addEventListener('keydown',
+         new Function('event', `
+            let menuOrder = [
+               'gameMenu', 'menuInstructions', 'menuSettings', 'menuCredits'
+            ];
+
+            let orderInMenu = menuOrder.indexOf('${id}');
+
+            if (event.key === 'ArrowDown') {
+               if (orderInMenu === 3) {
+                  getById(menuOrder[1]).focus();
+               } else if (orderInMenu) {
+                  getById(menuOrder[orderInMenu + 1]).focus();
+               } else {
+                  getByClass('dropdownContent')[0].style.display = 'block';
+                  getById(menuOrder[1]).focus();
+               }
+            } else if (event.key === 'ArrowUp') {
+               if (orderInMenu > 1) {
+                  getById(menuOrder[orderInMenu - 1]).focus();
+               } else {
+                  getById(menuOrder[3]).focus();
+               }
+            } else if (event.key === 'ArrowRight' && orderInMenu) {
+               getById('gameMenu').focus();
+            } else if (
+               ['Tab', 'ArrowLeft'].includes(event.key) && !orderInMenu
+            ) {
+               event.preventDefault();
+               // otherwise it would focus on the element and then
+               // tab to the next element
+
+               getByClass('dropdownContent')[0].style.display = 'block';
+               getById(menuOrder[1]).focus();
+            } else if (event.key === 'Tab' && orderInMenu === 3) {
+               getByClass('dropdownContent')[0].style.display = '';
+            }
+         `)
+      );
+   }
 
    // future self: https://www.w3schools.com/cssref/css3_pr_animation.asp
    document.body.classList.add('startGameBackgroundTransition');
@@ -220,9 +262,19 @@ function continueGame() {
 function menu(elementID) {
    let messageElement = getById('messageConsole');
 
-   const validElementIDs = ['menuInstructions', 'menuSettings', 'menuCredits'];
+   const validElementIDs = ['menuInstructions', 'menuCredits'];
 
-   if (validElementIDs.includes(elementID)) {
+   // Automates typing "settings" and pressing Enter like in the message
+   if (elementID === 'menuSettings') {
+      getById('playerConsole').innerHTML = `<em>&gt; settings</em>`;
+      playerConsole(
+         new KeyboardEvent("keydown", {
+            key: "Enter",
+            code: "Enter",
+            keyCode: 13
+         })
+      );
+   } else if (validElementIDs.includes(elementID)) {
       messageElement.innerHTML = messages[elementID];
    } else {
       console.error(
@@ -245,16 +297,16 @@ function writeToStory (text, newline = '\n') {
    function writeCharacters(string) {
       let characters = [];
 
-      let mode = false;
+      let skipHTMLmode = false;
       let currentCharacter = '';
 
       for (let i = 0; i < string.length; i++) {
-         if (mode) {
+         if (skipHTMLmode) {
             // Σ = Alt + 2020
             if (string[i] === 'Σ') {
                characters.push(currentCharacter);
                currentCharacter = '';
-               mode = false;
+               skipHTMLmode = false;
             } else if (string[i] === '\n') {
                currentCharacter += '<br>';
             } else {
@@ -263,7 +315,7 @@ function writeToStory (text, newline = '\n') {
          } else if (string[i] === '\n') {
             characters.push('<br>');
          } else if (string[i] === 'Σ') {
-            mode = true;
+            skipHTMLmode = true;
          } else {
             characters.push(string[i]);
          }
@@ -370,14 +422,11 @@ function startUpdate() {
 
 function storyAction(choiceID) {
    colorLog('dodgerblue', 'storyAction: ' + choiceID);
-   getById('messageConsole').innerHTML = `
-      <i class = 'dogeblue'>Lol</i><br>
-      It doesn't work yet!
-   `;
+   visibleCustomMessage('dogeblue', 'Lol', `It doesn't work yet!`)
 }
 
 function playerConsole (event) {
-   if (event.code === "Enter") {
+   if (event.key === "Enter") {
 
       // Don't need to async since the timeout starts after everything.
 
@@ -413,7 +462,7 @@ function playerConsole (event) {
                0, playerDirectory.lastIndexOf('/')
             );
          } else {
-            parseInput(playerInput);
+            parseInput(playerInput.toLowerCase());
          }
       }
 
@@ -425,19 +474,21 @@ function playerConsole (event) {
    }
 }
 
+// class is a keyword =/
+// with intro!
+function visibleCustomMessage(className = '', intro = '', text = '') {
+   // I'd put parenthesis but atom removes the html syntax colors =/
+   getById('messageConsole').innerHTML =
+      `<i class = "${className}">${intro}</i><br>${text}`;
+}
+
 function visibleError(type, text) {
    if (type === 'Error') {
-      getById('messageConsole').innerHTML = (
-         '<i class = "red">Error</i><br>' + text
-      );
+      visibleCustomMessage('red', type, text);
    } else if (type === 'Warn') {
-      getById('messageConsole').innerHTML = (
-         '<i class = "orange">Warning</i><br>' + text
-      );
+      visibleCustomMessage('orange', type, text);
    } else if (type === 'Huh?') {
-      getById('messageConsole').innerHTML = (
-         '<i class = "dogeblue">Huh?</i><br>' + text
-      );
+      visibleCustomMessage('dogeblue', type, text);
    } else {
       console.error('Error Code 1: unsupported visibleError type: ' + type);
    }
@@ -445,7 +496,8 @@ function visibleError(type, text) {
 
 function parseInput (playerInput) {
    let startCommands = [
-      'help', 'settings'
+      'help', 'settings',
+      'hi', 'hello', 'easteregg'
    ];
 
    if (playerInput === 'done') {
@@ -467,7 +519,7 @@ function parseInput (playerInput) {
    );
 
    if (playerDirectory === '') {
-      if (startCommands.indexOf(playerInput) !== -1) {
+      if (startCommands.includes(playerInput)) {
          parseStartCommand(playerInput);
          playerDirectory = playerInput;
       } else {
@@ -486,25 +538,32 @@ function parseInput (playerInput) {
             `What do you need help on?<br><ol>` +
             messages.helpOptions + standardNote
          );
+      } else if (command === 'settings') {
+         getById('messageConsole').innerHTML = (
+            `What do you need help on?<br><ol>` +
+            messages.helpOptions + standardNote
+         );
+      } else if (['hi', 'hello'].includes(command)) {
+         visibleCustomMessage('dogeblue', 'hi!', '=D');
+      } else if (command === 'easteregg') {
+         visibleCustomMessage('orange', 'hmm...');
       }
    }
 
-   function parseHelpCommand(command) {
-      if (playerDirectory === 'help') {
-         // isNaN() vs Number.isNaN()
-         // isNaN() converts to Number automatically
-
-         let helpOptionText = (
-            standardNote + `<br><ol>` + messages.helpOptions
+   function parseCommand(command, options, responses) {
+      if (responses[command] !== undefined) {
+         getById('messageConsole').innerHTML = (
+            responses[command] + options
          );
-
-         // NaN strings to NaN
+      } else {
          command = extraNumberConvert(command);
+         let maxNumber = 1;
+         while (responses[maxNumber + 1] !== undefined) {maxNumber++;}
 
          if (Number.isNaN(command)) {
             exitPathAndWarnPlayer(command,
                `Errr, sorry. You actually have to type in a number.<br>` +
-               `Otherwise I don't really understand.<br>` + helpOptionText
+               `Otherwise I don't really understand.` + helpOptionText
             );
          } else if (!Number.isInteger(command)) {
             visibleError('Warn',
@@ -514,11 +573,49 @@ function parseInput (playerInput) {
             );
          } else if (command < 1) {
             visibleError(
-               'Warn', `${command} is too small.<br><br>` + helpOptionText
+               'Warn', `${command} is too small.` + helpOptionText
             );
-         } else if (command > 6) {
+         } else if (command > maxNumber) {
             visibleError(
-               'Warn', `${command} is too big.<br><br>` + helpOptionText
+               'Warn', `${command} is too big.` + helpOptionText
+            );
+         } else if (responses[command] !== undefined) {
+            // todo
+         }
+      }
+
+   }
+
+   function parseHelpCommand(command) {
+      if (playerDirectory === 'help') {
+         // isNaN() vs Number.isNaN()
+         // isNaN() converts to Number automatically
+
+         let helpOptionText = (
+            `<br><br>` + standardNote + `<br><ol>` + messages.helpOptions
+         );
+
+         // NaN strings to NaN
+         command = extraNumberConvert(command);
+
+         if (Number.isNaN(command)) {
+            exitPathAndWarnPlayer(command,
+               `Errr, sorry. You actually have to type in a number.<br>` +
+               `Otherwise I don't really understand.` + helpOptionText
+            );
+         } else if (!Number.isInteger(command)) {
+            visibleError('Warn',
+               `${command}? <br>` +
+               `That's like saying you want the "5.2"th cupcake.` +
+               helpOptionText
+            );
+         } else if (command < 1) {
+            visibleError(
+               'Warn', `${command} is too small.` + helpOptionText
+            );
+         } else if (command > 7) {
+            visibleError(
+               'Warn', `${command} is too big.` + helpOptionText
             );
          } else {
             switch (command) {
@@ -538,7 +635,7 @@ function parseInput (playerInput) {
                      `or <i class = 'purple'>"It was poisoned!"</i>` +
                      ` or something else.` +
                      ` This is an adventure <br>` +
-                     `<i class = 'dogeblue'>Have fun</i><br><br><br>` +
+                     `<i class = 'dogeblue'>Have fun</i><br>` +
                      helpOptionText
                   );
                   break;
@@ -552,7 +649,7 @@ function parseInput (playerInput) {
                      `<i class = 'dogeblue'>"Hi. Welcome to SideQuest"</i>` +
                      `, which tells you the title or theme of the story.<br>` +
                      `<br><i class = 'dogeblue'>Just have fun</i><br>` +
-                     `What are games about, anyway?<br><br>` +
+                     `What are games about, anyway?` +
                      helpOptionText
                   );
                   break;
@@ -568,19 +665,33 @@ function parseInput (playerInput) {
                      `"Game messages" is self-explanatory. <br><br>` +
                      `By the way, inside the "Player info" box, <br>` +
                      `"actions" is how many links you've clicked on, <br>` +
-                     `and "Inventory" is any stuff you have.` + 
+                     `and "Inventory" is any stuff you have.` +
                      helpOptionText
                   );
                   break;
                case 4:
-
+                  getById('messageConsole').innerHTML = (
+                     `Commands i'll tell you about:<br>` +
+                     `<ul><li>help</li><li>settings</li><li>done</li></ul>` +
+                     `There <em>are</em> more!<br>` +
+                     `But you'll have to find them yourself.<br><br>` +
+                     `=D ${helpOptionText}`
+                  );
                   break;
                case 5:
-
+                  getById('messageConsole').innerHTML = (
+                     `What! Why would I tell you that? ${helpOptionText}`
+                  );
                   break;
                case 6:
-
+                  getById('messageConsole').innerHTML = (
+                     `Well, I can't really predict that... ${helpOptionText}`
+                  );
                   break;
+               case 7:
+                  visibleCustomMessage(
+                     'dogeblue', 'lol', 'Extra option!' + helpOptionText
+                  );
                default:
                   console.error('Error Code 2: Impossible error');
                   console.stack();
@@ -630,25 +741,18 @@ function checkMenu() {
    );
 
    // none or block
+   let isStillInFocus = (
+      ['menuInstructions', 'menuSettings', 'menuCredits'].includes(
+         document.activeElement.id
+      )
+   );
 
    if (menuDelayLeft > 0) {
-      let isStillInFocus = (
-         ['menuInstructions', 'menuSettings', 'menuCredits'].includes(
-            document.activeElement.id
-         )
-      );
-
       if (isStillInFocus) {
          menuDelayLeft = 13;
       } else {
          menuDelayLeft--;
       }
-
-      colorLog(
-         'dodgerblue',
-         previousMenuDisplayState, currentMenuDisplayState,
-         menuDelayLeft
-      );
 
       if (menuDelayLeft === 0) {
          // Inline overrrides css file so set to nothing
@@ -659,6 +763,10 @@ function checkMenu() {
          // fixed: Menu keeps popping up over and over again
          previousMenuDisplayState = currentMenuDisplayState = 'none';
       }
+   } else if (!isStillInFocus && currentMenuDisplayState === 'block') {
+      // It's only possible because of the tab navigation above
+      currentMenuDisplayState = 'none';
+      getByClass('dropdownContent')[0].style.display = '';
    }
 
    // Menu accessibility: 1001ms delay before menu disappears
@@ -740,5 +848,12 @@ When tabbing off the gameMenu into the dropdown, it selects:
 
 IDEAS:
 Presentation words: https://www.youtube.com/watch?v=C-r8rUydKHo
+
+https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent
+"Are you okay?: You're holding a button down"
+> hi --> "Hi there"
+
+Easter egg
+Extra options
 
 */

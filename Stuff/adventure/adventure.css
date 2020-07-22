@@ -142,6 +142,8 @@ details p {
    animation: 5s 1 welcome-animation;
 
    padding-left: 7em;
+   font-size: 1.17em;
+   font-weight: bold;
 }
 
 /* "Why are you using camelCase ugh that's not what you're..." */

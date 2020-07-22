@@ -47,7 +47,7 @@ let messages = {
       `at your now invisible car.</li>` +
       `<li>They haven't really said anything important… right?</li>` +
       `</ul>Σ\n\n` +
-      `Σ<button class = "link" onClick = "storyAction(0)" type = "button">` +
+      `Σ<button class = "link" onclick = "storyAction(0)" type = "button">` +
       `An option</button>Σ`
    ),
    welcome: (
@@ -121,6 +121,8 @@ accessibility
 syntax--markup syntax--underline syntax--link syntax--https syntax--hyperlink
 */
 
+console.clear(); // So helpful
+
 // checkMenu variables
 let previousMenuDisplayState = 'none';
 let menuDelayLeft = 0;
@@ -130,6 +132,9 @@ function getById(id) {return document.getElementById(id);}
 function getByClass(className) {
    return document.getElementsByClassName(className);
 }
+
+getById('start').onclick = startGame;
+getById('continue').onclick = continueGame;
 
 function startGame() {
    time = new Date();
@@ -142,22 +147,22 @@ function startGame() {
       </main>
       <div id = 'infoContainer'>
          <div class = 'dropdown'>
-            <button id = 'gameMenu' type = 'button'>
+            <button id = 'gameMenu' type = 'button' title = 'menu'>
                <span class = 'material-icons'>menu</span>
             </button>
             <div class = 'dropdownContent'>
                <button id = 'menuInstructions' type = 'button'
-                  onClick = 'menu("menuInstructions")'
+                  onclick = 'menu("menuInstructions")'
                >
                Instructions </button>
 
                <button id = 'menuSettings' type = 'button'
-                  onClick = 'menu("menuSettings")'
+                  onclick = 'menu("menuSettings")'
                >
                Settings </button>
 
                <button id = 'menuCredits' type = 'button'
-                  onClick = 'menu("menuCredits")'
+                  onclick = 'menu("menuCredits")'
                >
                Credits </button>
             </div>
@@ -196,66 +201,80 @@ function startGame() {
 
    // Keyboard navigation of menu
    // With wraparound!
-   for (let id of [
-      'gameMenu', 'menuInstructions', 'menuSettings', 'menuCredits'
-   ]) {
-      getById(id).addEventListener('keydown',
-         new Function('event', `
-            let menuOrder = [
-               'gameMenu', 'menuInstructions', 'menuSettings', 'menuCredits'
-            ];
+   addMenuFunctionality();
+   addKeyboardMenuNavigation();
 
-            let orderInMenu = menuOrder.indexOf('${id}');
-
-            if (event.key === 'ArrowDown') {
-               if (orderInMenu === 3) {
-                  getById(menuOrder[1]).focus();
-               } else if (orderInMenu) {
-                  getById(menuOrder[orderInMenu + 1]).focus();
-               } else {
-                  getByClass('dropdownContent')[0].style.display = 'block';
-                  getById(menuOrder[1]).focus();
-               }
-            } else if (event.key === 'ArrowUp') {
-               if (orderInMenu > 1) {
-                  getById(menuOrder[orderInMenu - 1]).focus();
-               } else {
-                  getById(menuOrder[3]).focus();
-               }
-            } else if (event.key === 'ArrowRight' && orderInMenu) {
-               getById('gameMenu').focus();
-            } else if (
-               ['Tab', 'ArrowLeft'].includes(event.key) && !orderInMenu
-            ) {
-               event.preventDefault();
-               // otherwise it would focus on the element and then
-               // tab to the next element
-
-               getByClass('dropdownContent')[0].style.display = 'block';
-               getById(menuOrder[1]).focus();
-            } else if (event.key === 'Tab' && orderInMenu === 3) {
-               getByClass('dropdownContent')[0].style.display = '';
-            }
-         `)
-      );
-   }
-
-   // future self: https://www.w3schools.com/cssref/css3_pr_animation.asp
    document.body.classList.add('startGameBackgroundTransition');
    getById('story').classList.add('startGameBackgroundTransition');
 }
 
 function continueGame() {
-   if (getById('potato') ?? false) {
-      getById('continue').parentNode.removeChild(getById('continue'));
-      colorLog('green', 'success?');
-   } else {
+   if (getById('potato') === null) {
       let notice = document.createElement('p');
       notice.id = 'potato';
       notice.innerHTML = 'Sorry, this feature is currently unavailable';
 
       getById('continue').insertAdjacentElement('afterend', notice);
+   } else {
+      // deletes the element
+      getById('continue').parentNode.removeChild(getById('continue'));
+      colorLog('green', 'success?');
    }
+}
+
+function addMenuFunctionality() {
+   ['menuInstructions', 'menuSettings', 'menuCredits'].forEach(
+      id => {
+         getById(id).onclick = new Function(`menu('${id}')`)
+      }
+   );
+
+}
+
+function addKeyboardMenuNavigation() {
+   ['gameMenu', 'menuInstructions', 'menuSettings', 'menuCredits'].forEach(
+      (id, index) => {
+         getById(id).addEventListener('keydown',
+            new Function('event', `
+               let menuOrder = [
+                  'gameMenu', 'menuInstructions', 'menuSettings', 'menuCredits'
+               ];
+
+               let orderInMenu = ${index};
+
+               if (event.key === 'ArrowDown') {
+                  if (orderInMenu === 3) {
+                     getById(menuOrder[1]).focus();
+                  } else if (orderInMenu) {
+                     getById(menuOrder[orderInMenu + 1]).focus();
+                  } else {
+                     getByClass('dropdownContent')[0].style.display = 'block';
+                     getById(menuOrder[1]).focus();
+                  }
+               } else if (event.key === 'ArrowUp') {
+                  if (orderInMenu > 1) {
+                     getById(menuOrder[orderInMenu - 1]).focus();
+                  } else {
+                     getById(menuOrder[3]).focus();
+                  }
+               } else if (event.key === 'ArrowRight' && orderInMenu) {
+                  getById('gameMenu').focus();
+               } else if (
+                  ['Tab', 'ArrowLeft'].includes(event.key) && !orderInMenu
+               ) {
+                  event.preventDefault();
+                  // otherwise it would focus on the element and then
+                  // tab to the next element
+
+                  getByClass('dropdownContent')[0].style.display = 'block';
+                  getById(menuOrder[1]).focus();
+               } else if (event.key === 'Tab' && orderInMenu === 3) {
+                  getByClass('dropdownContent')[0].style.display = '';
+               }
+            `)
+         );
+      }
+   );
 }
 
 // TODO: Make menu accessible
@@ -282,8 +301,6 @@ function menu(elementID) {
       );
    }
 }
-
-console.clear(); // So helpful
 
 function messageToStory (...messages) {
    // wouldn't know how to write multiple things
@@ -839,6 +856,12 @@ These are Used
 
 NOTES:
 The storyDiv / story's background doesn't fade like the rest of the elements.
+button name
+
+The line number in colorlog is the colorlog function instead of the place where
+colorlog was done
+
+onclick events are "bad"
 
 BUGS:
 When tabbing off the gameMenu into the dropdown, it selects:

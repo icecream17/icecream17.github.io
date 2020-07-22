@@ -1,12 +1,16 @@
+
+</html>
 <!DOCTYPE html>
 <html lang = 'en-US'>
    <head>
       <!--
-         WARNING: Internet Explorer is so outdated.
+         WARNING: Internet Explorer definitely won't work.
             It won't work because of 'async'
          -->
       <meta charset = 'utf-8'>
-      <meta name = 'description' content = 'absolutely horrible and a waste of time'>
+      <meta name = 'viewport' content = 'width=device-width, initial-scale=1'>
+      <meta name = 'description'
+            content = 'absolutely horrible and a waste of time'>
       <meta name = 'keywords' content = 'adventure, fun, icecream'>
       <meta name = 'author' content = 'icecream17'>
 
@@ -21,12 +25,14 @@
       <!-- Only because of the menu symbol -->
       <link rel = "stylesheet" href = "https://fonts.googleapis.com/icon?family=Material+Icons">
 
-      <!-- favicon -->
-      <link rel = "icon" href = "../../favicon.ico" type = "image/x-icon">
-      <link rel = "shortcut icon" href = "../../favicon.ico" type = "image/x-icon">
+      <!-- favicon, href is an svg file to avoid extra http request, see https://stackoverflow.com/questions/5199902 -->
+      <link rel = "icon" href = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' id='Layer_1' x='0px' y='0px' width='80px' height='80px' viewBox='0 0 80 80' enable-background='new 0 0 80 80' xml:space='preserve'%3E%3Cimage id='image0' width='80' height='80' x='0' y='0' xlink:href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAMAAAC5zwKfAAAABGdBTUEAALGPC/xhBQAAACBjSFJN AAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABmFBMVEX//vr//////vv///v/ //z+/vv+/vr///ru9vtotP1AoP5YrP7m8vr//vlgsP0AgP/9/fv8/fv9/vsQiP/4+/v+/vxIpP6+ 3vz//fnt9vtfsP3++ez/0W//uy3/uyz/zGH/+OT9/fkgkP7m8vv/z2f/sQ//xUrt9fpns/3/th79 /fr7/fu22vzl8fr7/Pr6/Pr+6Ljv+fAXn5UapXkWoIoDhe4wmP78/Pr7/Pv9/vr7/Pn8/fr+0G90 z44isUwgkvNGrcL/x1IwtldLvX4JjNL9+Ov+6sAisk0PlrA4nP6+3vvW6vweq2ILkMcHi9gJh/QU nZV70ZMiskw+u2Itq5AiqXn99ez/sRM3uF3A6MkttVf/r3b/pRXF6c78/Pv79Oz/hzX/hyP/qRP/ rBI9u2Lw+e/+s33/fyfA6Mh70JP+omNfxn7+3sXH6s/99u0vtlfw+fD/o2N1z47+3sb+r3b/j0H+ 2r8ksk5QwnE2uFvb8uBFvWcps1JZxXja8uD/gy7/n1z/j0L+6tr/k0j/izv/28AViv+15h3l8dJ7 AAAAAWJLR0QB/wIt3gAAAAlwSFlzAAAOwwAADsMBx2+oZAAAAAd0SU1FB+QHFwEBACY2G3QAAAR5 SURBVFjDtdgJd9w0EABg19Jok5RgWyWlUCgQCIcB01AgNqFbCEehnOUOZziX+77vM/u3GY0kXytf iZm3L89O7O/NjGRlZc8bLY5QjOf1A338YNDBYUGyGGOcc6bjUKCvsJwyrn8YkFumFCD8g4G+Zywx KbuAIQ4GcmVMGOgwXTRn/nCQUppAJRjmJ0AI/NnUygbQp/QY1ENZ5idnA0C/qK0hkOT+EJB3g8D7 g4zp5i0trxy9pFmceN5ktRvMJwfApUEQrIgGcKIvr5GLIHlhFEUS4BiCgRu0HsZqD/AyiQEQNIDq V6VbVttAXa8kcKkCiipZbnkruKau1+AygeCu2XNHFcxHQ0YKpBYePzBIz6q5WmdICV7uBEUXiJr6 VEDdQnBnKFgrqB7N0vwjMFpuB4sn74QLrIbyItPChh6CFf0TXi9QStPCJnDNrOC+q2ThAK8wFTeC a9T4XiAleGU7ePKqq09dc60ayr7gMQteh6vO+vrR662MD3oIcMMGxo04MbjX3cOihQq86eZ1dbRi /ojLhlo5blHghpod/hBwHb3jmg5iFSBuVWAE5J0SrAEUDeBtWK3xgttJjJMkuSOKThJ4egC4eeeZ u+4Olu4J8lgRsUBwK0mze7fv0xVDL5ASPDudTs+cuz8oRRwLFEWSJdsxtfCBIeAOgtMHH6qBIZlx +DAl+MgQUHnnp48q6LELj+sRj9GjskNbcX9wc0rxxJPBUxdEGD79DHYUUAIFhsJWjItET/Aias+S +ZwIhXgeD16IVRNheyuCF18yFavoBIsWqnh5F0IRvqIOUQ5jmWTZ1quvqUkIQ0DrTV+XgBAd4lXh G2mWJW/uvfX2xjunh4CbOCAU72JGEL+nQWwZeln6/kxFfgNrAYVJ8KLJb+cDmaYQfmhBkFmaJnvK +8h6vAe4uaMT3NnN8EyE1NGP1QWJlFlGCX6Sg7wbtAnuSplKaVr4Ka5cCpSfERj2yVCYFn5uZoyu X4AdEzrPdAtFr5I1uHnezhgC5Rd5C9MUM6YWfilcXg20CZ6d2hq1+FUOZnnFX8euFjoypIpNwdVZ bk+/0ZMm7AaFvUVXvFud5bm/V8xC9VXbWTKrZjjNB6EE5j5535qiGv7rESgcGZXOoQJ+pzmfc+61 ZkjA93lGNVDmY7L40DlBoYEf8P4f6y2ojQmF1whWl5qfflZzULjB0pj4fcH6avuLAWVpTMC9KbWg 2bbqm6AO/mrGSNbGpBXk4A5l/EYtMM9hUbHXDPLy11eHKIujHHRvRy3ImkVpRXNgQO7cOx4E/J1A 3r5fbgOhBv6B3p+8IcFeoCj3EOCvv2f//HsosB7my3o7qHZRg7ymN0ylrRlrQUv589YEF3ajKtXG IpVpj3pkWFLZAmjephUvrLwhIDVg0dM7COa1Jdj6Mq3omvFY8RcHUo4mUPdN94yzjqy6Qa/oGGvz +oP0Rk059FLS6wC98eL/A/dtjAbOEZvPRwVRGxWcz2cqxfF6OJur9XxMELXZiCXvz/Y1eGSEMCAl OR5o4j+mFBz7Z2WEmwAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMC0wNy0yM1QwMTowMTowMCswMzow MJu31NkAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjAtMDctMjNUMDE6MDE6MDArMDM6MDDq6mxlAAAA AElFTkSuQmCC'/%3E%3C/svg%3E"
+            type = "image/x-icon">
+      <link rel = "shortcut icon" href = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' id='Layer_1' x='0px' y='0px' width='80px' height='80px' viewBox='0 0 80 80' enable-background='new 0 0 80 80' xml:space='preserve'%3E%3Cimage id='image0' width='80' height='80' x='0' y='0' xlink:href='data:image/png;base64,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 AElFTkSuQmCC'/%3E%3C/svg%3E"
+            type = "image/x-icon">
 
       <!-- My code-->
-      <script src = "adventure.js"></script>
+      <script defer src = "adventure.js"></script>
    </head>
    <body>
       <noscript>
@@ -71,23 +77,19 @@
                You are causing developers worldwide to suffer
             <br></i>
             <i class = "red">No, seriously.</i><br><br>
-            <strong>Also this game doesn't support it.</strong>
+            <strong>Internet Explorer is definitely unsupported</strong><br><br>
+            On another note, it definitely works on Chrome, but i'm not
+            sure about any other browsers.<br>
+            I've also seen how squished and horrible it looks on mobile devices.
+            <br>
          </p>
       </details>
       <br>
-      <button onClick = "startGame()" type = "button" id = 'start'>
-         Start game
-      </button>
-      <button onClick = "continueGame()" type = "button" id = 'continue'>
-         Continue
-      </button>
+      <button type = "button" id = 'start'>Start game</button>
+      <button type = "button" id = 'continue'>Continue</button>
       <h1 class = "centered-text dogeblue" id = "gameName">
          <em>SideQuest</em>
       </h1>
-      <h3 class = "centered-text dogeblue" id = "subTitle">Well hi there!</h3>
+      <p class = "centered-text dogeblue" id = "subTitle">Well hi there!</p>
    </body>
-   <!-- 
-      # of times ___ didn't update:
-      JS: 2
-   -->
 </html>

@@ -1,7 +1,7 @@
 # Hi
 So here's my code for the schedule. Be sure to read the all caps comment.
 
-To copy: Click on the code. Press ```Ctrl + A```. Press ```Ctrl + C```.
+Copy the code. Also: Look at the bottom
 
 ```javascript
 function timeRange(time, time2) {

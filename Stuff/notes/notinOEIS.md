@@ -27,3 +27,11 @@ This is a list of integer sequences I have made that are not in the OEIS
    * Variable, but wikipedia has a nice list at https://en.wikipedia.org/wiki/Most_common_words_in_English
    * the, be, to, of, and, a, in, that, have, ....
    * 3, 2, 2, 2, 3, 1, 2, 4, 4
+* Length of Symbols for ASCII characters
+   * Here's an [ascii table](https://www.ascii-code.com/)
+   * NUL, SOH, STX, ETX, EOT, ENQ, ACK, BEL, BS, HT, LF, VT, FF, CR, SO, SI, DLE
+   * 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 3
+   * 8 threes, then 8 twos gets 31 results, but another 3 doesn't get any results.
+   * Eventually you'll to some printable characters and there will be a lot of 1s
+* List of MegaFavNumbers
+   * See playlist on youtube, goes 666030256, 1169809367327212570704813632106852886389036911

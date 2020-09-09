@@ -23,3 +23,7 @@ This is a list of integer sequences I have made that are not in the OEIS
 * Number of different squares a knight can be at after n moves in (this obscure grid), not counting squares a knight could reach in less than n moves.
    * Same handy sheet at https://docs.google.com/spreadsheets/d/1tyKU2ff-3KWQlUEPTu7FgMjlETDuwLXTczfs-ptuxsc/edit?usp=sharing, sequence goes:
    * 1, 2, 2, 3, 4, 9, 4, 9
+* Number of letters in English words, sorted most to least common.
+   * Variable, but wikipedia has a nice list at https://en.wikipedia.org/wiki/Most_common_words_in_English
+   * the, be, to, of, and, a, in, that, have, ....
+   * 3, 2, 2, 2, 3, 1, 2, 4, 4

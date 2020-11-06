@@ -498,10 +498,11 @@ function playerConsole (event) {
       const pathLength = playerDirectory.length + 2; // '> '.length
 
       // NOTE: It trims the space too.
+      // NOTE: playerInput '>' does something different from 'settings>'
       if (playerInput === '>') {
          visibleError('Huh?', `You didn't type anything.`);
       } else if (
-         playerInput.substring(0, pathLength) !== playerDirectory + '> '
+         playerInput.substring(0, pathLength - 1) !== playerDirectory + '>'
       ) {
          visibleError('Error',
             'Do not delete or change the start,<br>' +
@@ -595,6 +596,7 @@ function parseInput(playerInput) {
    } else if (playerDirectory.substring(0, 4) === 'help') {
       parseHelpCommand(playerInput);
    }
+   // TODO: 'settings'
 
    function parseStartCommand(command) {
       if (command === 'help') {
@@ -603,6 +605,7 @@ function parseInput(playerInput) {
             messages.helpOptions + standardNote
          );
       } else if (command === 'settings') {
+         // TODO
          getById('messageConsole').innerHTML = (
             `Unavailable...`
          );

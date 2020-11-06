@@ -168,19 +168,13 @@ function startGame() {
                <span class = 'material-icons'>menu</span>
             </button>
             <div class = 'dropdownContent'>
-               <button id = 'menuInstructions' type = 'button'
-                  onclick = 'menu("menuInstructions")'
-               >
+               <button id = 'menuInstructions' type = 'button'>
                Instructions </button>
 
-               <button id = 'menuSettings' type = 'button'
-                  onclick = 'menu("menuSettings")'
-               >
+               <button id = 'menuSettings' type = 'button'>
                Settings </button>
 
-               <button id = 'menuCredits' type = 'button'
-                  onclick = 'menu("menuCredits")'
-               >
+               <button id = 'menuCredits' type = 'button'>
                Credits </button>
             </div>
          </div>

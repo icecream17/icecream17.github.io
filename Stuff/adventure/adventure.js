@@ -6,6 +6,10 @@ let time;
 let chapter = 0;
 let storyLine = 1; // Now this is useless, but maybe I could reuse it
 
+let storyInstructions = [{name: 'p'}]; // Like a queue
+let storyElementNesting = [];
+let buttonElements = [];
+
 // Used in f startUpdate().
 // 1 frame = 77ms
 let gameInterval;
@@ -13,11 +17,34 @@ let gameInterval;
 let playerDirectory = ''; // Used in playerConsole parseInput
 
 // Player info works!
+const challenges = [
+   '-', 'Go to Rowlett'
+]
+
 const locations = [
    'Office (Dallas)'
 ];
 
+const endTag = {name: 'endTag'};
+const iTag = {
+   none: {name: 'i'},
+   dogeblue: {name: 'i', class: 'dogeblue'},
+   gray: {name: 'i', class: 'gray'},
+   green: {name: 'i', class: 'green'},
+   orange: {name: 'i', class: 'orange'}
+};
+const storyClick = {
+   name: 'storyClick'
+}
+const storyOptionTag = {
+   name: 'button',
+   class: 'link'
+}
+
+let storyClickCount = 0;
+
 let Player = {
+   challenge: 0,
    place: 0,
    actions: 0, // location is a thing. no overwrite or error
    lives: 10,
@@ -29,27 +56,18 @@ let UserSettings = {
 };
 
 let messages = {
-   start: (
-      `Σ<i class = "dogeblue">"Hi. Welcome to SideQuest"</i>Σ` +
-      ` says the director. \n` +
-      `Σ<i class = "dogeblue">` +
-      `"There are only 3 challenges. Simple challenges, ` +
-      `but they somehow take up the whole year.\n\nGood luck"</i>Σ` +
-      `\n\n\nA TV lights up saying ` +
-      `Σ<i class = "gray">"First Challenge: Go to Rowlett"</i>Σ\n\n` +
-      `What? That's really easy. Just 15 miles, ish.\n` +
-      `Σ<i class = "green">"SUPER FREE TREE APPLE!"</i>Σ` +
-      ` a kid outside yells. Σ<i class = "orange">gasp</i>Σ\n` +
-      `Your car is Σ<em>missing!</em>Σ ` +
-      `What used to be a crowded lot with no space\n` +
-      `is now replaced by an asteroid.\n\n` +
-      `Σ<ul><li>The presentation now seems useless as you stare\n` +
-      `at your now invisible car.</li>` +
-      `<li>They haven't really said anything important… right?</li>` +
-      `</ul>Σ\n\n` +
-      `Σ<button class = "link" onclick = "storyAction(0)" type = "button">` +
-      `An option</button>Σ`
-   ),
+   start: [
+      iTag.dogeblue, '"Hi. Welcome to SideQuest"', endTag,
+      ' says the director. \n',
+      iTag.dogeblue,
+         '"There are only 3 challenges. Simple challenges, ' +
+         'but they somehow take up the whole year.\n\nGood luck"',
+      endTag, '\n\n\nA TV lights up saying ',
+      iTag.gray, '"First challenge: Go to Rowlett"', endTag,
+      `\nWhat? That's really easy. Just 15 miles, ish\n\n`,
+      iTag.green, '"LOOK A SUPER TREE APPLE!"', endTag,
+      ' a kid outside yells. \n\n', storyOptionTag, '\n', storyOptionTag
+   ],
    welcome: (
       'Welcome!<br><br>' +
       'You can hover over the menu (at the top right) ' +
@@ -142,8 +160,7 @@ function startGame() {
    // Is there a better way?
    // WOW: The JS whitespace AND the HTML whitespace are good!
    document.body.innerHTML = `
-      <main id = 'storyDiv'>
-         <p id = 'story'></p>
+      <main id = 'story'>
       </main>
       <div id = 'infoContainer'>
          <div class = 'dropdown'>
@@ -187,7 +204,7 @@ function startGame() {
 
    // Usually I like putting the => notation
    setTimeout( function() {
-      writeToStory(messages.start);
+      storyInstructions.push(...(messages.start));
 
       setTimeout ( function() {
          startUpdate();
@@ -225,53 +242,58 @@ function continueGame() {
 function addMenuFunctionality() {
    ['menuInstructions', 'menuSettings', 'menuCredits'].forEach(
       id => {
-         getById(id).onclick = new Function(`menu('${id}')`)
+         getById(id).onclick = menu.pass(id)
       }
    );
 
 }
 
 function addKeyboardMenuNavigation() {
+   function processKeyboardEvent (index, event) {
+      let menuOrder = [
+         'gameMenu', 'menuInstructions', 'menuSettings', 'menuCredits'
+      ];
+
+      if (event.key === 'ArrowDown') {
+         if (index === 3) {
+            getById(menuOrder[1]).focus();
+         } else if (index !== 0) {
+            getById(menuOrder[index + 1]).focus();
+         } else {
+            getByClass('dropdownContent')[0].style.display = 'block';
+            getById(menuOrder[1]).focus();
+         }
+      } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+         if (index > 1) {
+            getById(menuOrder[index - 1]).focus();
+         } else if (event.key === 'ArrowLeft') {
+            if (index) {
+               getById(menuOrder[0]).focus();
+            } else {
+               getByClass('dropdownContent')[0].style.display = 'block';
+               getById(menuOrder[1]).focus();
+            }
+         } else {
+            getById(menuOrder[3]).focus();
+         }
+      } else if (event.key === 'ArrowRight' && index) {
+         getById('gameMenu').focus();
+      } else if (event.key === 'Tab' && index === 0) {
+         event.preventDefault();
+         // otherwise it would focus on the element and then
+         // tab to the next element
+
+         getByClass('dropdownContent')[0].style.display = 'block';
+         getById(menuOrder[1]).focus();
+      } else if (event.key === 'Tab' && index === 3) {
+         getByClass('dropdownContent')[0].style.display = '';
+      }
+   }
+
    ['gameMenu', 'menuInstructions', 'menuSettings', 'menuCredits'].forEach(
       (id, index) => {
          getById(id).addEventListener('keydown',
-            new Function('event', `
-               let menuOrder = [
-                  'gameMenu', 'menuInstructions', 'menuSettings', 'menuCredits'
-               ];
-
-               let orderInMenu = ${index};
-
-               if (event.key === 'ArrowDown') {
-                  if (orderInMenu === 3) {
-                     getById(menuOrder[1]).focus();
-                  } else if (orderInMenu) {
-                     getById(menuOrder[orderInMenu + 1]).focus();
-                  } else {
-                     getByClass('dropdownContent')[0].style.display = 'block';
-                     getById(menuOrder[1]).focus();
-                  }
-               } else if (event.key === 'ArrowUp') {
-                  if (orderInMenu > 1) {
-                     getById(menuOrder[orderInMenu - 1]).focus();
-                  } else {
-                     getById(menuOrder[3]).focus();
-                  }
-               } else if (event.key === 'ArrowRight' && orderInMenu) {
-                  getById('gameMenu').focus();
-               } else if (
-                  ['Tab', 'ArrowLeft'].includes(event.key) && !orderInMenu
-               ) {
-                  event.preventDefault();
-                  // otherwise it would focus on the element and then
-                  // tab to the next element
-
-                  getByClass('dropdownContent')[0].style.display = 'block';
-                  getById(menuOrder[1]).focus();
-               } else if (event.key === 'Tab' && orderInMenu === 3) {
-                  getByClass('dropdownContent')[0].style.display = '';
-               }
-            `)
+            processKeyboardEvent.pass(index)
          );
       }
    );
@@ -297,7 +319,7 @@ function menu(elementID) {
       messageElement.innerHTML = messages[elementID];
    } else {
       console.error(
-         'Error Code 0: Invalid elementID in menu(elementID) function'
+         RangeError('#000: Invalid elementID in menu(elementID) function')
       );
    }
 }
@@ -306,73 +328,89 @@ function messageToStory (...messages) {
    // wouldn't know how to write multiple things
 }
 
-function writeToStory (text, newline = '\n') {
-   async function avoidEncryption() {
-      await writeCharacters(text + newline);
+function writeToStory (newline = '\n') {
+   if (storyInstructions.length) {doInstruction();}
+
+   // TODO: Add li automatically when ul.
+   // Exit automatically when HTML elements
+   // are incompatible in nesting, with warning.
+   function doInstruction() {
+      let instruction = storyInstructions.shift();
+      if (!instruction) {return}
+
+      let contextElement = (
+         storyElementNesting[storyElementNesting.length - 1]
+      );
+
+      if (!contextElement) {contextElement = getById('story')}
+
+      if (typeof instruction === 'string') {
+         let character = instruction[0];
+         //if (character === ' ') {character = '\xa0'}
+         if (character === '\n') {character = ''
+            contextElement.appendChild(
+               document.createElement('br')
+            )
+         }
+
+         // WARNING: Don't add to textContent, it deletes styles and elements
+         contextElement.innerHTML += character;
+
+         if (instruction.length > 1) {
+            storyInstructions.unshift(instruction.substring(1));
+            // Add the string back, minus the first character
+         }
+      } else if (typeof instruction === 'object') {
+         if (instruction === endTag) {
+            storyElementNesting.pop();
+         } else {
+            let element = document.createElement(instruction.name);
+            contextElement.appendChild(element);
+
+            // TODO: Other properties
+            if (instruction.hasOwnProperty('class')) {
+               element.className = instruction.class
+            }
+
+            if (instruction === storyOptionTag) {
+               setupStoryAction(element);
+            }
+
+            storyElementNesting.push(element)
+         }
+      } else {
+         console.error(
+            RangeError('#004: storyInstruction must be a <string> | <object>'));
+      }
    }
 
-   function writeCharacters(string) {
-      let characters = [];
-
-      let skipHTMLmode = false;
-      let currentCharacter = '';
-
-      for (let i = 0; i < string.length; i++) {
-         if (skipHTMLmode) {
-            // Σ = Alt + 2020
-            if (string[i] === 'Σ') {
-               characters.push(currentCharacter);
-               currentCharacter = '';
-               skipHTMLmode = false;
-            } else if (string[i] === '\n') {
-               currentCharacter += '<br>';
-            } else {
-               currentCharacter += string[i];
-            }
-         } else if (string[i] === '\n') {
-            characters.push('<br>');
-         } else if (string[i] === 'Σ') {
-            skipHTMLmode = true;
-         } else {
-            characters.push(string[i]);
-         }
+   // TODO: this function
+   function hmmAppend(parent, child) {
+      // Current elements used:
+      // p, i, br, em, ul, li, button
+      let incompatiblities = {
+         p: ['ul', 'li']
       }
 
-      colorLog('green', 'writeToStory()\nStart:');
-      colorLog('dodgerblue', string);
-
-      return new Promise (
-         resolve => {
-            let writeCharacterByCharacter = setInterval( function () {
-               let nextCharacter = characters.shift();
-
-               // Instead of appendChild becuase it's not an element
-               getById('story').innerHTML += nextCharacter;
-
-               if (characters.length === 0) {
-                  clearInterval(writeCharacterByCharacter);
-                  resolve('done!');
-               }
-            }, 10);
-         }
-      );
+      if (incompatiblities[parent].includes(child)) {
+         storyElementNesting.pop();
+         storyElementNesting[storyElementNesting.length - 1].appendChild(child)
+         storyElementNesting.push(child);
+         console.warn(`Parent ${parent} doesn't support child ${child}`)
+      }
    }
-   // oh...
-   // wow this is the longest return statement ever
 
    function clickToContinue() {
       // can't do this yet.
       // would be soo great for suspense
    }
-
-   // amazing
-   avoidEncryption();
 }
 
 function updateInfo() {
    // Originally the info declaration at lives: and time: wasn't indented
 
    let info = (
+      `todo: ${challenges[Player.challenge]} <br>` +
       `location: ${locations[Player.place]} <br> ` +
       `lives: ${Player.lives} <br> actions: ${Player.actions} <br> ` +
       `time: ${humanTime()} <br><br> Inventory <br>`
@@ -433,8 +471,28 @@ function startUpdate() {
       () => {
          updateInfo();
          checkMenu();
+         writeToStory();
       }, 77
    );
+}
+
+function storyActionText(count) {
+   switch (count) {
+      case 0:
+         return "Keep listening to the director"
+      case 1:
+         return "Look outside"
+      default:
+         console.error(RangeError("#005: AAA, " + count))
+   }
+}
+
+function setupStoryAction(element) {
+   element.innerHTML = storyActionText(storyClickCount)
+   element.onclick = storyAction.call(storyClickCount)
+   buttonElements.push(element)
+   storyClickCount++;
+   storyElementNesting.pop()
 }
 
 function storyAction(choiceID) {
@@ -507,11 +565,11 @@ function visibleError(type, text) {
    } else if (type === 'Huh?') {
       visibleCustomMessage('dogeblue', type, text);
    } else {
-      console.error('Error Code 1: unsupported visibleError type: ' + type);
+      console.error(RangeError('#001: unsupported visibleError type: ' + type));
    }
 }
 
-function parseInput (playerInput) {
+function parseInput(playerInput) {
    let startCommands = [
       'help', 'settings',
       'hi', 'hello', 'easteregg'
@@ -567,7 +625,7 @@ function parseInput (playerInput) {
       }
    }
 
-   function parseCommand(command, options, responses) {
+   /* function parseCommand(helpOptionText, command, options, responses) {
       if (responses[command] !== undefined) {
          getById('messageConsole').innerHTML = (
             responses[command] + options
@@ -602,6 +660,10 @@ function parseInput (playerInput) {
       }
 
    }
+
+   Never used
+   TODO: Use ParseCommand as a general function, like in parsehelpCommand
+   */
 
    function parseHelpCommand(command) {
       if (playerDirectory === 'help') {
@@ -674,8 +736,8 @@ function parseInput (playerInput) {
                   getById('messageConsole').innerHTML = (
                      `This is the "Game messages" box.<br>` +
                      `The box above this one is called "Player info".<br>` +
-                     `<br>The text in the top left is the adventure game, ` +
-                     `<br>which is the story where you play.` +
+                     `<br>The text in the top left is the story.<br>` +
+                     `Click the links to play.<br><br>` + 
                      `And the box at the bottom is the player console.<br>` +
                      `The player console box is where you can get help or ` +
                      `change the settings. Hopefully "Player info" and ` +
@@ -710,7 +772,7 @@ function parseInput (playerInput) {
                      'dogeblue', 'lol', 'Extra option!' + helpOptionText
                   );
                default:
-                  console.error('Error Code 2: Impossible error');
+                  console.error(Error('#002: Impossible error'));
                   console.stack();
             }
          }
@@ -780,10 +842,6 @@ function checkMenu() {
          // fixed: Menu keeps popping up over and over again
          previousMenuDisplayState = currentMenuDisplayState = 'none';
       }
-   } else if (!isStillInFocus && currentMenuDisplayState === 'block') {
-      // It's only possible because of the tab navigation above
-      currentMenuDisplayState = 'none';
-      getByClass('dropdownContent')[0].style.display = '';
    }
 
    // Menu accessibility: 1001ms delay before menu disappears
@@ -797,6 +855,13 @@ function checkMenu() {
    }
 
    previousMenuDisplayState = currentMenuDisplayState;
+}
+
+Function.prototype.pass = function (...args) {
+   let func = this;
+   return function (...moreArgs) {
+      return func.apply(this, args.concat(moreArgs))
+   }
 }
 
 function colorLog (color, ...messages) {
@@ -825,13 +890,14 @@ function colorLog (color, ...messages) {
             break;
          default:
             console.error(
-               'Error Code 3: Unsupported colorLog message type: ' +
-               (typeof message)
+               TypeError('#003: Unsupported colorLog message type: ' +
+               (typeof message))
             );
       }
    }
 
-   console.log(...logArguments);
+   // https://github.com/atom/language-javascript/pull/681
+   window.console.log.bind(window.console, ...logArguments);
 }
 
 /*

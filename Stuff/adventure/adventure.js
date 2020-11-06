@@ -301,14 +301,9 @@ function menu(elementID) {
 
    // Automates typing "settings" and pressing Enter like in the message
    if (elementID === 'menuSettings') {
-      getById('playerConsole').innerHTML = `<em>&gt; settings</em>`;
-      playerConsole(
-         new KeyboardEvent("keydown", {
-            key: "Enter",
-            code: "Enter",
-            keyCode: 13
-         })
-      );
+      parseInput('done'); parseInput('done'); parseInput('done');
+      parseInput('settings');
+      getById('playerConsole').innerHTML = `<em>settings&gt;&nbsp;</em>`
    } else if (validElementIDs.includes(elementID)) {
       messageElement.innerHTML = messages[elementID];
    } else {
@@ -609,8 +604,7 @@ function parseInput(playerInput) {
          );
       } else if (command === 'settings') {
          getById('messageConsole').innerHTML = (
-            `What do you need help on?<br><ol>` +
-            messages.helpOptions + standardNote
+            `Unavailable...`
          );
       } else if (['hi', 'hello'].includes(command)) {
          visibleCustomMessage('dogeblue', 'hi!', '=D');

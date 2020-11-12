@@ -4,9 +4,11 @@ Website by icecream17
 Hi!
 
 ## Stuff
-* [Stuff](https://icecream17.github.io/Stuff/Stuff/stuff.html)
+* [Stuff](Stuff/Stuff/stuff.html)
   * [Stuff readme](Stuff/Stuff/README.md)
-* [Adventure](https://icecream17.github.io/Stuff/adventure/adventure.html)
+* [Adventure](Stuff/adventure/adventure.html)
   * Adventure game
-* [chessall](https://icecream17.github.io/Stuff/chessall/chessall.html)
+* [chessall](Stuff/chessall/chessall.html)
   * [chessall readme](Stuff/chessall/README.md)
+* [Tic Tac Toe Grow](Stuff/Tic Tac Toe Grow/game.html)
+  * [unfinished readme](Stuff/Tic Tac Toe Grow/README.md)

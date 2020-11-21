@@ -37,32 +37,32 @@
  *
  */
 
-var Chess = function(fen) {
-  var BLACK = 'b'
-  var WHITE = 'w'
+function Chess(fen) {
+  const BLACK = 'b'
+  const WHITE = 'w'
 
-  var EMPTY = -1
+  const EMPTY = -1
 
-  var PAWN = 'p'
-  var KNIGHT = 'n'
-  var BISHOP = 'b'
-  var ROOK = 'r'
-  var QUEEN = 'q'
-  var KING = 'k'
+  const PAWN = 'p'
+  const KNIGHT = 'n'
+  const BISHOP = 'b'
+  const ROOK = 'r'
+  const QUEEN = 'q'
+  const KING = 'k'
 
-  var SYMBOLS = 'pnbrqkPNBRQK'
+  const SYMBOLS = 'pnbrqkPNBRQK'
 
-  var DEFAULT_POSITION =
+  const DEFAULT_POSITION =
     'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
-  var POSSIBLE_RESULTS = ['1-0', '0-1', '1/2-1/2', '*']
+  const POSSIBLE_RESULTS = ['1-0', '0-1', '1/2-1/2', '*']
 
-  var PAWN_OFFSETS = {
+  const PAWN_OFFSETS = {
     b: [16, 32, 17, 15],
     w: [-16, -32, -17, -15]
   }
 
-  var PIECE_OFFSETS = {
+  const PIECE_OFFSETS = {
     n: [-18, -33, -31, -14, 18, 33, 31, 14],
     b: [-17, -15, 17, 15],
     r: [-16, 1, 16, -1],
@@ -71,7 +71,7 @@ var Chess = function(fen) {
   }
 
   // prettier-ignore
-  var ATTACKS = [
+  const ATTACKS = [
     20, 0, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0, 0,20, 0,
      0,20, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0,20, 0, 0,
      0, 0,20, 0, 0, 0, 0, 24,  0, 0, 0, 0,20, 0, 0, 0,
@@ -90,7 +90,7 @@ var Chess = function(fen) {
   ];
 
   // prettier-ignore
-  var RAYS = [
+  const RAYS = [
      17,  0,  0,  0,  0,  0,  0, 16,  0,  0,  0,  0,  0,  0, 15, 0,
       0, 17,  0,  0,  0,  0,  0, 16,  0,  0,  0,  0,  0, 15,  0, 0,
       0,  0, 17,  0,  0,  0,  0, 16,  0,  0,  0,  0, 15,  0,  0, 0,
@@ -108,9 +108,9 @@ var Chess = function(fen) {
     -15,  0,  0,  0,  0,  0,  0,-16,  0,  0,  0,  0,  0,  0,-17
   ];
 
-  var SHIFTS = { p: 0, n: 1, b: 2, r: 3, q: 4, k: 5 }
+  const SHIFTS = { p: 0, n: 1, b: 2, r: 3, q: 4, k: 5 }
 
-  var FLAGS = {
+  const FLAGS = {
     NORMAL: 'n',
     CAPTURE: 'c',
     BIG_PAWN: 'b',
@@ -120,7 +120,7 @@ var Chess = function(fen) {
     QSIDE_CASTLE: 'q'
   }
 
-  var BITS = {
+  const BITS = {
     NORMAL: 1,
     CAPTURE: 2,
     BIG_PAWN: 4,
@@ -130,17 +130,17 @@ var Chess = function(fen) {
     QSIDE_CASTLE: 64
   }
 
-  var RANK_1 = 7
-  var RANK_2 = 6
-  var RANK_3 = 5
-  var RANK_4 = 4
-  var RANK_5 = 3
-  var RANK_6 = 2
-  var RANK_7 = 1
-  var RANK_8 = 0
+  const RANK_1 = 7
+  const RANK_2 = 6
+  const RANK_3 = 5
+  const RANK_4 = 4
+  const RANK_5 = 3
+  const RANK_6 = 2
+  const RANK_7 = 1
+  const RANK_8 = 0
 
   // prettier-ignore
-  var SQUARES = {
+  const SQUARES = {
     a8:   0, b8:   1, c8:   2, d8:   3, e8:   4, f8:   5, g8:   6, h8:   7,
     a7:  16, b7:  17, c7:  18, d7:  19, e7:  20, f7:  21, g7:  22, h7:  23,
     a6:  32, b6:  33, c6:  34, d6:  35, e6:  36, f6:  37, g6:  38, h6:  39,
@@ -151,7 +151,7 @@ var Chess = function(fen) {
     a1: 112, b1: 113, c1: 114, d1: 115, e1: 116, f1: 117, g1: 118, h1: 119
   };
 
-  var ROOKS = {
+  const ROOKS = {
     w: [
       { square: SQUARES.a1, flag: BITS.QSIDE_CASTLE },
       { square: SQUARES.h1, flag: BITS.KSIDE_CASTLE }
@@ -162,16 +162,16 @@ var Chess = function(fen) {
     ]
   }
 
-  var board = new Array(128)
-  var kings = { w: EMPTY, b: EMPTY }
-  var turn = WHITE
-  var castling = { w: 0, b: 0 }
-  var ep_square = EMPTY
-  var half_moves = 0
-  var move_number = 1
-  var history = []
-  var header = {}
-  var comments = {}
+  let board = new Array(128)
+  let kings = { w: EMPTY, b: EMPTY }
+  let turn = WHITE
+  let castling = { w: 0, b: 0 }
+  let ep_square = EMPTY
+  let half_moves = 0
+  let move_number = 1
+  let history = []
+  let header = {}
+  let comments = {}
 
   /* if the user passes in a fen string, load it, else default to
    * starting position
@@ -183,9 +183,7 @@ var Chess = function(fen) {
   }
 
   function clear(keep_headers) {
-    if (typeof keep_headers === 'undefined') {
-      keep_headers = false
-    }
+    keep_headers ??= false
 
     board = new Array(128)
     kings = { w: EMPTY, b: EMPTY }
@@ -203,7 +201,7 @@ var Chess = function(fen) {
   function prune_comments() {
     var reversed_history = [];
     var current_comments = {};
-    var copy_comment = function(fen) {
+    function copy_comment(fen) {
       if (fen in comments) {
         current_comments[fen] = comments[fen];
       }
@@ -238,7 +236,7 @@ var Chess = function(fen) {
 
     clear(keep_headers)
 
-    for (var i = 0; i < position.length; i++) {
+    for (let i = 0; i < position.length; i++) {
       var piece = position.charAt(i)
 
       if (piece === '/') {

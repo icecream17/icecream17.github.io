@@ -76,40 +76,40 @@ export default function Chess(fen) {
 
    // prettier-ignore
    const ATTACKS = [
-      20, 0, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0, 0,20, 0,
-       0,20, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0,20, 0, 0,
-       0, 0,20, 0, 0, 0, 0, 24,  0, 0, 0, 0,20, 0, 0, 0,
-       0, 0, 0,20, 0, 0, 0, 24,  0, 0, 0,20, 0, 0, 0, 0,
-       0, 0, 0, 0,20, 0, 0, 24,  0, 0,20, 0, 0, 0, 0, 0,
-       0, 0, 0, 0, 0,20, 2, 24,  2,20, 0, 0, 0, 0, 0, 0,
-       0, 0, 0, 0, 0, 2,53, 56, 53, 2, 0, 0, 0, 0, 0, 0,
-      24,24,24,24,24,24,56,  0, 56,24,24,24,24,24,24, 0,
-       0, 0, 0, 0, 0, 2,53, 56, 53, 2, 0, 0, 0, 0, 0, 0,
-       0, 0, 0, 0, 0,20, 2, 24,  2,20, 0, 0, 0, 0, 0, 0,
-       0, 0, 0, 0,20, 0, 0, 24,  0, 0,20, 0, 0, 0, 0, 0,
-       0, 0, 0,20, 0, 0, 0, 24,  0, 0, 0,20, 0, 0, 0, 0,
-       0, 0,20, 0, 0, 0, 0, 24,  0, 0, 0, 0,20, 0, 0, 0,
-       0,20, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0,20, 0, 0,
-      20, 0, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0, 0,20
+      20, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 20, 0,
+      0, 20, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 20, 0, 0,
+      0, 0, 20, 0, 0, 0, 0, 24, 0, 0, 0, 0, 20, 0, 0, 0,
+      0, 0, 0, 20, 0, 0, 0, 24, 0, 0, 0, 20, 0, 0, 0, 0,
+      0, 0, 0, 0, 20, 0, 0, 24, 0, 0, 20, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 20, 2, 24, 2, 20, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 2, 53, 56, 53, 2, 0, 0, 0, 0, 0, 0,
+      24, 24, 24, 24, 24, 24, 56, 0, 56, 24, 24, 24, 24, 24, 24, 0,
+      0, 0, 0, 0, 0, 2, 53, 56, 53, 2, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 20, 2, 24, 2, 20, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 20, 0, 0, 24, 0, 0, 20, 0, 0, 0, 0, 0,
+      0, 0, 0, 20, 0, 0, 0, 24, 0, 0, 0, 20, 0, 0, 0, 0,
+      0, 0, 20, 0, 0, 0, 0, 24, 0, 0, 0, 0, 20, 0, 0, 0,
+      0, 20, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 20, 0, 0,
+      20, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 20
    ];
 
    // prettier-ignore
    const RAYS = [
-       17,  0,  0,  0,  0,  0,  0, 16,  0,  0,  0,  0,  0,  0, 15, 0,
-        0, 17,  0,  0,  0,  0,  0, 16,  0,  0,  0,  0,  0, 15,  0, 0,
-        0,  0, 17,  0,  0,  0,  0, 16,  0,  0,  0,  0, 15,  0,  0, 0,
-        0,  0,  0, 17,  0,  0,  0, 16,  0,  0,  0, 15,  0,  0,  0, 0,
-        0,  0,  0,  0, 17,  0,  0, 16,  0,  0, 15,  0,  0,  0,  0, 0,
-        0,  0,  0,  0,  0, 17,  0, 16,  0, 15,  0,  0,  0,  0,  0, 0,
-        0,  0,  0,  0,  0,  0, 17, 16, 15,  0,  0,  0,  0,  0,  0, 0,
-        1,  1,  1,  1,  1,  1,  1,  0, -1, -1,  -1,-1, -1, -1, -1, 0,
-        0,  0,  0,  0,  0,  0,-15,-16,-17,  0,  0,  0,  0,  0,  0, 0,
-        0,  0,  0,  0,  0,-15,  0,-16,  0,-17,  0,  0,  0,  0,  0, 0,
-        0,  0,  0,  0,-15,  0,  0,-16,  0,  0,-17,  0,  0,  0,  0, 0,
-        0,  0,  0,-15,  0,  0,  0,-16,  0,  0,  0,-17,  0,  0,  0, 0,
-        0,  0,-15,  0,  0,  0,  0,-16,  0,  0,  0,  0,-17,  0,  0, 0,
-        0,-15,  0,  0,  0,  0,  0,-16,  0,  0,  0,  0,  0,-17,  0, 0,
-      -15,  0,  0,  0,  0,  0,  0,-16,  0,  0,  0,  0,  0,  0,-17
+      17, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 15, 0,
+      0, 17, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 15, 0, 0,
+      0, 0, 17, 0, 0, 0, 0, 16, 0, 0, 0, 0, 15, 0, 0, 0,
+      0, 0, 0, 17, 0, 0, 0, 16, 0, 0, 0, 15, 0, 0, 0, 0,
+      0, 0, 0, 0, 17, 0, 0, 16, 0, 0, 15, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 17, 0, 16, 0, 15, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 17, 16, 15, 0, 0, 0, 0, 0, 0, 0,
+      1, 1, 1, 1, 1, 1, 1, 0, -1, -1, -1, -1, -1, -1, -1, 0,
+      0, 0, 0, 0, 0, 0, -15, -16, -17, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, -15, 0, -16, 0, -17, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, -15, 0, 0, -16, 0, 0, -17, 0, 0, 0, 0, 0,
+      0, 0, 0, -15, 0, 0, 0, -16, 0, 0, 0, -17, 0, 0, 0, 0,
+      0, 0, -15, 0, 0, 0, 0, -16, 0, 0, 0, 0, -17, 0, 0, 0,
+      0, -15, 0, 0, 0, 0, 0, -16, 0, 0, 0, 0, 0, -17, 0, 0,
+      -15, 0, 0, 0, 0, 0, 0, -16, 0, 0, 0, 0, 0, 0, -17
    ];
 
    const SHIFTS = { p: 0, n: 1, b: 2, r: 3, q: 4, k: 5 }
@@ -145,13 +145,13 @@ export default function Chess(fen) {
 
    // prettier-ignore
    const SQUARES = {
-      a8:   0, b8:   1, c8:   2, d8:   3, e8:   4, f8:   5, g8:   6, h8:   7,
-      a7:  16, b7:  17, c7:  18, d7:  19, e7:  20, f7:  21, g7:  22, h7:  23,
-      a6:  32, b6:  33, c6:  34, d6:  35, e6:  36, f6:  37, g6:  38, h6:  39,
-      a5:  48, b5:  49, c5:  50, d5:  51, e5:  52, f5:  53, g5:  54, h5:  55,
-      a4:  64, b4:  65, c4:  66, d4:  67, e4:  68, f4:  69, g4:  70, h4:  71,
-      a3:  80, b3:  81, c3:  82, d3:  83, e3:  84, f3:  85, g3:  86, h3:  87,
-      a2:  96, b2:  97, c2:  98, d2:  99, e2: 100, f2: 101, g2: 102, h2: 103,
+      a8: 0, b8: 1, c8: 2, d8: 3, e8: 4, f8: 5, g8: 6, h8: 7,
+      a7: 16, b7: 17, c7: 18, d7: 19, e7: 20, f7: 21, g7: 22, h7: 23,
+      a6: 32, b6: 33, c6: 34, d6: 35, e6: 36, f6: 37, g6: 38, h6: 39,
+      a5: 48, b5: 49, c5: 50, d5: 51, e5: 52, f5: 53, g5: 54, h5: 55,
+      a4: 64, b4: 65, c4: 66, d4: 67, e4: 68, f4: 69, g4: 70, h4: 71,
+      a3: 80, b3: 81, c3: 82, d3: 83, e3: 84, f3: 85, g3: 86, h3: 87,
+      a2: 96, b2: 97, c2: 98, d2: 99, e2: 100, f2: 101, g2: 102, h2: 103,
       a1: 112, b1: 113, c1: 114, d1: 115, e1: 116, f1: 117, g1: 118, h1: 119
    };
 
@@ -177,14 +177,7 @@ export default function Chess(fen) {
    let header = {}
    let comments = {}
 
-   /* if the user passes in a fen string, load it, else default to
-    * starting position
-    */
-   if (typeof fen === 'undefined') {
-      load(DEFAULT_POSITION)
-   } else {
-      load(fen)
-   }
+
 
    class FENError extends Error {
       constructor(message) {
@@ -195,6 +188,16 @@ export default function Chess(fen) {
       get name() { return this.constructor.name } // For ease of maintenance
    }
 
+
+
+   /* if the user passes in a fen string, load it, else default to
+    * starting position
+    */
+   if (typeof fen === 'undefined') {
+      load(DEFAULT_POSITION)
+   } else {
+      load(fen)
+   }
 
    function clear(keep_headers) {
       keep_headers ??= false
@@ -232,7 +235,51 @@ export default function Chess(fen) {
    }
 
    function reset() {
-      load(DEFAULT_POSITION)
+      // load(DEFAULT_POSITION)
+      // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+
+      // Optimization lol
+      clear(false)
+
+      board[SQUARES.a8] = { type: "r", color: BLACK }
+      board[SQUARES.b8] = { type: "n", color: BLACK }
+      board[SQUARES.c8] = { type: "b", color: BLACK }
+      board[SQUARES.d8] = { type: "q", color: BLACK }
+      board[SQUARES.e8] = { type: "k", color: BLACK }
+      board[SQUARES.f8] = { type: "b", color: BLACK }
+      board[SQUARES.g8] = { type: "n", color: BLACK }
+      board[SQUARES.h8] = { type: "r", color: BLACK }
+
+      board[SQUARES.a7] = { type: "p", color: BLACK }
+      board[SQUARES.b7] = { type: "p", color: BLACK }
+      board[SQUARES.c7] = { type: "p", color: BLACK }
+      board[SQUARES.d7] = { type: "p", color: BLACK }
+      board[SQUARES.e7] = { type: "p", color: BLACK }
+      board[SQUARES.f7] = { type: "p", color: BLACK }
+      board[SQUARES.g7] = { type: "p", color: BLACK }
+      board[SQUARES.h7] = { type: "p", color: BLACK }
+
+      board[SQUARES.a2] = { type: "p", color: WHITE }
+      board[SQUARES.b2] = { type: "p", color: WHITE }
+      board[SQUARES.c2] = { type: "p", color: WHITE }
+      board[SQUARES.d2] = { type: "p", color: WHITE }
+      board[SQUARES.e2] = { type: "p", color: WHITE }
+      board[SQUARES.f2] = { type: "p", color: WHITE }
+      board[SQUARES.g2] = { type: "p", color: WHITE }
+      board[SQUARES.h2] = { type: "p", color: WHITE }
+
+      board[SQUARES.a1] = { type: "r", color: WHITE }
+      board[SQUARES.b1] = { type: "n", color: WHITE }
+      board[SQUARES.c1] = { type: "b", color: WHITE }
+      board[SQUARES.d1] = { type: "q", color: WHITE }
+      board[SQUARES.e1] = { type: "k", color: WHITE }
+      board[SQUARES.f1] = { type: "b", color: WHITE }
+      board[SQUARES.g1] = { type: "n", color: WHITE }
+      board[SQUARES.h1] = { type: "r", color: WHITE }
+      kings[BLACK] = SQUARES.e8
+      kings[WHITE] = SQUARES.e1
+
+      update_setup(DEFAULT_POSITION)
    }
 
    function load(fen, keep_headers) {
@@ -265,16 +312,16 @@ export default function Chess(fen) {
 
       turn = tokens[1]
 
-      if (tokens[2].indexOf('K') > -1) {
+      if (tokens[2].includes('K')) {
          castling.w |= BITS.KSIDE_CASTLE
       }
-      if (tokens[2].indexOf('Q') > -1) {
+      if (tokens[2].includes('Q')) {
          castling.w |= BITS.QSIDE_CASTLE
       }
-      if (tokens[2].indexOf('k') > -1) {
+      if (tokens[2].includes('k')) {
          castling.b |= BITS.KSIDE_CASTLE
       }
-      if (tokens[2].indexOf('q') > -1) {
+      if (tokens[2].includes('q')) {
          castling.b |= BITS.QSIDE_CASTLE
       }
 
@@ -401,7 +448,7 @@ export default function Chess(fen) {
          }
       }
 
-      if (numberOfEachPiece.p > 8) 
+      if (numberOfEachPiece.p > 8)
          return new FENError(`There are ${numberOfEachPiece.p} black pawns!`)
       else if (numberOfEachPiece.r > 10)
          return new FENError(`There are ${numberOfEachPiece.p} black rooks!`)
@@ -425,18 +472,17 @@ export default function Chess(fen) {
          return new FENError(`There are ${numberOfEachPiece.R} white queens!`)
       else if (numberOfEachPiece.K !== 1)
          return new FENError(`${numberOfEachPiece.K} white kings..!?`)
-      
-      if (
-         Object.values(numberOfEachPiece).reduce((accum, current) => accum + current) > 32
-      ) {
-         return new FENError(`Way too many pieces (${
-            Object.values(numberOfEachPiece).reduce((accum, current) => accum + current)
-         })`)
+
+      const numberOfPieces = Object.values(numberOfEachPiece).reduce(
+         (accum, current) => accum + current
+      );
+      if (numberOfPieces > 32) {
+         return new FENError(`Way too many pieces (${numberOfPieces})`)
       }
 
       if (
          Math.abs(kingPositions[0].x - kingPositions[1].x) < 2 &&
-         Math.abs(kingPositions[0].y - kingPositions[1].y) < 2 
+         Math.abs(kingPositions[0].y - kingPositions[1].y) < 2
       ) {
          return new FENError(errors.adjacentKings)
       }
@@ -449,7 +495,7 @@ export default function Chess(fen) {
       }
 
       /* everything's okay! */
-      return { valid: true }
+      return true;
    }
 
    function generate_fen() {
@@ -557,7 +603,7 @@ export default function Chess(fen) {
 
       /* don't let the user place more than one king */
       if (
-         piece.type == KING &&
+         piece.type === KING &&
          !(kings[piece.color] == EMPTY || kings[piece.color] == sq)
       ) {
          return false
@@ -1269,7 +1315,7 @@ export default function Chess(fen) {
    function algebraic(i) {
       const f = file(i)
       const r = rank(i)
-      return 'abcdefgh'.substring(f, f + 1) + '87654321'.substring(r, r + 1)
+      return 'abcdefgh'[f] + '87654321'[r]
    }
 
    function swap_color(c) {
@@ -1353,7 +1399,7 @@ export default function Chess(fen) {
       ROOK: ROOK,
       QUEEN: QUEEN,
       KING: KING,
-      SQUARES: (function() {
+      SQUARES: (function () {
          /* from the ECMA-262 spec (section 12.6.4):
           * "The mechanics of enumerating the properties ... is
           * implementation dependent"
@@ -1508,7 +1554,7 @@ export default function Chess(fen) {
             result.push(newline)
          }
 
-         var append_comment = function(move_string) {
+         var append_comment = function (move_string) {
             var comment = comments[generate_fen()]
             if (typeof comment !== 'undefined') {
                var delimiter = move_string.length > 0 ? ' ' : '';
@@ -1568,7 +1614,7 @@ export default function Chess(fen) {
             return result.join('') + moves.join(' ')
          }
 
-         var strip = function() {
+         var strip = function () {
             if (result.length > 0 && result[result.length - 1] === ' ') {
                result.pop();
                return true;
@@ -1577,7 +1623,7 @@ export default function Chess(fen) {
          };
 
          /* NB: this does not preserve comment whitespace. */
-         var wrap_comment = function(width, move) {
+         var wrap_comment = function (width, move) {
             for (var token of move.split(' ')) {
                if (!token) {
                   continue;
@@ -1651,7 +1697,7 @@ export default function Chess(fen) {
          function parse_pgn_header(header, options) {
             var newline_char =
                typeof options === 'object' &&
-               typeof options.newline_char === 'string'
+                  typeof options.newline_char === 'string'
                   ? options.newline_char
                   : '\r?\n'
             var header_obj = {}
@@ -1680,11 +1726,11 @@ export default function Chess(fen) {
          // With default newline_char, will equal: /^(\[((?:\r?\n)|.)*\])(?:\r?\n){2}/
          var header_regex = new RegExp(
             '^(\\[((?:' +
-               mask(newline_char) +
-               ')|.)*\\])' +
-               '(?:' +
-               mask(newline_char) +
-               '){2}'
+            mask(newline_char) +
+            ')|.)*\\])' +
+            '(?:' +
+            mask(newline_char) +
+            '){2}'
          )
 
          // If no header given, begin with moves.
@@ -1720,10 +1766,10 @@ export default function Chess(fen) {
           * we use {en,de}codeURIComponent here to support arbitrary UTF8
           * as a convenience for modern users */
 
-         var to_hex = function(string) {
+         var to_hex = function (string) {
             return Array
                .from(string)
-               .map(function(c) {
+               .map(function (c) {
                   /* encodeURI doesn't transform most ASCII characters,
                    * so we handle these ourselves */
                   return c.charCodeAt(0) < 128
@@ -1733,18 +1779,18 @@ export default function Chess(fen) {
                .join('')
          }
 
-         var from_hex = function(string) {
+         var from_hex = function (string) {
             return string.length == 0
                ? ''
                : decodeURIComponent('%' + string.match(/.{1,2}/g).join('%'))
          }
 
-         var encode_comment = function(string) {
+         var encode_comment = function (string) {
             string = string.replace(new RegExp(mask(newline_char), 'g'), ' ')
             return `{${to_hex(string.slice(1, string.length - 1))}}`
          }
 
-         var decode_comment = function(string) {
+         var decode_comment = function (string) {
             if (string.startsWith('{') && string.endsWith('}')) {
                return from_hex(string.slice(1, string.length - 1))
             }
@@ -1756,7 +1802,7 @@ export default function Chess(fen) {
             .replace(
                /* encode comments so they don't get deleted below */
                new RegExp(`(\{[^}]*\})+?|;([^${mask(newline_char)}]*)`, 'g'),
-               function(match, bracket, semicolon) {
+               function (match, bracket, semicolon) {
                   return bracket !== undefined
                      ? encode_comment(bracket)
                      : ' ' + encode_comment(`{${semicolon.slice(1)}}`)
@@ -1972,7 +2018,7 @@ export default function Chess(fen) {
       get_comments() {
          prune_comments();
          return Object.keys(comments).map(fen => (
-            {fen: fen, comment: comments[fen]}
+            { fen: fen, comment: comments[fen] }
          ));
       },
 
@@ -1981,7 +2027,7 @@ export default function Chess(fen) {
          return Object.keys(comments).map(fen => {
             const comment = comments[fen];
             delete comments[fen];
-            return {fen: fen, comment: comment};
+            return { fen: fen, comment: comment };
          });
       },
 

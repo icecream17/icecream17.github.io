@@ -1,4 +1,5 @@
 import Chess from './chessModified.js'
+globalThis._Chess = Chess
 
 const BOARD_ID = "board1" // hashtag not included
 let game = new Chess()
@@ -72,6 +73,44 @@ function greyLegalMoves(square, piece) {
    for (let i = 0; i < moves.length; i++) {
       greySquare(moves[i].to)
    }
+}
+
+
+function updateStatus() {
+   return 'Status not needed yet'
+
+   let status = ''
+
+   let moveColor = game.turn() === 'w' ? 'White' : 'Black'
+
+   // checkmate?
+   if (game.in_checkmate()) {
+      status = 'Game over, ' + moveColor + ' got checkmated.'
+   }
+
+   // draw?
+   else if (game.in_draw()) {
+      let reason = '100 half-moves'
+      if (game.in_stalemate()) reason = 'stalemate'
+      if (game.insufficient_material()) reason = 'insufficient material'
+      if (game.in_threefold_repetition()) reason = 'threefold repetition'
+
+      status = `Game over, draw by ${reason}`
+   }
+
+   // game still on
+   else {
+      status = moveColor + ' to move'
+
+      // check?
+      if (game.in_check()) {
+         status += ', ' + moveColor + ' is in check'
+      }
+   }
+
+   $status.html(status)
+   $fen.html(game.fen())
+   $pgn.html(game.pgn())
 }
 
 let board = Chessboard(BOARD_ID, boardConfig)

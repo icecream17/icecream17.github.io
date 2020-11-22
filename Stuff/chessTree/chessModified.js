@@ -33,8 +33,12 @@
  * This section, or the next one, isn't part of the license.
  *----------------------------------------------------------------------------
  *
- * I've changed / will change the code to use ES2021 features
- *
+ * TODO: 
+ * 
+ * ES2021 
+ * Docs
+ * 
+ * 
  */
 
 function Chess(fen) {
@@ -92,19 +96,19 @@ function Chess(fen) {
    // prettier-ignore
    const RAYS = [
        17,  0,  0,  0,  0,  0,  0, 16,  0,  0,  0,  0,  0,  0, 15, 0,
-         0, 17,  0,  0,  0,  0,  0, 16,  0,  0,  0,  0,  0, 15,  0, 0,
-         0,  0, 17,  0,  0,  0,  0, 16,  0,  0,  0,  0, 15,  0,  0, 0,
-         0,  0,  0, 17,  0,  0,  0, 16,  0,  0,  0, 15,  0,  0,  0, 0,
-         0,  0,  0,  0, 17,  0,  0, 16,  0,  0, 15,  0,  0,  0,  0, 0,
-         0,  0,  0,  0,  0, 17,  0, 16,  0, 15,  0,  0,  0,  0,  0, 0,
-         0,  0,  0,  0,  0,  0, 17, 16, 15,  0,  0,  0,  0,  0,  0, 0,
-         1,  1,  1,  1,  1,  1,  1,  0, -1, -1,  -1,-1, -1, -1, -1, 0,
-         0,  0,  0,  0,  0,  0,-15,-16,-17,  0,  0,  0,  0,  0,  0, 0,
-         0,  0,  0,  0,  0,-15,  0,-16,  0,-17,  0,  0,  0,  0,  0, 0,
-         0,  0,  0,  0,-15,  0,  0,-16,  0,  0,-17,  0,  0,  0,  0, 0,
-         0,  0,  0,-15,  0,  0,  0,-16,  0,  0,  0,-17,  0,  0,  0, 0,
-         0,  0,-15,  0,  0,  0,  0,-16,  0,  0,  0,  0,-17,  0,  0, 0,
-         0,-15,  0,  0,  0,  0,  0,-16,  0,  0,  0,  0,  0,-17,  0, 0,
+        0, 17,  0,  0,  0,  0,  0, 16,  0,  0,  0,  0,  0, 15,  0, 0,
+        0,  0, 17,  0,  0,  0,  0, 16,  0,  0,  0,  0, 15,  0,  0, 0,
+        0,  0,  0, 17,  0,  0,  0, 16,  0,  0,  0, 15,  0,  0,  0, 0,
+        0,  0,  0,  0, 17,  0,  0, 16,  0,  0, 15,  0,  0,  0,  0, 0,
+        0,  0,  0,  0,  0, 17,  0, 16,  0, 15,  0,  0,  0,  0,  0, 0,
+        0,  0,  0,  0,  0,  0, 17, 16, 15,  0,  0,  0,  0,  0,  0, 0,
+        1,  1,  1,  1,  1,  1,  1,  0, -1, -1,  -1,-1, -1, -1, -1, 0,
+        0,  0,  0,  0,  0,  0,-15,-16,-17,  0,  0,  0,  0,  0,  0, 0,
+        0,  0,  0,  0,  0,-15,  0,-16,  0,-17,  0,  0,  0,  0,  0, 0,
+        0,  0,  0,  0,-15,  0,  0,-16,  0,  0,-17,  0,  0,  0,  0, 0,
+        0,  0,  0,-15,  0,  0,  0,-16,  0,  0,  0,-17,  0,  0,  0, 0,
+        0,  0,-15,  0,  0,  0,  0,-16,  0,  0,  0,  0,-17,  0,  0, 0,
+        0,-15,  0,  0,  0,  0,  0,-16,  0,  0,  0,  0,  0,-17,  0, 0,
       -15,  0,  0,  0,  0,  0,  0,-16,  0,  0,  0,  0,  0,  0,-17
    ];
 
@@ -287,6 +291,9 @@ function Chess(fen) {
     * completely ignores content (e.g. doesn't verify that each side has a king)
     * ... we should rewrite this, and ditch the silly error_number field while
     * we're at it
+    * 
+    * It does now. Doesn't detect stuff like multiple sides checking,
+    * but that's gonna take too long.
     */
    function validate_fen(fen) {
       const errors = {
@@ -301,7 +308,10 @@ function Chess(fen) {
          8: '1st field (piece positions) is invalid [consecutive numbers].',
          9: '1st field (piece positions) is invalid [invalid piece].',
          10: '1st field (piece positions) is invalid [row too large].',
-         11: 'Illegal en-passant square [wrong side to move vs row]'
+         11: 'Illegal en-passant square [wrong side to move vs row]',
+
+         pawnRank: 'Pawn on first or eighth row',
+         adjacentKings: 'Kings are next to each other'
       }
 
       /* 1st criterion: 6 space-seperated fields? */
@@ -336,10 +346,27 @@ function Chess(fen) {
       }
 
       /* 7th criterion: 1st field contains 8 rows? */
-      var rows = tokens[0].split('/')
+      const rows = tokens[0].split('/')
       if (rows.length !== 8) {
          return new FENError(errors[7])
       }
+
+      let numberOfEachPiece = {
+         p: 0,
+         r: 0,
+         n: 0,
+         b: 0,
+         q: 0,
+         k: 0,
+         P: 0,
+         R: 0,
+         N: 0,
+         B: 0,
+         Q: 0,
+         K: 0
+      }
+
+      let kingPositions = [null, null]
 
       /* 8th criterion: every row is valid? */
       for (let i = 0; i < rows.length; i++) {
@@ -357,14 +384,61 @@ function Chess(fen) {
             } else {
                if (!/^[prnbqkPRNBQK]$/.test(rows[i][k])) {
                   return new FENError(errors[9])
+               } else if (/^[pP]$/.test(rows[i][k]) && (i === 0 || i === 7)) {
+                  return new FENError(errors.pawnRank)
                }
-               sum_fields += 1
+
+               if (rows[i][k] === 'k') kingPositions[0] = { i: i, k: k }
+               if (rows[i][k] === 'K') kingPositions[1] = { i: i, k: k }
+
+               numberOfEachPiece[rows[i][k]]++
+               sum_fields++
                previous_was_number = false
             }
          }
          if (sum_fields !== 8) {
             return new FENError(errors[10])
          }
+      }
+
+      if (numberOfEachPiece.p > 8) 
+         return new FENError(`There are ${numberOfEachPiece.p} black pawns!`)
+      else if (numberOfEachPiece.r > 10)
+         return new FENError(`There are ${numberOfEachPiece.p} black rooks!`)
+      else if (numberOfEachPiece.b > 10)
+         return new FENError(`There are ${numberOfEachPiece.p} black rooks!`)
+      else if (numberOfEachPiece.n > 10)
+         return new FENError(`There are ${numberOfEachPiece.p} black knights!`)
+      else if (numberOfEachPiece.q > 10)
+         return new FENError(`There are ${numberOfEachPiece.p} black queens!`)
+      else if (numberOfEachPiece.k !== 1)
+         return new FENError(`${numberOfEachPiece.p} black king(s)..!?`)
+      else if (numberOfEachPiece.P > 8)
+         return new FENError(`There are ${numberOfEachPiece.p} white pawns!`)
+      else if (numberOfEachPiece.R > 10)
+         return new FENError(`There are ${numberOfEachPiece.R} white rooks!`)
+      else if (numberOfEachPiece.B > 10)
+         return new FENError(`There are ${numberOfEachPiece.R} white bishops!`)
+      else if (numberOfEachPiece.N > 10)
+         return new FENError(`There are ${numberOfEachPiece.R} white knights!`)
+      else if (numberOfEachPiece.Q > 10)
+         return new FENError(`There are ${numberOfEachPiece.R} white queens!`)
+      else if (numberOfEachPiece.K !== 1)
+         return new FENError(`${numberOfEachPiece.K} white kings..!?`)
+      
+      if (
+         Object.values(numberOfEachPiece).reduce((accum, current) => accum + current) > 32
+      ) {
+         return new FENError(`Way too many pieces (${
+            Object.values(numberOfEachPiece).reduce((accum, current) => accum + current)
+         })`)
+      }
+
+      if (
+         Math.abs(kingPositions[0].x - kingPositions[1].x) < 2 &&
+         Math.abs(kingPositions[0].y - kingPositions[1].y) < 2 
+      ) {
+         return new FENError(errors.adjacentKings)
       }
 
       if (
@@ -1057,20 +1131,20 @@ function Chess(fen) {
 
    /* this function is used to uniquely identify ambiguous moves */
    function get_disambiguator(move, sloppy) {
-      var moves = generate_moves({ legal: !sloppy })
+      const moves = generate_moves({ legal: !sloppy })
 
-      var from = move.from
-      var to = move.to
-      var piece = move.piece
+      const from = move.from
+      const to = move.to
+      const piece = move.piece
 
-      var ambiguities = 0
-      var same_rank = 0
-      var same_file = 0
+      let ambiguities = 0
+      let same_rank = 0
+      let same_file = 0
 
-      for (var i = 0, len = moves.length; i < len; i++) {
-         var ambig_from = moves[i].from
-         var ambig_to = moves[i].to
-         var ambig_piece = moves[i].piece
+      for (let i = 0, len = moves.length; i < len; i++) {
+         let ambig_from = moves[i].from
+         let ambig_to = moves[i].to
+         let ambig_piece = moves[i].piece
 
          /* if a move of the same piece type ends on the same to square, we'll
           * need to add a disambiguator to the algebraic notation
@@ -1193,8 +1267,8 @@ function Chess(fen) {
    }
 
    function algebraic(i) {
-      var f = file(i),
-         r = rank(i)
+      const f = file(i)
+      const r = rank(i)
       return 'abcdefgh'.substring(f, f + 1) + '87654321'.substring(r, r + 1)
    }
 
@@ -1215,7 +1289,7 @@ function Chess(fen) {
 
       var flags = ''
 
-      for (var flag in BITS) {
+      for (let flag in BITS) {
          if (BITS[flag] & move.flags) {
             flags += FLAGS[flag]
          }
@@ -1285,6 +1359,8 @@ function Chess(fen) {
           * implementation dependent"
           * so: for (var sq in SQUARES) { keys.push(sq); } might not be
           * ordered correctly
+          * 
+          * possibly solved for for-of
           */
          var keys = []
          for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
@@ -1301,15 +1377,15 @@ function Chess(fen) {
       /***************************************************************************
        * PUBLIC API
        **************************************************************************/
-      load: function(fen) {
+      load(fen) {
          return load(fen)
       },
 
-      reset: function() {
+      reset() {
          return reset()
       },
 
-      moves: function(options) {
+      moves(options) {
          /* The internal representation of a chess move is in 0x88 format, and
           * not meant to be human-readable.  The code below converts the 0x88
           * square coordinates to algebraic coordinates.  It also prunes an
@@ -1337,19 +1413,19 @@ function Chess(fen) {
          return moves
       },
 
-      in_check: function() {
+      in_check() {
          return in_check()
       },
 
-      in_checkmate: function() {
+      in_checkmate() {
          return in_checkmate()
       },
 
-      in_stalemate: function() {
+      in_stalemate() {
          return in_stalemate()
       },
 
-      in_draw: function() {
+      in_draw() {
          return (
             half_moves >= 100 ||
             in_stalemate() ||
@@ -1358,15 +1434,15 @@ function Chess(fen) {
          )
       },
 
-      insufficient_material: function() {
+      insufficient_material() {
          return insufficient_material()
       },
 
-      in_threefold_repetition: function() {
+      in_threefold_repetition() {
          return in_threefold_repetition()
       },
 
-      game_over: function() {
+      game_over() {
          return (
             half_moves >= 100 ||
             in_checkmate() ||
@@ -1376,15 +1452,15 @@ function Chess(fen) {
          )
       },
 
-      validate_fen: function(fen) {
+      validate_fen(fen) {
          return validate_fen(fen)
       },
 
-      fen: function() {
+      fen() {
          return generate_fen()
       },
 
-      board: function() {
+      board() {
          var output = [],
             row = []
 
@@ -1404,7 +1480,7 @@ function Chess(fen) {
          return output
       },
 
-      pgn: function(options) {
+      pgn(options) {
          /* using the specification from http://www.chessclub.com/help/PGN-spec
           * example for html usage: .pgn({ max_width: 72, newline_char: "<br />" })
           */
@@ -1553,7 +1629,7 @@ function Chess(fen) {
          return result.join('')
       },
 
-      load_pgn: function(pgn, options) {
+      load_pgn(pgn, options) {
          // allow the user to specify the sloppy move parser to work around over
          // disambiguation bugs in Fritz and Chessbase
          var sloppy =
@@ -1754,19 +1830,19 @@ function Chess(fen) {
          return true
       },
 
-      header: function() {
+      header() {
          return set_header(arguments)
       },
 
-      ascii: function() {
+      ascii() {
          return ascii()
       },
 
-      turn: function() {
+      turn() {
          return turn
       },
 
-      move: function(move, options) {
+      move(move, options) {
          /* The move function can be called with in the following parameters:
           *
           * .move('Nxb7')      <- where 'move' is a case-sensitive SAN string
@@ -1820,32 +1896,32 @@ function Chess(fen) {
          return pretty_move
       },
 
-      undo: function() {
+      undo() {
          var move = undo_move()
          return move ? make_pretty(move) : null
       },
 
-      clear: function() {
+      clear() {
          return clear()
       },
 
-      put: function(piece, square) {
+      put(piece, square) {
          return put(piece, square)
       },
 
-      get: function(square) {
+      get(square) {
          return get(square)
       },
 
-      remove: function(square) {
+      remove(square) {
          return remove(square)
       },
 
-      perft: function(depth) {
+      perft(depth) {
          return perft(depth)
       },
 
-      square_color: function(square) {
+      square_color(square) {
          if (square in SQUARES) {
             var sq_0x88 = SQUARES[square]
             return (rank(sq_0x88) + file(sq_0x88)) % 2 === 0 ? 'light' : 'dark'
@@ -1854,7 +1930,7 @@ function Chess(fen) {
          return null
       },
 
-      history: function(options) {
+      history(options) {
          var reversed_history = []
          var move_history = []
          var verbose =
@@ -1879,28 +1955,28 @@ function Chess(fen) {
          return move_history
       },
 
-      get_comment: function() {
+      get_comment() {
          return comments[generate_fen()];
       },
 
-      set_comment: function(comment) {
+      set_comment(comment) {
          comments[generate_fen()] = comment.replace('{', '[').replace('}', ']');
       },
 
-      delete_comment: function() {
+      delete_comment() {
          var comment = comments[generate_fen()];
          delete comments[generate_fen()];
          return comment;
       },
 
-      get_comments: function() {
+      get_comments() {
          prune_comments();
          return Object.keys(comments).map(function(fen) {
             return {fen: fen, comment: comments[fen]};
          });
       },
 
-      delete_comments: function() {
+      delete_comments() {
          prune_comments();
          return Object.keys(comments)
             .map(function(fen) {

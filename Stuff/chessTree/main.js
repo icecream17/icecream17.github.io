@@ -1,6 +1,6 @@
 import Chess from './chessModified.js'
 
-const BOARD_ID = "board1"
+const BOARD_ID = "board1" // hashtag not included
 let game = new Chess()
 
 const whiteGreySquare = '#a9a9a9'
@@ -40,12 +40,12 @@ function preventIllegalMove(source, target) {
 
 
 function removeGreySquares() {
-   for (let element of document.querySelectorAll(`${BOARD_ID} .square-55d63`))
+   for (let element of document.querySelectorAll(`#${BOARD_ID} .square-55d63`))
       element.style.backgroundColor = ''
 }
 
 function greySquare(square) {
-   square = document.querySelectorAll(`${BOARD_ID} .square-${square}`)
+   square = document.querySelectorAll(`#${BOARD_ID} .square-${square}`)
 
    let backgroundColor = whiteGreySquare
    if (square.classList.contains('black-3c85d')) {

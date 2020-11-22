@@ -679,13 +679,10 @@ export default function Chess(fen) {
       var single_square = false
 
       /* do we want legal moves? */
-      var legal =
-         typeof options !== 'undefined' && 'legal' in options
-            ? options.legal
-            : true
+      var legal = options?.legal ?? true
 
       /* are we generating moves for a single square? */
-      if (typeof options !== 'undefined' && 'square' in options) {
+      if (options?.square ?? false) {
          if (options.square in SQUARES) {
             first_sq = last_sq = SQUARES[options.square]
             single_square = true
@@ -1914,7 +1911,7 @@ export default function Chess(fen) {
             var moves = generate_moves()
 
             /* convert the pretty move object to an ugly move object */
-            for (var i = 0, len = moves.length; i < len; i++) {
+            for (let i = 0, len = moves.length; i < len; i++) {
                if (
                   move.from === algebraic(moves[i].from) &&
                   move.to === algebraic(moves[i].to) &&

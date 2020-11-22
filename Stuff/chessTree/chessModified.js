@@ -41,7 +41,7 @@
  * 
  */
 
-function Chess(fen) {
+export default function Chess(fen) {
    const BLACK = 'b'
    const WHITE = 'w'
 
@@ -1183,32 +1183,32 @@ function Chess(fen) {
    }
 
    function ascii() {
-      var s = '   +------------------------+\n'
+      let str = '   +------------------------+\n'
       for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
          /* display the rank */
          if (file(i) === 0) {
-            s += ' ' + '87654321'[rank(i)] + ' |'
+            str += ' ' + '87654321'[rank(i)] + ' |'
          }
 
          /* empty piece */
          if (board[i] == null) {
-            s += ' . '
+            str += ' . '
          } else {
-            var piece = board[i].type
-            var color = board[i].color
-            var symbol = color === WHITE ? piece.toUpperCase() : piece.toLowerCase()
-            s += ' ' + symbol + ' '
+            let piece = board[i].type
+            let color = board[i].color
+            let symbol = color === WHITE ? piece.toUpperCase() : piece.toLowerCase()
+            str += ' ' + symbol + ' '
          }
 
          if ((i + 1) & 0x88) {
-            s += '|\n'
+            str += '|\n'
             i += 8
          }
       }
-      s += '   +------------------------+\n'
-      s += '     a  b  c  d  e  f  g  h\n'
+      str += '   +------------------------+\n'
+      str += '     a  b  c  d  e  f  g  h\n'
 
-      return s
+      return str
    }
 
    // convert a move from Standard Algebraic Notation (SAN) to 0x88 coordinates
@@ -1282,12 +1282,12 @@ function Chess(fen) {
 
    /* pretty = external move object */
    function make_pretty(ugly_move) {
-      var move = clone(ugly_move)
+      let move = clone(ugly_move)
       move.san = move_to_san(move, false)
       move.to = algebraic(move.to)
       move.from = algebraic(move.from)
 
-      var flags = ''
+      let flags = ''
 
       for (let flag in BITS) {
          if (BITS[flag] & move.flags) {
@@ -1300,9 +1300,9 @@ function Chess(fen) {
    }
 
    function clone(obj) {
-      var dupe = obj instanceof Array ? [] : {}
+      let dupe = obj instanceof Array ? [] : {}
 
-      for (var property in obj) {
+      for (let property in obj) {
          if (typeof property === 'object') {
             dupe[property] = clone(obj[property])
          } else {
@@ -1313,6 +1313,7 @@ function Chess(fen) {
       return dupe
    }
 
+   // possibly redundant
    function trim(str) {
       return str.replace(/^\s+|\s+$/g, '')
    }
@@ -1329,8 +1330,7 @@ function Chess(fen) {
          make_move(moves[i])
          if (!king_attacked(color)) {
             if (depth - 1 > 0) {
-               var child_nodes = perft(depth - 1)
-               nodes += child_nodes
+               nodes += perft(depth - 1)
             } else {
                nodes++
             }
@@ -1964,33 +1964,29 @@ function Chess(fen) {
       },
 
       delete_comment() {
-         var comment = comments[generate_fen()];
+         const comment = comments[generate_fen()];
          delete comments[generate_fen()];
          return comment;
       },
 
       get_comments() {
          prune_comments();
-         return Object.keys(comments).map(function(fen) {
-            return {fen: fen, comment: comments[fen]};
-         });
+         return Object.keys(comments).map(fen => (
+            {fen: fen, comment: comments[fen]}
+         ));
       },
 
       delete_comments() {
          prune_comments();
-         return Object.keys(comments)
-            .map(function(fen) {
-               var comment = comments[fen];
-               delete comments[fen];
-               return {fen: fen, comment: comment};
-            });
+         return Object.keys(comments).map(fen => {
+            const comment = comments[fen];
+            delete comments[fen];
+            return {fen: fen, comment: comment};
+         });
+      },
+
+      _this() {
+         return this
       }
    }
 }
-
-/* export Chess object if using node or any other CommonJS compatible
- * environment */
-if (typeof exports !== 'undefined') exports.Chess = Chess
-
-/* export Chess object for any RequireJS compatible environment */
-if (typeof define !== 'undefined') define(() => Chess)

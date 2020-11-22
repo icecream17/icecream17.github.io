@@ -46,7 +46,7 @@ function removeGreySquares() {
 }
 
 function greySquare(square) {
-   square = document.querySelectorAll(`#${BOARD_ID} .square-${square}`)
+   square = document.querySelector(`#${BOARD_ID} .square-${square}`)
 
    let backgroundColor = whiteGreySquare
    if (square.classList.contains('black-3c85d')) {

@@ -2,7 +2,7 @@
 <html>
 
    <head>
-      <title>Chess</title>
+      <title>ChessTree</title>
       <link rel="stylesheet" href="./css/chessboard-1.0.0.css">
       <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
       <script src="./js/chessboard-1.0.0.js"></script>
@@ -11,7 +11,18 @@
    </head>
 
    <body>
+      <h1>ChessTree</h1>
       <div id="board1" style="width: 400px"></div>
+      <br>
+      <button id="start" type="button">Start</button><br>
+      <h2>Instructions</h2>
+      <p>Play until there are 8 pieces, including pawns and kings.<br>
+         Then click "Start" to search</p>
+      <label for="output">Output:</label>
+      <textarea id="output" name="output"
+                rows="20" cols="500">
+      Start FEN: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+      </textarea>
    </body>
 
 </html>

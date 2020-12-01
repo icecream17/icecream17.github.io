@@ -57,10 +57,81 @@ button.win {
    border-color: #19FF19;
 }
 
+#nameFields,
+#choosePlayerFields {
+   padding: 0;  
+}
+
+fieldset fieldset {
+   margin: 0;
+   border: none;
+}
+
 aside button,
 button.board {
    visibility: visible;
 }
+
+button.enable {
+   border-color: #0f9;
+   color: #0f9d58;
+}
+
+button.disable {
+   border-color: #f54;
+   color: #ea4335;
+}
+
+button.enable,
+button.disable {
+   font-weight: bold;
+   font-family: Arial, Helvetica, sans-serif;
+   background-color: white;
+   border-style: outset;
+}
+
+button.enable:active,
+button.disable:active {
+   border-style: inset;
+}
+
+button.enable:active {
+   background-color: #cfc;
+}
+
+button.disable:active {
+   background-color: #cfc;  
+}
+
+button.enable:disabled,
+button.disable:disabled {
+   font-weight: normal;
+   background-color: rgba(239, 239, 239, 30%);
+}
+
+button.enable:disabled {
+   border-color: rgba(0, 255, 153, 30%);
+   color: rgba(58, 175, 128, 50%);
+}
+
+button.disable:disabled {
+   border-color: rgba(255, 85, 68, 30%);
+   color: rgba(234, 67, 53, 30%);
+}
+
+button.enable:hover:not(:active):not(:disabled) {
+   border-color: #0e8;
+   color: #2b7;
+   background-color: #eee;
+}
+
+button.disable:hover:not(:active):not(:disabled) {
+   border-color: #f76;
+   color: #f54;
+   background-color: #eee;
+}
+
+
 
 .monospace {
    font-family: Consolas, monospace;

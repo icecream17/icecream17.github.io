@@ -1,6 +1,4 @@
 
-import { Octokit } from "https://cdn.skypack.dev/@octokit/rest";
-
 (() => {
    setProgress(17);
    const USERNAME = "icecream17";

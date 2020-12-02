@@ -53,13 +53,13 @@
    }
 
    function getJS(seperator) {
-      let JSReponse = GETgithubReponse(src.js);
+      let JSReponse = GETgithubResponse(src.js);
       let JSContent = atob(CSSResponse.content);
       return `   <script defer>${JSContent}</script>`
    }
    
    function getCSS(seperator) {
-      let CSSReponse = GETgithubReponse(src.css);
+      let CSSReponse = GETgithubResponse(src.css);
       let CSSContent = atob(CSSResponse.content);
       return `   <style>${CSSContent}</style>`
    }

@@ -1,5 +1,7 @@
 # Security Policy
 
+Lol this code isn't gonna handle any passwords or stuff like that. It's... probably fine.
+
 ## Supported Versions
 
 Use this section to tell people about which versions of your project are

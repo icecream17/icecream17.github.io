@@ -25,7 +25,7 @@
    }
    
    function setProgress(number) {
-      document.getElementById("Loading").value = number;
+      document.getElementById("Progress").value = number;
    }
 
 })()

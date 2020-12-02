@@ -17,11 +17,17 @@
       throw rejectionReason;
    }
 
+   // Warning:
+   // line 3 = LESS-THAN SIGN + LATIN SMALL LETTER H + LATIN SMALL LETTER E + LATIN SMALL LETTER A + LATIN SMALL LETTER D + CARRIAGE RETURN
    function setDocumentTo(text) {
       setProgress(95);
-      text = text.split('\n').slice(1);
-      text.splice(2, 0, '   <base href="https://raw.githubusercontent.com/icecream17/tic-tac-toe-grow/main">');
+      
+      if (text.includes('\r\n')) text = text.split('\r\n').slice(1);
+      else                       text = text.split('\n').slice(1);
+      
+      text.splice(3, 0, '   <base href="https://raw.githubusercontent.com/icecream17/tic-tac-toe-grow/main">');
       text = text.join('\n');
+      
       setProgress(99);
       document.documentElement.innerHTML = text;
    }

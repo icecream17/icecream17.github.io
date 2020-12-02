@@ -25,7 +25,7 @@
       if (text.includes('\r\n')) text = text.split('\r\n').slice(1);
       else                       text = text.split('\n').slice(1);
       
-      text.splice(3, 0, '   <base href="https://raw.githubusercontent.com/icecream17/tic-tac-toe-grow/main">');
+      text.splice(3, 0, '   <base href="https://raw.githubusercontent.com/icecream17/tic-tac-toe-grow/main/">');
       text = text.join('\n');
       
       setProgress(99);

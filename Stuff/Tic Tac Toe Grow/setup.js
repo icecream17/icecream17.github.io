@@ -1,6 +1,6 @@
 (() => {
    setProgress(17);
-   fetch('https://raw.githubusercontent.com/icecream17/icecream17.github.io/master/Stuff/Tic%20Tac%20Toe%20Grow/game.html').then(success, uhoh)
+   fetch('https://raw.githubusercontent.com/icecream17/tic-tac-toe-grow/main/game.html').then(success, uhoh)
 
    async function success(response) {
       setProgress(42);

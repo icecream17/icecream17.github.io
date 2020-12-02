@@ -5,9 +5,9 @@
    const TOKEN = "73db0c8f9e06a16de7762627d2e1ae8497f37269";
    
    const src = {
-      html: "https://raw.githubusercontent.com/icecream17/tic-tac-toe-grow/main/game.html",
-      css: "https://api.github.com/repos/icecream17/tic-tac-toe-grow/contents/style.css",
-      js: "https://api.github.com/repos/icecream17/tic-tac-toe-grow/contents/game.js",
+      html: "https://raw.githubusercontent.com/icecream17/tic-tac-toe-grow-for-website/main/game.html",
+      css: "https://api.github.com/repos/icecream17/tic-tac-toe-grow-for-website/contents/style.css",
+      js: "https://api.github.com/repos/icecream17/tic-tac-toe-grow-for-website/contents/game.js",
    }
    setProgress(20);
    

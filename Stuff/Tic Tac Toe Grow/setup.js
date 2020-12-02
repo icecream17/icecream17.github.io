@@ -19,7 +19,9 @@
 
    function setDocumentTo(text) {
       setProgress(95);
-      text = text.split('\n').slice(1).join('\n');
+      text = text.split('\n').slice(1);
+      text.splice(2, 0, '   <base href="https://raw.githubusercontent.com/icecream17/tic-tac-toe-grow/main">');
+      text = text.join('\n');
       setProgress(99);
       document.documentElement.innerHTML = text;
    }

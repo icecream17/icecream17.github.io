@@ -8,7 +8,7 @@
       if (!response.ok) {
          throw Error("Response !== 200 OK, got: " + reponse.status)
       }
-      let text = reponse.text()
+      let text = response.text()
       return setDocumentTo(text)
    }
 

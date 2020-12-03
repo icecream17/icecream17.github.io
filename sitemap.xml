@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<urlset xmlns="http://www.google.com/schemas/sitemap/0.84" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+		<url>
+			<loc>https://icecream17.github.io</loc>
+			<changefreq>always</changefreq>
+		</url>
+
+		<url>
+			<loc>https://icecream17.github.io/stuff/stuff/stuff.html</loc>
+			<changefreq>always</changefreq>
+		</url>
+
+		<url>
+			<loc>https://icecream17.github.io/stuff/stuff/</loc>
+			<changefreq>always</changefreq>
+		</url>
+
+		<url>
+			<loc>https://icecream17.github.io/stuff/adventure/adventure.html</loc>
+			<changefreq>always</changefreq>
+		</url>
+
+		<url>
+			<loc>https://icecream17.github.io/stuff/chessall/chessall.html</loc>
+			<changefreq>always</changefreq>
+		</url>
+
+		<url>
+			<loc>https://icecream17.github.io/stuff/chessall/</loc>
+			<changefreq>always</changefreq>
+		</url>
+
+		<url>
+			<loc>https://icecream17.github.io/stuff/tic%20tac%20toe%20grow/game.html</loc>
+			<changefreq>always</changefreq>
+		</url>
+
+		<url>
+			<loc>https://icecream17.github.io/stuff/tic%20tac%20toe%20grow/readme.md</loc>
+			<changefreq>always</changefreq>
+		</url>
+
+	</urlset>
+

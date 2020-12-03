@@ -53,22 +53,18 @@
    }
 
    function getJS(seperator) {
-      let JSReponse = GETgithubResponse(src.js);
-      let JSContent = atob(CSSResponse.content);
-      return `   <script defer>${JSContent}</script>`
+      return `   <script defer>${GETgithubResponseContent(src.js)}</script>`
    }
    
    function getCSS(seperator) {
-      let CSSReponse = GETgithubResponse(src.css);
-      let CSSContent = atob(CSSResponse.content);
-      return `   <style>${CSSContent}</style>`
+      return `   <style>${GETgithubResponseContent(src.css)}</style>`
    }
    
-   function GETgithubResponse(file) {
+   function GETgithubResponseContent(file) {
       let request = new XMLHttpRequest();
       request.open("GET", file, false, [USERNAME, TOKEN].join(':'))
       request.setRequestHeader("Accept", "application/vnd.github.v3+json")
       request.setRequestHeader("User-Agent", USERNAME)
-      return JSON.parse(request.response)
+      return atob(request.response.content)
    }
 })()

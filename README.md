@@ -3,12 +3,30 @@ Website by icecream17
 
 Hi!
 
-## Stuff
-* [Stuff](Stuff/Stuff/stuff.html)
-  * [Stuff readme](Stuff/Stuff/README.md)
-* [Adventure](Stuff/adventure/adventure.html)
-  * Adventure game
-* [chessall](Stuff/chessall/chessall.html)
-  * [chessall readme](Stuff/chessall/README.md)
-* [Tic Tac Toe Grow](Stuff/Tic%20Tac%20Toe%20Grow/game.html)
-  * [unfinished readme](Stuff/Tic%20Tac%20Toe%20Grow/README.md)
+## File Explorer
+* Stuff/
+  * Stuff/Stuff/
+    * [README.md](Stuff/Stuff/README.md)
+    * [stuff.css](Stuff/Stuff/stuff.css)
+    * [stuff.html](Stuff/Stuff/stuff.html)
+    * [stuff.js](Stuff/Stuff/stuff.js)
+  * Stuff/Tic Tac Toe Grow/
+    * TODO
+  * Stuff/adventure/
+    * [adventure.css](Stuff/Stuff/adventure.css)
+    * [adventure.html](Stuff/Stuff/adventure.html)
+    * [adventure.js](Stuff/Stuff/adventure.js)
+  * Stuff/chessall/
+    * [README.md](Stuff/chessall/README.md)
+    * TODO
+  * Stuff/chesstree/
+    * [main.html](Stuff/chessTree/main.html)
+    * TODO
+  * Stuff/notes/
+    * TODO
+* [404.md](404.md)
+* [LICENSE](LICENSE)
+* [README.md](README.md) (What you're reading right now)
+* [SECURITY.md](SECURITY.md)
+* [favicon.ico](favicon.ico) (Need to convert to png some time)
+* [sitemap.xml](sitemap.xml) (Not a very good sitemap)

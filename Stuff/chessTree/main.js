@@ -3,6 +3,7 @@ globalThis._Chess = Chess
 
 const BOARD_ID = "board1" // hashtag not included
 let game = new Chess()
+globalThis._game = game
 
 const whiteGreySquare = '#a9a9a9'
 const blackGreySquare = '#696969'
@@ -30,7 +31,8 @@ function preventIllegalMove(source, target) {
    // see if the move is legal
    let move = game.move({
       from: source,
-      to: target
+      to: target,
+      promotion: (game.get(source).type === game.PAWN && target[1] % 7 === 1 ? getPromotion() : "q")
    })
 
    // illegal move
@@ -39,6 +41,11 @@ function preventIllegalMove(source, target) {
    updateStatus()
 }
 
+function getPromotion() {
+   let promotion = prompt("Oh what piece would you like to promote to").trim()
+   if (promotion.length === 1) return promotion
+   return game[promotion.toUpperCase()]
+}
 
 function removeGreySquares() {
    for (let element of document.querySelectorAll(`#${BOARD_ID} .square-55d63`))

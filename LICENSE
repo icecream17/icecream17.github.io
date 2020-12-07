@@ -1,6 +1,6 @@
-MIT License
+Modified MIT License
 
-Copyright (c) 2020 steven nguyen
+Copyright (c) 2020 Steven Nguyen
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,70 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+The part of this license that is preceded by and followed by 37 hyphen-minuses
+are not a condition of this license but rather clarifications, and any part of
+this license following (the clarfications and both sets of 37 hyphen-minuses)
+are not clarifications but conditions unless otherwise stated.
+
+-------------------------------------
+A newline is a LineTerminator as defined at the eleventh edition of the 
+EMCAScript Language Specification. The 37 hyphen-minuses are in-a-row.
+
+"in-a-row", where it refers to a group of hyphen-minuses, means that:
+  1. Immediately preceding the hyphen-minuses is a newline.
+  2. Immediately following the hyphen-minuses is a newline.
+  3. Between the first and last hyphen-minus of the group,
+     there can only be other hyphen-minuses.
+
+The 74 hyphen-minuses in-a-row do not include 37 hyphen-minuses in-a-row.
+
+
+"Other Licenses" are the licenses from the sites in the 
+following list:
+  1. https://github.com/icecream17/tic-tac-toe-grow-for-website/blob/main/LICENSE
+
+
+The following clarifications apply:
+  1. the Software referenced in this license means the same thing as the
+     "Larger Software" referenced in the Other Licenses.
+  2. the Software referenced in this license is not the same thing as any
+     Other Software referenced in any Other Licenses, (rather, as mentioned
+     in the Other Licenses, the Other Software is part of the Software)
+
+-------------------------------------
+
+All the Other Licenses are assumed to have the text following the 74
+hyphen-minuses in-a-row. If one or more of the Other Licenses do not,
+then this license overrides those Other Licenses, and those Other Licenses
+are assumed to have the text following the 74 hyphen-minuses in-a-row.
+The text following the 74 hyphen-minuses in-a-row are seperate from this
+license.
+
+--------------------------------------------------------------------------
+Modified MIT License
+
+Copyright (c) 2020 Steven Nguyen
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Any person obtaining the Software shall also be informed that the Software is
+part of the "Larger Software". Any person informed of such should also see
+https://github.com/icecream17/icecream17.github.io/blob/master/LICENSE too.
+

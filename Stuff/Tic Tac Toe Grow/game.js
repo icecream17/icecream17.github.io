@@ -7,11 +7,14 @@ async function pause(ms) {
 
 
 class CustomError extends Error {
-   constructor (message) {
-      super(message);
-   }
-
    get name() { return this.constructor.name } // For ease of maintenance
+}
+
+class ElementError extends CustomError {
+   constructor (element = document.createElement('HTMLUnknownElement'), message) {
+      super(message);
+      this.element = element;
+   }
 }
 
 class NothingDisabledError extends CustomError {
@@ -44,13 +47,22 @@ class ElementIsDisabledError extends DisabledError {
    }
 }
 
-class ElementIsEnabledWarning {
-   constructor (element) {
-      this.message = `${element.tagName} element is already enabled`;
-      this.element = element;
+class ElementAlreadyError extends ElementError {
+   constructor (element, isAlreadyWhat) {
+      super(element, `${element.tagName} element is already ${isAlreadyWhat}`);
    }
+}
 
-   get name() { return this.constructor.name }
+class ElementIsAlreadyDisabledError extends ElementAlreadyError {
+   constructor (element) {
+      super(element, "disabled");
+   }
+}
+
+class ElementIsAlreadyEnabledError extends ElementAlreadyError {
+   constructor (element) {
+      super(element, "enabled");
+   }
 }
 
 // When an internal value is wrong
@@ -95,7 +107,7 @@ const ERRORS = {
    MAX_PLAYERS_REACHED: new MaxValueError("Max players reached"),
    EVERYONEs_ENABLED: new NothingDisabledError("person", "people"),
    EVIL_CLICK: new EvilPlayerError("Hey, you're not supposed to click that"),
-   EVIL_CHANGE: new EvilPlayerError("How did you do that") 
+   EVIL_CHANGE: new EvilPlayerError("How did you do that"),
 };
 
 class Position {
@@ -260,7 +272,7 @@ class Game {
       this.logAscii();
    }
 
-   async playBots(verbose=false) {
+   async playBots(verbose = false) {
       if (players[this.toMove].type === "bot") {
          await pause(200);
          this.doBotMove();
@@ -285,19 +297,19 @@ class Game {
       if (moveFinish !== false) {
          this.result ??= moveFinish[0];
          if (moveFinish[0] === "win") {
-            this.winner = [this.toMove, PLAYER_NAMES[this.toMove], players[this.toMove].player]
+            this.winner = [this.toMove, PLAYER_NAMES[this.toMove], players[this.toMove].player];
             notice("WINNNN", moveFinish);
             for (let cell of moveFinish[1].flat().concat(this.board[y][x]))
                cell.win = true;
          } else if (moveFinish[0] === "draw")
             notice(`*gasp*! Draw!\n${moveFinish[1]}`, moveFinish);
          else
-            throw ERRORS.INVALID_MOVE_FINISH
+            throw ERRORS.INVALID_MOVE_FINISH;
       }
 
       this.gameStates.push(new GameState(this));
       this.moveHistory.push(new Move(oldPosition, {x, y}, this));
-      players[this.toMove].lastMove = this.moveHistory[this.moveHistory.length - 1]
+      players[this.toMove].lastMove = this.moveHistory[this.moveHistory.length - 1];
 
       // updateVisual must go after setting lastMove but before setting toMove
       this.updateVisual();
@@ -635,7 +647,7 @@ function handleClick(x, y) {
    x -= currentGame.visual.offset.x;
    y -= currentGame.visual.offset.y;
 
-   let square = currentGame.board?.[y]?.[x]
+   let square = currentGame.board?.[y]?.[x];
    if (square === undefined)
       throw ERRORS.EVIL_CLICK;
 
@@ -644,7 +656,7 @@ function handleClick(x, y) {
 }
 
 function notice(...args) {
-   // do something
+   // TODO: do something
 }
 
 const player_assets = [
@@ -745,41 +757,44 @@ for (let x = 0; x < 20; x++) {
 let currentGame = new Game();
 
 
+// Assumes that the enable and disable buttons are disabled / enabled when appropriate.
+// For example, the enable button should not be enabled if the element is already enabled.
+// So the errors might be wrong.
 document.querySelector("#playerAmountLabel select").onchange = function (event) {
-   console.log(EnableOrDisablePlayers.apply(event.target));
+   console.log(EnableOrDisablePlayers.call(event.target));
 };
 document.querySelector("#personCountLabel select").onchange = function (event) {
-   console.log(EnableOrDisablePeople.apply(event.target));
+   console.log(EnableOrDisablePeople.call(event.target));
 };
 for (let input of ELEMENTS.getUsernameInputs())
    input.onchange = function usernameChange(event) {
       if (event.target.disabled) throw new ElementIsDisabledError(event.target);
-      console.log(changeName.apply(event.target));
+      console.log(changeName.call(event.target));
    };
 for (let button of ELEMENTS.getEnablePersonButtons())
    button.onclick = function (event) {
-      if (event.target.disabled) throw new ElementIsDisabledError(event.target);
-      console.log(disablePerson.apply(event.target));
+      if (event.target.disabled) throw new ElementIsAlreadyEnabledError(event.target);
+      console.log(enablePerson.call(event.target.parentElement.children[0].children[0]));
    };
 for (let button of ELEMENTS.getDisablePersonButtons())
    button.onclick = function (event) {
-      if (!event.target.disabled) return new ElementIsEnabledWarning(event.target);
-      console.log(enablePerson.apply(event.target));
+      if (event.target.disabled) throw new ElementIsAlreadyDisabledError(event.target);
+      console.log(disablePerson.call(event.target.parentElement.children[0].children[0]));
    };
 for (let select of ELEMENTS.getPlayerSelects())
    select.onchange = function playerChange(event) {
       if (event.target.disabled) throw new ElementIsDisabledError(event.target);
-      console.log(changePlayer.apply(event.target.selectedOptions[0]));
+      console.log(changePlayer.call(event.target.selectedOptions[0]));
    };
 for (let button of ELEMENTS.getEnablePlayerButtons())
    button.onclick = function (event) {
-      if (event.target.disabled) throw new ElementIsDisabledError(event.target);
-      console.log(disablePlayer.apply(event.target));
+      if (event.target.disabled) throw new ElementIsAlreadyEnabledError(event.target);
+      console.log(enablePlayer.call(event.target.parentElement.children[0].children[0]));
    };
 for (let button of ELEMENTS.getDisablePlayerButtons())
    button.onclick = function (event) {
-      if (!event.target.disabled) return new ElementIsEnabledWarning(event.target);
-      console.log(enablePlayer.apply(event.target));
+      if (event.target.disabled) throw new ElementIsAlreadyDisabledError(event.target);
+      console.log(disablePlayer.call(event.target.parentElement.children[0].children[0]));
    };
 
 
@@ -867,13 +882,12 @@ const bot_mechanics = {
       if (lastMove === undefined)
          bot_mechanics.random_move.apply(this);
       else if (this.moveHistory.length === 1)
-         if (positionOfLastMove.y === 0) {
+         if (positionOfLastMove.y === 0)
             this.play(lastMove.x, 0);
-         } else if (positionOfLastMove.x === 0) {
+         else if (positionOfLastMove.x === 0)
             this.play(0, lastMove.y);
-         } else {
+         else
             this.play(lastMove.x + 1, lastMove.y);
-         }
       else {
          let secondLastMove = this.moveHistory[this.moveHistory.length - 2];
          let indexOfLastMove = (
@@ -922,18 +936,21 @@ let players = [
 // They might not even need to be async functions,
 // But it's nice and I might need them for tournaments.
 
-/* EnableOrDisablePlayers
- * EnableOrDisablePeople
- * changePlayer
- * changeName
- * enablePerson
- * disablePerson
- * enablePeople
- * disablePeople
- * enablePlayer
- * disablePlayer
- * enablePlayers
- * disablePlayers
+/* async function          this                          event element (if different)
+ * EnableOrDisablePlayers  #playerAmountLabel <select>
+ * EnableOrDisablePeople   #personCountLabel <select>
+ * changePlayer            #choosePlayerFields <option>  #choosePlayerFields <select>
+ * changeName              #nameFields <input>
+ * enablePerson            #nameFields <input>           #nameFields <button.enable>
+ * disablePerson           #nameFields <input>           #nameFields <button.disable>
+ * enablePeople            undefined                     used in EnableOrDisablePeople
+ * disablePeople           undefined                     used in EnableOrDisablePeople
+ * enablePlayer            #choosePlayerFields <option>  #choosePlayerFields <button.enable>
+ * disablePlayer           #choosePlayerFields <option>  #choosePlayerFields <button.disable>
+ * enablePlayers           undefined                     used in EnableOrDisablePlayers
+ * disablePlayers          undefined                     used in EnableOrDisablePlayers
+ * 
+ * <this> = <select> or <input> in general
  */
 
 // this = #playerAmountLabel <select>
@@ -1032,15 +1049,20 @@ async function disablePerson() {
 // num === this.value, in above func
 async function enablePeople(num) {
    let clickPromises = [];
+   let counter = activePeople;
    for (let button of ELEMENTS.getEnablePersonButtons()) {
       if (button.disabled) continue;
       clickPromises.push(button.click());
-      if (activePeople + clickPromises.length === num) break;
+      
+      if (++counter === num) break;
    }
 
    let promiseGroup = Promise.allSettled(clickPromises);
    for (let promise of promiseGroup)
       if (promise.status === 'rejected') throw promiseGroup;
+
+   if (counter !== num)
+      console.warn(`Failed to enable the correct amount: ${counter} !== ${num}`);
 
    return promiseGroup;
 }
@@ -1048,15 +1070,19 @@ async function enablePeople(num) {
 // Disables first-to-last just like enable.
 async function disablePeople(num) {
    let clickPromises = [];
+   let counter = activePeople;
    for (let button of ELEMENTS.getDisablePersonButtons()) {
       if (button.disabled) continue;
       clickPromises.push(button.click());
-      if (activePeople - clickPromises.length === num) break;
+      if (--counter === num) break;
    }
 
    let promiseGroup = Promise.allSettled(clickPromises);
    for (let promise of promiseGroup)
       if (promise.status === 'rejected') throw promiseGroup;
+
+   if (counter !== num)
+      console.warn(`Failed to disable the correct amount: ${counter} !== ${num}`);
 
    return promiseGroup;
 }
@@ -1086,31 +1112,39 @@ async function disablePlayer() { }
 
 async function enablePlayers(num) {
    let clickPromises = [];
+   let counter = activePlayers;
    for (let button of ELEMENTS.getEnablePlayerButtons()) {
       if (button.disabled) continue;
       clickPromises.push(button.click());
-      if (activePeople + clickPromises.length === num) break;
+      if (++counter === num) break;
    }
 
    let promiseGroup = await Promise.allSettled(clickPromises);
    for (let promise of promiseGroup)
       if (promise.status === 'rejected') throw promiseGroup;
 
+   if (counter !== num)
+      console.warn(`Failed to enable the correct amount: ${counter} !== ${num}`);
+   
    return promiseGroup;
 }
 
 async function disablePlayers(num) {
    let clickPromises = [];
+   let counter = activePlayers;
    for (let button of ELEMENTS.getDisablePlayerButtons()) {
       if (button.disabled) continue;
       clickPromises.push(button.click());
-      if (activePlayers - clickPromises.length === num) break;
+      if (--counter === num) break;
    }
 
    let promiseGroup = await Promise.allSettled(clickPromises);
    for (let promise of promiseGroup)
       if (promise.status === 'rejected') throw promiseGroup;
 
+   if (counter !== num)
+      console.warn(`Failed to disable the correct amount: ${counter} !== ${num}`);
+   
    return promiseGroup;
 }
 

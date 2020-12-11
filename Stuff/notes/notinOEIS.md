@@ -35,3 +35,5 @@ This is a list of integer sequences I have made that are not in the OEIS
    * Eventually you'll to some printable characters and there will be a lot of 1s
 * List of MegaFavNumbers
    * See playlist on youtube, goes 666030256, 1169809367327212570704813632106852886389036911
+* Concatenation of all {n mod (all prime numbers smaller than n)}
+   * 0, 0, 0, 1, 1, 12, 1, 112, 231, 1042

@@ -33,7 +33,13 @@ This is a list of integer sequences I have made that are not in the OEIS
    * 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 3
    * 8 threes, then 8 twos gets 31 results, but another 3 doesn't get any results.
    * Eventually you'll to some printable characters and there will be a lot of 1s
+       * Might need to look at the actual table here.
 * List of MegaFavNumbers
    * See playlist on youtube, goes 666030256, 1169809367327212570704813632106852886389036911
 * Concatenation of all {n mod (all prime numbers smaller than n)}
    * 0, 0, 0, 1, 1, 12, 1, 112, 231, 1042
+* Of the sequence {1, 1/2, 1/(2 + 3), 1/(2 + 3/4), 1/(2 + 3/(4 + 5)), 1/(2 + 3/(4 + 5/6)), 1/(2 + 3/(4 + 5/(6 + 7))), 1/(2 + 3/(4 + 5/(6 + 7/8))), etc...}
+   * Simplified numerators:
+       * 1, 1, 1, 4, 3, 29, 19, 52
+   * Simplified denominators:
+       * 1, 2, 5, 11, 7, 76, 51, 137

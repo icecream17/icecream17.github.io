@@ -4,6 +4,7 @@ Website by icecream17
 Hi!
 
 ## File Explorer
+
 * Stuff/
   * Stuff/Stuff/
     * [README.md](Stuff/Stuff/README.md)
@@ -32,3 +33,9 @@ Hi!
 * [SECURITY.md](SECURITY.md)
 * [favicon.ico](favicon.ico) (Need to convert to png some time)
 * [sitemap.xml](sitemap.xml) (Not a very good sitemap)
+
+## License
+
+This site is generally in the Apache License, however some specific folders have their own license.<br>
+So you might want to check the specific folders.
+

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="backface-visibility: hidden;background-color: #0000;">
+
+
+
+<defs>
+  <style type="text/css">
+    /* latin */
+    @font-face {
+      font-family: 'Noto Sans';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url(https://fonts.gstatic.com/s/notosans/v11/o-0IIpQlx3QUlC5A4PNr5TRA.woff2) format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+  </style>
+</defs>
+
+
+<text xmlns="http://www.w3.org/2000/svg" x="10" y="20" style="font-family:Noto Sans;font-weight: normal;color: green;background-color: #0000;">Lichess easter egg!</text>
+</svg>

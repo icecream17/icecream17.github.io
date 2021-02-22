@@ -104,7 +104,7 @@ function greyLegalMoves(square, piece) {
 
 
 function updateStatus() {
-   let status = ''
+   let status = game.fen() + '\n\n'
 
    let moveColor = game.turn() === 'w' ? 'White' : 'Black'
 
@@ -129,14 +129,22 @@ function updateStatus() {
 
       // check?
       if (game.in_check()) {
-         status += ', ' + moveColor + ' is in check'
+         status += '. Also is in check'
       }
    }
 
-   status += JSON.stringify(currentTree, replacer, 3)
-   $status.html(status)
-   $fen.html(game.fen())
-   $pgn.html(game.pgn())
+   status += '\n\n' + 
+      JSON.stringify(currentTree, replacer, 3)
+          .split('\n')
+          .filter(a => a.includes('"'))
+          .map(
+            a => 
+               a.slice(3, a.indexOf('"')) +
+               a.slice(a.indexOf('"') + 1, a.lastIndexOf('"'))
+          )
+          .join('\n')
+   
+   document.getElementById('output').value = status
 }
 
 function replacer(key, value) {

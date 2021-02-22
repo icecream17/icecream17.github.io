@@ -153,7 +153,7 @@ function replacer(key, value) {
 let board = Chessboard(BOARD_ID, boardConfig)
 
 document.getElementById('start').onclick = function () {
-   globalThis.searchIntervals = [setInterval(search, 50), setInterval(updateBoard, 1000)]
+   globalThis.searchIntervals = [setInterval(search, 100), setInterval(updateBoard, 200)]
 }
 document.getElementById('stop').onclick = function () {
    globalThis.searchIntervals.forEach(interval => clearInterval(interval))
@@ -168,9 +168,10 @@ function search () {
    }
    let moved = false
    for (let move of moves) {
-      if (!currentBranch.has(move)) {
+      if (!(currentBranch.has(move))) {
          moved = true
          game.move(move)
+         break
       }
    }
    if (moved === false) {
@@ -180,6 +181,7 @@ function search () {
          document.getElementById('stop').click()  
       }
    }
+   currentTree.update()
 }
 
 function updateBoard() {

@@ -104,13 +104,16 @@ function greyLegalMoves(square, piece) {
 
 
 function updateStatus() {
-   let status = game.fen() + '\n\n' + game.history().length + '\n\n'
+   document.getElementById('output').value = `${game.fen()}
 
+${game.history().length}
+
+${(()=>{
    let moveColor = game.turn() === 'w' ? 'White' : 'Black'
 
    // checkmate?
    if (game.in_checkmate()) {
-      status = 'Game over, ' + moveColor + ' got checkmated.'
+      return 'Game over, ' + moveColor + ' got checkmated.'
    }
 
    // draw?
@@ -120,20 +123,16 @@ function updateStatus() {
       if (game.insufficient_material()) reason = 'insufficient material'
       if (game.in_threefold_repetition()) reason = 'threefold repetition'
 
-      status = `Game over, draw by ${reason}`
+      return `Game over, draw by ${reason}`
    }
 
    // game still on
    else {
-      status = moveColor + ' to move'
-
-      // check?
-      if (game.in_check()) {
-         status += '. Also is in check'
-      }
+      return moveColor + ' to move' + (game.in_check() ? '. Check!' : '')
    }
+})()}
 
-   status += '\n\n' + 
+${
       JSON.stringify(currentTree, replacer, 1)
           .split('\n')
           .filter(a => a.includes('"'))
@@ -143,8 +142,7 @@ function updateStatus() {
                a.slice(a.indexOf('"') + 1, a.lastIndexOf('"'))
           )
           .join('\n')
-   
-   document.getElementById('output').value = status
+}`
 }
 
 function replacer(key, value) {
@@ -164,9 +162,9 @@ let board = Chessboard(BOARD_ID, boardConfig)
 document.getElementById('start').onclick = function () {
    globalThis.searchIntervals = [
       setInterval(() => {
-         for (let i = 0; i < 3; i++) search();
+         for (let i = 0; i < 10; i++) search();
          updateStatus()
-      }, 77),
+      }, 250),
       setInterval(updateBoard, globalThis.speed)
    ]
 }

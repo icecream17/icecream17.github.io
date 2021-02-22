@@ -166,19 +166,24 @@ function search () {
    for (let move of game.history()) {
       currentBranch = currentBranch.get(move)
    }
-   let moved = false
-   for (let move of moves) {
-      if (!(currentBranch.has(move))) {
-         moved = true
-         game.move(move)
-         break
+   
+   if (typeof currentBranch === 'string') {
+      game.undo()
+   } else { // instanceof Map
+      let moved = false
+      for (let move of moves) {
+         if (!(currentBranch.has(move))) {
+            moved = true
+            game.move(move)
+            break
+         }
       }
-   }
-   if (moved === false) {
-      if (game.history().length > 0) {
-         game.undo()
-      } else {
-         document.getElementById('stop').click()  
+      if (moved === false) {
+         if (game.history().length > 0) {
+            game.undo()
+         } else {
+            document.getElementById('stop').click()  
+         }
       }
    }
    currentTree.update()

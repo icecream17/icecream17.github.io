@@ -22,6 +22,9 @@ currentTree.update = function () {
 }
 globalThis._game = game
 
+// Increase the right number for more speed
+globalThis.speed = (60_000) / 314
+
 const whiteGreySquare = '#a9a9a9'
 const blackGreySquare = '#696969'
 
@@ -101,8 +104,6 @@ function greyLegalMoves(square, piece) {
 
 
 function updateStatus() {
-   return 'Status not needed yet'
-
    let status = ''
 
    let moveColor = game.turn() === 'w' ? 'White' : 'Black'
@@ -153,11 +154,22 @@ function replacer(key, value) {
 let board = Chessboard(BOARD_ID, boardConfig)
 
 document.getElementById('start').onclick = function () {
-   globalThis.searchIntervals = [setInterval(search, 77), setInterval(updateBoard, 200)]
+   globalThis.searchIntervals = [
+      setInterval(() => {
+         for (let i = 0; i < 3; i++) search();
+         updateStatus()
+      }, 77),
+      setInterval(updateBoard, globalThis.speed)
+   ]
 }
 document.getElementById('stop').onclick = function () {
    globalThis.searchIntervals.forEach(interval => clearInterval(interval))
    delete globalThis.searchIntervals
+}
+function setSpeed(n) {
+   globalThis.speed = n
+   clearInterval(globalThis.searchIntervals[1])
+   globalThis.searchIntervals[1] = setInterval(updateBoard, globalThis.speed)
 }
 
 function search () {
@@ -187,7 +199,6 @@ function search () {
       }
    }
    currentTree.update()
-   updateStatus()
 }
 
 function updateBoard() {

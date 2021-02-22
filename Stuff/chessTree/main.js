@@ -153,7 +153,7 @@ function replacer(key, value) {
 let board = Chessboard(BOARD_ID, boardConfig)
 
 document.getElementById('start').onclick = function () {
-   globalThis.searchIntervals = [setInterval(search, 100), setInterval(updateBoard, 200)]
+   globalThis.searchIntervals = [setInterval(search, 77), setInterval(updateBoard, 200)]
 }
 document.getElementById('stop').onclick = function () {
    globalThis.searchIntervals.forEach(interval => clearInterval(interval))
@@ -187,8 +187,9 @@ function search () {
       }
    }
    currentTree.update()
+   updateStatus()
 }
 
 function updateBoard() {
-   board.position(game.fen())
+   board.position(game.fen(), false)
 }

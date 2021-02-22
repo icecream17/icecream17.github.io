@@ -3,6 +3,23 @@ globalThis._Chess = Chess
 
 const BOARD_ID = "board1" // hashtag not included
 let game = new Chess()
+let currentTree = new Map()
+currentTree.update = function () {
+   let currentBranch = this
+   for (let move of game.history()) {
+      if (currentBranch.has(move)) {
+         currentBranch = currentBranch.get(move)
+      } else {
+         if (game.in_checkmate()) {
+            currentBranch.set(move, 'checkmate')
+         } else if (game.in_draw()) {
+            currentBranch.set(move, 'draw')
+         } else {
+            currentBranch.set(move, new Map())
+         }
+      }
+   }
+}
 globalThis._game = game
 
 const whiteGreySquare = '#a9a9a9'
@@ -115,9 +132,56 @@ function updateStatus() {
       }
    }
 
+   status += JSON.stringify(currentTree, replacer, 3)
    $status.html(status)
    $fen.html(game.fen())
    $pgn.html(game.pgn())
 }
 
+function replacer(key, value) {
+   if (value instanceof Map) {
+      let obj = {}
+      for (let [key, entryValue] of value.entries()) {
+         obj[key] = entryValue
+      }
+      return obj
+   } else {
+      return value;
+   }
+}
+
 let board = Chessboard(BOARD_ID, boardConfig)
+
+document.getElementById('start').onclick = function () {
+   globalThis.searchIntervals = [setInterval(search, 50), setInterval(updateBoard, 1000)]
+}
+document.getElementById('stop').onclick = function () {
+   globalThis.searchIntervals.forEach(interval => clearInterval(interval))
+   delete globalThis.searchIntervals
+}
+
+function search () {
+   let moves = game.moves()
+   let currentBranch = currentTree
+   for (let move of game.history()) {
+      currentBranch = currentBranch.get(move)
+   }
+   let moved = false
+   for (let move of moves) {
+      if (!currentBranch.has(move)) {
+         moved = true
+         game.move(move)
+      }
+   }
+   if (moved === false) {
+      if (game.history().length > 0) {
+         game.undo()
+      } else {
+         document.getElementById('stop').click()  
+      }
+   }
+}
+
+function updateBoard() {
+   board.position(game.fen())
+}

@@ -16,6 +16,7 @@ currentTree.update = function () {
             currentBranch.set(move, 'draw')
          } else {
             currentBranch.set(move, new Map())
+            currentBranch = currentBranch.get(move)
          }
       }
    }
@@ -169,16 +170,19 @@ document.getElementById('start').onclick = function () {
    ]
 }
 document.getElementById('stop').onclick = function () {
+   if (!('searchIntervals' in globalThis)) return;
    globalThis.searchIntervals.forEach(interval => clearInterval(interval))
    delete globalThis.searchIntervals
 }
 function setSpeed(n) {
+   if (!('searchIntervals' in globalThis)) return;
    globalThis.speed = n
    clearInterval(globalThis.searchIntervals[1])
    globalThis.searchIntervals[1] = setInterval(updateBoard, globalThis.speed)
 }
 
 function search () {
+   currentTree.update()
    let moves = game.moves()
    let currentBranch = currentTree
    for (let move of game.history()) {
@@ -204,7 +208,6 @@ function search () {
          }
       }
    }
-   currentTree.update()
 }
 
 function updateBoard() {

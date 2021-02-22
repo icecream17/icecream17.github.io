@@ -104,7 +104,7 @@ function greyLegalMoves(square, piece) {
 
 
 function updateStatus() {
-   let status = game.fen() + '\n\n'
+   let status = game.fen() + '\n\n' + game.history().length + '\n\n'
 
    let moveColor = game.turn() === 'w' ? 'White' : 'Black'
 

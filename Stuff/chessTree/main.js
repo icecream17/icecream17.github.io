@@ -134,12 +134,12 @@ function updateStatus() {
    }
 
    status += '\n\n' + 
-      JSON.stringify(currentTree, replacer, 3)
+      JSON.stringify(currentTree, replacer, 1)
           .split('\n')
           .filter(a => a.includes('"'))
           .map(
             a => 
-               a.slice(3, a.indexOf('"')) +
+               a.slice(1, a.indexOf('"')) +
                a.slice(a.indexOf('"') + 1, a.lastIndexOf('"'))
           )
           .join('\n')

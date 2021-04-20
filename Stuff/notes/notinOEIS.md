@@ -43,3 +43,16 @@ This is a list of integer sequences I have made that are not in the OEIS
        * 1, 1, 1, 4, 3, 29, 19, 52
    * Simplified denominators:
        * 1, 2, 5, 11, 7, 76, 51, 137
+* See https://docs.google.com/document/d/1wmtR2oZQkczNzOVNBPs04BxUh91rhloMqQUQ8YjjxGE/edit?usp=sharing
+   * ![Take a number, say 8439. This is written in binary as  10000011110111.
+Now shift the digits to the right until there’s a number that’s not greater: 10000011110111 >> 01111000001111
+And now the same but the opposite, waiting for a number that’s not lesser: 10000011110111 >> 11000001111011
+And now the same but the opposite, shifting to the left:
+10000011110111 << 00000111101111
+10000011110111 << 11110111100000
+And finally… bitwise and all of those together:
+01111000001111 & 
+11000001111011 &
+00000111101111 &
+11110111100000 = 0](https://user-images.githubusercontent.com/58114641/115335602-233d8280-a163-11eb-903c-6142fd9e407e.png)
+   * Although there's a spreadsheet at the doc (or here: https://docs.google.com/spreadsheets/d/1pNS9AYsXV4uIqfBbtzekho4C708UEy8Awvjvk_MJDeM/edit?usp=sharing), [there's also a markdown table of the pattern](./random-pattern.md)

@@ -1,7 +1,9 @@
 # Hi
+If you don't know what this is
+
 So here's my code for the schedule. Be sure to read the all caps comment.
 
-Copy the code. Also: Look at the bottom
+Copy the code.
 
 ```javascript
 function timeRange(time, time2) {
@@ -10,6 +12,8 @@ function timeRange(time, time2) {
 
 function whichDay(day) {
   if (day.getDay() === 0 || day.getDay === 6) {return "FREE"} // If saturday or sunday, day is free
+
+  return "Summer"
 
   day = [day.getMonth() + 1, day.getDate(), day.getFullYear()].join('/') // Formatted like this: MONTH/DAY/YEAR
   
@@ -65,6 +69,9 @@ function TIMENOW() {
 }
 
 function WhichRange(day, time, timeRanges, blockA, blockB) {
+  // There's a bug where am = pm
+  if (day === 'FREE') return 'none';
+
   time *= 24;
   time = [Math.floor(time), time];
   time[1] -= time[0];
@@ -107,17 +114,3 @@ function WhichRange(day, time, timeRanges, blockA, blockB) {
 
 
 ```
-
-
-Cell layout:
-|   | A |       B       |              C             |              D              |           E                 |                               F                               | G | H |                I                |
-|---|---|---------------|----------------------------|-----------------------------|-----------------------------|---------------------------------------------------------------|---|---|---------------------------------|
-| 1 |   |               |                            |                             |                             |                                                               |   |   |                                 |
-| 2 |   | Schedule      | =timeRange("8:40", "9:50") | =timeRange("9:55", "11:05") | =timeRange("12:25", "1:35") | =timeRange("1:40", "2:50")                                    |   |   | Recalculate:                    |
-| 3 |   | A             | A1 class name here         | A2 class name here          | A3 class name here          | A4 class name here                                            |   |   | To recalculate, reload the page |
-| 4 |   | B             | B1 class name here         | B2 class name here          | B3 class name here          | B4 class name here                                            |   |   |                                 |
-| 5 |   |               |                            |                             |                             |                                                               |   |   |                                 |
-| 6 |   | Today is      | =TODAY()                   | which is an                 | =whichDay(C7)               | day                                                           |   |   |                                 |
-| 7 |   | Current time: | =TIMENOW()                 |                             | Current subject:            | =WhichRange(E7, TIMEVALUE(C8), C2:F2, C3:F3, C4:F4)           |   |   |                                 |
-| 8 |   |               |                            |                             | In ten minutes:             | =WhichRange(E7, TIMEVALUE(C8) + (1/144), C2:F2, C3:F3, C4:F4) |   |   |                                 |
-| 9 |   |               |                            |                             |                             |                                                               |   |   |                                 |

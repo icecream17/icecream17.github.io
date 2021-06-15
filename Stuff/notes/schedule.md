@@ -1,5 +1,5 @@
 # Hi
-If you don't know what this is
+If you don't know what this is, that's on purpose
 
 So here's my code for the schedule. Be sure to read the all caps comment.
 

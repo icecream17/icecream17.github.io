@@ -3,6 +3,8 @@ Website by icecream17
 
 Hi!
 
+[Main repo](https://github.com/icecream17/icecream17.github.io)
+
 ## File Explorer
 
 * Stuff/
@@ -12,9 +14,9 @@ Hi!
     * [stuff.html](Stuff/Stuff/stuff.html)
     * [stuff.js](Stuff/Stuff/stuff.js)
   * Stuff/adventure/
-    * [adventure.css](Stuff/Stuff/adventure.css)
-    * [adventure.html](Stuff/Stuff/adventure.html)
-    * [adventure.js](Stuff/Stuff/adventure.js)
+    * [adventure.css](Stuff/adventure/adventure.css)
+    * [adventure.html](Stuff/adventure/adventure.html)
+    * [adventure.js](Stuff/adventure/adventure.js)
   * Stuff/chessall/
     * [README.md](Stuff/chessall/README.md)
     * TODO

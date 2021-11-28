@@ -66,7 +66,8 @@ let messages = {
       iTag.gray, '"First challenge: Go to Rowlett"', endTag,
       `\nWhat? That's really easy. Just 15 miles, ish\n\n`,
       iTag.green, '"LOOK A SUPER TREE APPLE!"', endTag,
-      ' a kid outside yells. \n\n', storyOptionTag, '\n', storyOptionTag
+      ' a kid outside yells. \n\n', storyOptionTag, endTag, '\n',
+      storyOptionTag, endTag,
    ],
    welcome: (
       'Welcome!<br><br>' +
@@ -146,10 +147,8 @@ let previousMenuDisplayState = 'none';
 let menuDelayLeft = 0;
 
 // no jQuery anymore
-function getById(id) {return document.getElementById(id);}
-function getByClass(className) {
-   return document.getElementsByClassName(className);
-}
+const getById = id => document.getElementById(id);
+const getByClass = className => document.getElementsByClassName(className);
 
 getById('start').onclick = startGame;
 getById('continue').onclick = continueGame;
@@ -704,8 +703,8 @@ function parseInput(playerInput) {
                      `<i class = 'green'>"It was delicious"</i> <br>` +
                      `or <i class = 'purple'>"It was poisoned!"</i>` +
                      ` or something else.` +
-                     ` This is an adventure <br>` +
-                     `<i class = 'dogeblue'>Have fun</i><br>` +
+                     ` It's like an adventure <br>` +
+                     `<i class = 'dogeblue'>Have fun!</i><br>` +
                      helpOptionText
                   );
                   break;
@@ -770,15 +769,20 @@ function parseInput(playerInput) {
       }
    }
 
+   /** Does not exit path if path is empty */
    function exitPathAndWarnPlayer(playerInput, message) {
-      visibleError('Warn',
-         message + `<br><br>Exiting the "${playerDirectory}" path`
-      );
+      if (playerDirectory === "") {
+         visibleError('Warn', message);
+      } else {
+         visibleError('Warn',
+            message + `<br><br>Exiting the "${playerDirectory}" path`
+         );
 
-      // 'help/how/why' => 'help/how'
-      playerDirectory = playerDirectory.substring(
-         0, playerDirectory.lastIndexOf('/')
-      );
+         // 'help/how/why' => 'help/how'
+         playerDirectory = playerDirectory.substring(
+            0, playerDirectory.lastIndexOf('/')
+         );
+      }
    }
 
    let words = playerInput.split(' ');
@@ -849,7 +853,7 @@ function checkMenu() {
 }
 
 Function.prototype.pass = function (...args) {
-   let func = this;
+   const func = this;
    return function (...moreArgs) {
       return func.apply(this, args.concat(moreArgs))
    }
@@ -860,7 +864,7 @@ function colorLog (color, ...messages) {
    // WARNING: Do not use the variable name "arguments"
    let logArguments = ['%c', 'color: ' + color];
 
-   for (let message of messages) {
+   for (const message of messages) {
       logArguments[0] += ' ';
 
       switch (typeof message) {

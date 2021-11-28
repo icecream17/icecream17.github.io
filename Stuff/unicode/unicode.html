@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en-US">
+
+<head>
+  <!-- You can delete theme-color and color-scheme if you want -->
+  <meta charset="UTF-8">
+  <meta name="theme-color" content="#fff">
+  <meta name="color-scheme" content="normal">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Used for security. Remove if you can control the web server's response headers.
+       You don't have control if you're using github pages. -->
+  <meta http-equiv="content-security-policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
+
+  <!-- Change all of these. You can delete keywords if you want -->
+  <title>Unicode display</title>
+  <meta name="description" content="A nice display for code points in unicode">
+  <meta name="keywords" content="unicode">
+  <meta name="author" content="icecream17 (github)"> <!-- If you're not me, you might want to change this -->
+
+  <link defer rel="stylesheet" src="unicode.css">
+  <script defer src="unicode.js"></script>
+</head>
+
+<body>
+  <label for="speed">
+    <span>Speed</span>
+    <input type="range" id="speed" name="speed"
+           min="0" max="99" value="93">
+  </label>
+  <br>
+  <article id="unicodeoutput"></article>
+  <noscript>You need javascript for this to work</noscript>
+</body>
+
+</html>

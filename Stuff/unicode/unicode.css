@@ -1,0 +1,8 @@
+body {
+  margin: 2em;
+  line-height: 1.225;
+  letter-spacing: 1.5;
+  font-size: 1.5em;
+  font-family: Consolas, monospace;
+  overflow-wrap: break-word;
+}

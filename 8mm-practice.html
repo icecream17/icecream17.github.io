@@ -718,6 +718,7 @@
     const prefix = currentWord.slice(0, currentPrefixLen);
     const guessMiddle = values.join('');
     const suffix = currentWord.slice(currentPrefixLen + 3);
+    const guessWord = prefix + guessMiddle + suffix;
     
     const checks = [
       currentWord,
@@ -731,7 +732,7 @@
       return WORDS.includes(guessWord)
     });
 
-    lastGuessWord = prefix + guessMiddle + suffix;
+    lastGuessWord = guessWord;
     lastGuessMiddle = guessMiddle;
     lastWasWrong = !isCorrect;
     

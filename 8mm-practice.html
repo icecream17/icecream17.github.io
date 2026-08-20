@@ -625,7 +625,7 @@
     return Array.from(tilesEl.querySelectorAll('.blank-input'));
   }
   function getBlankValues(){
-    return getBlankInputs.map(i => i.value.toUpperCase())
+    return getBlankInputs().map(i => i.value.toUpperCase())
   }
 
   function syncRelatedInputs(){

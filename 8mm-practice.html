@@ -719,17 +719,16 @@
     const guessMiddle = values.join('');
     const suffix = currentWord.slice(currentPrefixLen + 3);
     const guessWord = prefix + guessMiddle + suffix;
-    
     const checks = [
-      currentWord,
-      ...currentRelated.map(cr => cr.word)
+      { word: currentWord, pl: currentPrefixLen },
+      ...currentRelated
     ];
 
-    const isCorrect = checks.every(check => {
-      const prefix = check.slice(0, currentPrefixLen);
-      const suffix = check.slice(currentPrefixLen + 3);
-      const guessWord = prefix + guessMiddle + suffix;
-      return WORDS.includes(guessWord)
+    const isCorrect = checks.every(({ word, pl }) => {
+      const prefix = word.slice(0, pl);
+      const suffix = word.slice(pl + 3);
+      const reconstructed = prefix + guessMiddle + suffix;
+      return WORDS.includes(reconstructed);
     });
 
     lastGuessWord = guessWord;

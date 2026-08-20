@@ -387,7 +387,7 @@
     <p class="subtitle">Reconstruct the classified word. Three letters have been withheld from the middle — fill them in and submit for review.</p>
 
     <div class="tiles" id="tiles"></div>
-    <div class="related-words" id="relatedWords" hidden>
+    <div class="related-words" id="relatedWords">
       <div class="tiles" id="relatedTiles1"></div>
       <div class="tiles" id="relatedTiles2"></div>
     </div>
@@ -494,7 +494,9 @@
   let lastGuessWord = "";
   let lastGuessMiddle = "";
 
-  let currentRelated = [], currentRelatedPrefixLen = [];
+  // !misnomer
+  // Additional clues to help the user figure out the missing middle
+  let currentRelated = []; // { word, pl }[]
 
   let totalAttempts = 0, totalCorrect = 0;
   let batchAttempts = 0, batchCorrect = 0;
@@ -531,8 +533,9 @@
     return PREFIX_LENS[Math.floor(r * PREFIX_LENS.length)];
   }
 
-  // Tries to return two randomish words with the same middle
-  function findRelatedWords(middle){
+  // Tries to return two randomish words with the same middle.
+  // Returns {word, pl}[]
+  function pickRelatedWords(middle){
     if (middle.length !== 3) return [];
 
     const matches = [];
@@ -543,7 +546,7 @@
       for (const pl of PREFIX_LENS){
         if (word.slice(pl, pl + 3) === middle){
           const idx = Math.floor(Math.random() * matches.length);
-          matches.splice(idx, 0, word);
+          matches.splice(idx, 0, {word, pl});
           break;
         }
       }
@@ -588,7 +591,7 @@
       tile.className = 'tile';
       if (i < prefixLen || i >= prefixLen + 3){
         tile.classList.add('revealed');
-        tile.textContent = word[i];
+        tile.textContent = word[i] ?? '';
       } else {
         tile.classList.add('blank');
 
@@ -605,20 +608,18 @@
   }
 
   function renderRelatedWords(middle){
-    const related = findRelatedWords(middle);
-
     renderRelatedTiles(
       relatedTiles1,
-      related[0],
-      related[0] ? findMissingPosition(related[0], middle) : 0
+      currentRelated[0]?.word ?? '',
+      currentRelated[0]?.pl ?? 0
     );
 
     renderRelatedTiles(
       relatedTiles2,
-      related[1],
-      related[1] ? findMissingPosition(related[1], middle) : 0
+      currentRelated[1]?.word ?? '',
+      currentRelated[1]?.pl ?? 0
     );
-}
+  }
 
   function getBlankInputs(){
     return Array.from(tilesEl.querySelectorAll('.blank-input'));
@@ -641,6 +642,7 @@
       inp.addEventListener('input', function(){
         const v = inp.value.toUpperCase().replace(/[^A-Z]/g, '');
         inp.value = v.slice(-1);
+        syncRelatedInputs();
         if (inp.value && idx < inputs.length - 1) inputs[idx + 1].focus();
       });
       inp.addEventListener('keydown', function(e){
@@ -679,6 +681,8 @@
     answered = false;
     currentWord = pickWord();
     currentPrefixLen = pickPrefixLen();
+    const middle = currentWord.slice(currentPrefixLen, currentPrefixLen + 3);
+    currentRelated = pickRelatedWords(middle);
     const prefix = currentWord.slice(0, currentPrefixLen);
     const suffix = currentWord.slice(currentPrefixLen + 3);
     currentKey = currentPrefixLen + '|' + prefix + '|' + suffix;
@@ -711,12 +715,23 @@
 
     answered = true;
     const guessMiddle = values.join('');
-    const prefix = currentWord.slice(0, currentPrefixLen);
-    const suffix = currentWord.slice(currentPrefixLen + 3);
-    const guessWord = prefix + guessMiddle + suffix;
-    const isCorrect = currentMatches.indexOf(guessWord) !== -1;
+    
+    const checks = [
+      currentWord,
+      ...currentRelated.map(cr => cr.word)
+    ];
 
-    lastGuessWord = guessWord;
+    const isCorrect = checks.every(check => {
+      const prefix = check.slice(0, currentPrefixLen);
+      const suffix = check.slice(currentPrefixLen + 3);
+      const guessWord = prefix + guessMiddle + suffix;
+      return WORDS.includes(guessWord)
+    });
+
+    lastGuessWord =
+      currentWord.slice(0, currentPrefixLen) +
+      guessMiddle +
+      currentWord.slice(currentPrefixLen + 3);
     lastGuessMiddle = guessMiddle;
     lastWasWrong = !isCorrect;
     

@@ -607,7 +607,7 @@
     }
   }
 
-  function renderRelatedWords(middle){
+  function renderRelatedWords(){
     renderRelatedTiles(
       relatedTiles1,
       currentRelated[0]?.word ?? '',
@@ -689,6 +689,7 @@
     currentMatches = PATTERN_MAP[currentKey];
 
     renderTiles(currentWord, currentPrefixLen, false);
+    renderRelatedWords();
     attachInputHandlers();
 
     hintEl.textContent = 'Type the three missing letters, then press Enter or Submit.';
@@ -714,7 +715,9 @@
     const gaveUp = values.some(v => !v);
 
     answered = true;
+    const prefix = currentWord.slice(0, currentPrefixLen);
     const guessMiddle = values.join('');
+    const suffix = currentWord.slice(currentPrefixLen + 3);
     
     const checks = [
       currentWord,
@@ -728,10 +731,7 @@
       return WORDS.includes(guessWord)
     });
 
-    lastGuessWord =
-      currentWord.slice(0, currentPrefixLen) +
-      guessMiddle +
-      currentWord.slice(currentPrefixLen + 3);
+    lastGuessWord = prefix + guessMiddle + suffix;
     lastGuessMiddle = guessMiddle;
     lastWasWrong = !isCorrect;
     

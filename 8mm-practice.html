@@ -1,0 +1,590 @@
+<!-- The first commit for this file was largely made by Claude Sonnet 5 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WORD FILE — Redacted Vocabulary Drill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#e7dcc0;
+    --desk:#c9b98f;
+    --card:#f2e9d3;
+    --ink:#26211b;
+    --ink-faint:#7a6c56;
+    --redact:#17140f;
+    --redact-edge:#050403;
+    --stamp-green:#3c6e47;
+    --stamp-red:#a13324;
+    --rule:#8b7355;
+    --gold:#a9863f;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 16px;
+    background:
+      radial-gradient(ellipse at center, var(--paper) 0%, var(--desk) 130%);
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--ink);
+  }
+
+  .wrap{ width:100%; max-width:600px; position:relative; }
+
+  .tab{
+    display:inline-block;
+    background:var(--gold);
+    color:#211a0d;
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    font-size:.68rem;
+    letter-spacing:.14em;
+    padding:6px 14px 5px;
+    border-radius:3px 3px 0 0;
+    margin-left:20px;
+    position:relative;
+    z-index:1;
+  }
+
+  .clip{
+    position:absolute;
+    top:-14px;
+    right:22px;
+    width:26px;
+    height:52px;
+    z-index:2;
+    opacity:.85;
+    transform:rotate(3deg);
+  }
+
+  .card{
+    position:relative;
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:2px;
+    padding:clamp(20px,5vw,40px);
+    box-shadow:0 18px 40px -14px rgba(20,15,5,.45), 0 2px 0 rgba(255,255,255,.4) inset;
+  }
+
+  .case-no{
+    font-size:.72rem;
+    letter-spacing:.12em;
+    color:var(--ink-faint);
+    text-align:right;
+    margin-bottom:4px;
+  }
+
+  h1{
+    font-family:'Special Elite', monospace;
+    font-weight:400;
+    font-size:clamp(1.6rem,6vw,2.2rem);
+    letter-spacing:.06em;
+    margin:0 0 2px;
+  }
+
+  .subtitle{
+    font-size:.82rem;
+    color:var(--ink-faint);
+    margin:0 0 24px;
+    line-height:1.5;
+  }
+
+  hr.rule{
+    border:none;
+    border-top:1px dashed var(--rule);
+    margin:20px 0;
+  }
+
+  .tiles{
+    display:flex;
+    justify-content:center;
+    gap:clamp(4px,1.6vw,8px);
+    margin:8px 0 10px;
+  }
+
+  .tile{
+    width:clamp(32px,9vw,50px);
+    height:clamp(40px,11vw,58px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Special Elite', monospace;
+    font-size:clamp(1rem,4vw,1.4rem);
+    border-radius:2px;
+    user-select:none;
+  }
+
+  .tile.revealed{
+    background:var(--card);
+    border:1px solid var(--rule);
+    color:var(--ink);
+  }
+
+  .tile.blank{
+    background:var(--redact);
+    border:1px solid var(--redact-edge);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);
+    transition:outline .15s ease;
+  }
+
+  .tile.blank:focus-within{
+    outline:2px solid var(--gold);
+    outline-offset:1px;
+  }
+
+  .tile.blank.filled-correct{ background:#213c28; border-color:var(--stamp-green); }
+  .tile.blank.filled-wrong{ background:#3a1b14; border-color:var(--stamp-red); }
+
+  .blank-input{
+    width:100%;
+    height:100%;
+    background:transparent;
+    border:none;
+    outline:none;
+    text-align:center;
+    color:#f2e9d3;
+    caret-color:#f2e9d3;
+    font-family:'Special Elite', monospace;
+    font-size:inherit;
+    text-transform:uppercase;
+  }
+
+  .hint{
+    text-align:center;
+    font-size:.72rem;
+    color:var(--ink-faint);
+    min-height:1.2em;
+    margin-bottom:18px;
+  }
+  .hint.warn{ color:var(--stamp-red); }
+
+  .controls{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    margin-bottom:6px;
+  }
+
+  .btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    font-size:.82rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    background:transparent;
+    border:2px solid var(--ink);
+    color:var(--ink);
+    padding:10px 22px;
+    border-radius:2px;
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease, transform .1s ease;
+  }
+  .btn:hover{ background:var(--ink); color:var(--card); }
+  .btn:active{ transform:translateY(1px); }
+  .btn:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+  .btn.primary{ border-color:var(--stamp-green); color:var(--stamp-green); }
+  .btn.primary:hover{ background:var(--stamp-green); color:var(--card); }
+
+  #feedback{
+    text-align:center;
+    margin:22px 0 6px;
+    opacity:0;
+    transform:translateY(4px);
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  #feedback.show{ opacity:1; transform:translateY(0); }
+
+  .stamp{
+    display:inline-block;
+    font-family:'Special Elite', monospace;
+    font-size:1rem;
+    letter-spacing:.18em;
+    padding:.5em 1em;
+    border:4px double transparent;
+    border-radius:4px;
+    transform:rotate(-6deg) scale(.85);
+    opacity:0;
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  .stamp.show{ opacity:.92; transform:rotate(-6deg) scale(1); }
+  .stamp-good{ color:var(--stamp-green); border-color:var(--stamp-green); }
+  .stamp-bad{ color:var(--stamp-red); border-color:var(--stamp-red); }
+
+  @media (prefers-reduced-motion: reduce){
+    .stamp, #feedback{ transition:none; transform:rotate(-6deg) scale(1); }
+  }
+
+  .sol-heading{ font-size:.82rem; color:var(--ink-faint); margin:14px 0 6px; }
+  .sol-list{ list-style:none; padding:0; margin:0 0 8px; font-size:.95rem; }
+  .sol-list li{ padding:3px 0; }
+  .sol-match{ color:var(--stamp-green); font-weight:600; }
+  .sol-note{ font-size:.8rem; color:var(--ink-faint); margin:6px 0 0; }
+
+  .ledger{
+    margin-top:28px;
+    padding-top:18px;
+    border-top:2px solid var(--rule);
+  }
+
+  .ledger-title{
+    font-size:.72rem;
+    letter-spacing:.14em;
+    color:var(--ink-faint);
+    margin-bottom:12px;
+  }
+
+  .round-line, .overall-line{
+    font-size:.82rem;
+    margin:2px 0;
+  }
+  .overall-line{ color:var(--ink-faint); margin-bottom:14px; }
+
+  .bars{
+    display:flex;
+    align-items:flex-end;
+    gap:10px;
+    height:90px;
+    padding:0 2px;
+    overflow-x:auto;
+  }
+  .bar-col{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    height:100%;
+    min-width:22px;
+  }
+  .bar{
+    width:20px;
+    background:linear-gradient(var(--ink), var(--redact));
+    border-radius:2px 2px 0 0;
+    transition:height .5s ease;
+  }
+  .bar-label{
+    font-size:.65rem;
+    color:var(--ink-faint);
+    margin-top:5px;
+  }
+  .ledger-empty{
+    font-size:.8rem;
+    color:var(--ink-faint);
+    font-style:italic;
+  }
+
+  .footnote{
+    margin-top:20px;
+    font-size:.68rem;
+    color:var(--ink-faint);
+    text-align:center;
+    font-style:italic;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <span class="tab">CASE FILE</span>
+  <svg class="clip" viewBox="0 0 26 52" xmlns="http://www.w3.org/2000/svg">
+    <path d="M13 4 C22 4 22 14 22 14 L22 38 C22 46 13 46 13 46 C6 46 6 40 6 40 L6 16 C6 11 11 11 11 11 C15 11 15 15 15 15 L15 36" fill="none" stroke="#8a7a52" stroke-width="3.4" stroke-linecap="round"/>
+  </svg>
+
+  <div class="card">
+    <div class="case-no">FILE NO. <span id="caseNumber">000001</span></div>
+    <h1>REDACTED</h1>
+    <p class="subtitle">Reconstruct the classified word. Three letters have been withheld from the middle — fill them in and submit for review.</p>
+
+    <div class="tiles" id="tiles"></div>
+    <div class="hint" id="inputHint">Type the three missing letters, then press Enter or Submit.</div>
+
+    <div class="controls">
+      <button class="btn primary" id="submitBtn">Submit</button>
+      <button class="btn" id="nextBtn" hidden>Next word</button>
+    </div>
+
+    <div id="feedback" hidden>
+      <span class="stamp" id="stamp"></span>
+      <div id="solutions"></div>
+    </div>
+
+    <div class="ledger">
+      <div class="ledger-title">CASE LOG</div>
+      <div class="round-line" id="batchProgress">Round 1 — 0/0 correct (0 of 10 logged)</div>
+      <div class="overall-line" id="overallStats">Overall: 0/0 (0%)</div>
+      <div id="history"><p class="ledger-empty">No completed rounds of 10 yet. Keep going, agent.</p></div>
+    </div>
+
+    <p class="footnote">Progress is kept only for this session — reloading the page clears the log.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const WORDS = [
+    "COMPUTER","ELEPHANT","MOUNTAIN","BUILDING","PAINTING","SANDWICH","HOSPITAL","CHILDREN",
+    "BIRTHDAY","LANGUAGE","QUESTION","ANSWERED","BUSINESS","MEDICINE","FOOTBALL","BASEBALL",
+    "AIRPLANE","BACKPACK","CALENDAR","CAMPAIGN","CAPACITY","CATALOGS","CHAMPION","CHEMICAL",
+    "CIRCULAR","CLASSIFY","CLIMATES","COLONIAL","COMBINED","COMEDIAN","COMMENCE","COMPLETE",
+    "COMPOUND","CONCRETE","CONFLICT","CONSTANT","CONTINUE","CONTRACT","COOKBOOK","CORRIDOR",
+    "CRIMINAL","CRITERIA","CULTURAL","CUSTOMER","DATABASE","DAUGHTER","DEADLINE","DECREASE",
+    "DEDICATE","DELICATE","DESIGNER","DIALOGUE","DIAMONDS","DIRECTOR","DISCOUNT","DISTANCE",
+    "DOCTRINE","DOMINANT","DOWNLOAD","DOWNTOWN","DRESSING","ECONOMIC","EDUCATOR","ELECTRIC",
+    "EMPHASIS","ENERGIES","ENGINEER","ENVELOPE","EPISODES","EVIDENCE","EXCHANGE","EXERCISE",
+    "EXPLICIT","FACILITY","FAVORITE","FEEDBACK","FESTIVAL","FUNCTION","GRADUATE","GRATEFUL",
+    "GUIDANCE","HANDBOOK","HARDWARE","HARVESTS","HEADACHE","HEADLINE","HERITAGE","HIGHLAND",
+    "HOMEWORK","HORIZONS","IMPORTED","INCIDENT","INCREASE","INDIRECT","INDUSTRY","INSTANCE",
+    "INTEGRAL","INTERACT","INTERIOR","JOURNALS","JUDGMENT","KEYBOARD","KINGDOMS","KITCHENS",
+    "LANDMARK","LAUGHTER","LEARNING","LITERARY","LOCATION","MACHINES","MAGAZINE","MAINTAIN",
+    "MAJORITY","MARRIAGE","MATERIAL","MEASURES","MECHANIC","MEETINGS","MEMORIAL","MINIMIZE",
+    "MODERATE","MOMENTUM","MONSTERS","MUSICIAN","MYSTICAL","NATIONAL","NEGATIVE","NEIGHBOR",
+    "NOTEBOOK","OBSTACLE","OFFICIAL","OMISSION","OPPOSITE","ORCHARDS","OUTBREAK","OVERCOME",
+    "OVERSEAS","PAINLESS","PARALLEL","PASSPORT","PATIENCE","PERSONAL","PHYSICAL","PIPELINE",
+    "PLEASANT","POSITIVE","POSSIBLE","POWDERED","PRACTICE","PRECIOUS","PRESENCE","PRINCESS",
+    "PRISONER","PROBABLE","PROBLEMS","PROVIDER","PUZZLING","QUANTITY","RAILROAD","RAINBOWS",
+    "READABLE","RECEIVED","REGIONAL","RELATIVE","RELEVANT","REMEMBER","RESEARCH","RESIDENT",
+    "RESOURCE","RESPONSE","REVERSED","ROADSIDE","ROUTINES","SATURDAY","SCHEDULE","SECURITY",
+    "SELECTED","SENTENCE","SHOULDER","SKELETON","SNOWBALL","SOFTWARE","SPECIMEN","SPLENDID",
+    "STANDARD","STRANGER","STRATEGY","STUDYING","SUBURBAN","SUNSHINE","SUPPLIED","SUPPORTS",
+    "SURGICAL","SURPRISE","SWIMMING","SYMPHONY","TEACHERS","TERRIBLE","TEXTBOOK","THEATERS",
+    "THOUSAND","TOGETHER","TOMORROW","TRAINING","TRANSFER","TREASURE","TUESDAYS","TWILIGHT",
+    "UMBRELLA","UNIVERSE","UPGRADED","VACATION","VALUABLE","VARIABLE","VEHICLES","VETERANS",
+    "VOLCANIC","WARDROBE","WATCHDOG","WEATHERS","WEEKENDS","WHATEVER","WIRELESS","WORKSHOP"
+  ];
+
+  // !misnomer
+  // The 3-letter blank can start at index 1, 2, 3, or 4 (0-based) so it always
+  // stays inside the middle of the 8-letter word - never touching letter 1 or
+  // letter 8:
+  //   1???5678  (prefixLen 1)
+  //   12???678  (prefixLen 2)
+  //   123???78  (prefixLen 3)
+  //   1234???8  (prefixLen 4)
+  const PREFIX_LENS = [1, 2, 3, 4];
+
+  // Build a map from "prefixLen|prefix|suffix" to every word that fits that
+  // exact pattern. A word is indexed once per possible blank position, since
+  // whether two words share a pattern depends on where the blank falls.
+  // Some patterns match more than one word (e.g. prefixLen 2, CO...ETE ->
+  // COMPLETE / CONCRETE) - those are the multi-solution cases.
+  const PATTERN_MAP = {};
+  WORDS.forEach(function(w){
+    PREFIX_LENS.forEach(function(pl){
+      const prefix = w.slice(0, pl);
+      const suffix = w.slice(pl + 3);
+      const key = pl + '|' + prefix + '|' + suffix;
+      if(!PATTERN_MAP[key]) PATTERN_MAP[key] = [];
+      PATTERN_MAP[key].push(w);
+    });
+  });
+  Object.keys(PATTERN_MAP).forEach(function(key){
+    PATTERN_MAP[key].sort();
+  });
+
+  let currentWord = "", currentPrefixLen = 2, currentKey = "", currentMatches = [];
+  let lastWord = null;
+  let answered = false;
+
+  let totalAttempts = 0, totalCorrect = 0;
+  let batchAttempts = 0, batchCorrect = 0;
+  let batchNumber = 1;
+  const history = [];
+
+  const tilesEl = document.getElementById('tiles');
+  const submitBtn = document.getElementById('submitBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const feedbackEl = document.getElementById('feedback');
+  const stampEl = document.getElementById('stamp');
+  const solutionsEl = document.getElementById('solutions');
+  const caseNumberEl = document.getElementById('caseNumber');
+  const batchProgressEl = document.getElementById('batchProgress');
+  const overallStatsEl = document.getElementById('overallStats');
+  const historyEl = document.getElementById('history');
+  const hintEl = document.getElementById('inputHint');
+
+  function pickWord(){
+    let w;
+    do { w = WORDS[Math.floor(Math.random() * WORDS.length)]; }
+    while (WORDS.length > 1 && w === lastWord);
+    lastWord = w;
+    return w;
+  }
+
+  function pickPrefixLen(){
+    // Increase difficulty so that this is more useful
+    let r = Math.random();
+    if (r >= 0.5) r = Math.random();
+    return PREFIX_LENS[Math.floor(r * PREFIX_LENS.length)];
+  }
+
+  function renderTiles(word, prefixLen, revealMiddle){
+    tilesEl.innerHTML = '';
+    for (let i = 0; i < 8; i++){
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      if (i < prefixLen || i >= prefixLen + 3){
+        tile.classList.add('revealed');
+        tile.textContent = word[i];
+      } else {
+        tile.classList.add('blank');
+        if (revealMiddle){
+          tile.textContent = word[i];
+        } else {
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.maxLength = 1;
+          input.className = 'blank-input';
+          input.autocomplete = 'off';
+          input.spellcheck = false;
+          input.setAttribute('inputmode', 'text');
+          input.setAttribute('aria-label', 'Missing letter ' + (i - prefixLen + 1) + ' of 3');
+          tile.appendChild(input);
+        }
+      }
+      tilesEl.appendChild(tile);
+    }
+  }
+
+  function getBlankInputs(){
+    return Array.from(tilesEl.querySelectorAll('.blank-input'));
+  }
+
+  function attachInputHandlers(){
+    const inputs = getBlankInputs();
+    inputs.forEach(function(inp, idx){
+      inp.addEventListener('input', function(){
+        const v = inp.value.toUpperCase().replace(/[^A-Z]/g, '');
+        inp.value = v.slice(-1);
+        if (inp.value && idx < inputs.length - 1) inputs[idx + 1].focus();
+      });
+      inp.addEventListener('keydown', function(e){
+        if (e.key === 'Backspace' && !inp.value && idx > 0) inputs[idx - 1].focus();
+        if (e.key === 'Enter'){ e.preventDefault(); handleSubmit(); }
+      });
+    });
+    if (inputs[0]) inputs[0].focus();
+  }
+
+  function updateStatsDisplay(){
+    caseNumberEl.textContent = String(totalAttempts + 1).padStart(6, '0');
+    batchProgressEl.textContent = 'Round ' + batchNumber + ' — ' + batchCorrect + '/' + batchAttempts + ' correct (' + batchAttempts + ' of 10 logged)';
+    const pct = totalAttempts ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
+    overallStatsEl.textContent = 'Overall: ' + totalCorrect + '/' + totalAttempts + ' (' + pct + '%)';
+  }
+
+  function renderHistory(){
+    if (history.length === 0){
+      historyEl.innerHTML = '<p class="ledger-empty">No completed rounds of 10 yet. Keep going, agent.</p>';
+      return;
+    }
+    let html = '<div class="bars">';
+    history.forEach(function(h){
+      const pct = Math.round((h.correct / h.total) * 100);
+      html += '<div class="bar-col" title="Round ' + h.batch + ': ' + h.correct + '/' + h.total + ' (' + pct + '%)">' +
+                '<div class="bar" style="height:' + Math.max(pct, 4) + '%"></div>' +
+                '<div class="bar-label">' + h.batch + '</div>' +
+              '</div>';
+    });
+    html += '</div>';
+    historyEl.innerHTML = html;
+  }
+
+  function newRound(){
+    answered = false;
+    currentWord = pickWord();
+    currentPrefixLen = pickPrefixLen();
+    const prefix = currentWord.slice(0, currentPrefixLen);
+    const suffix = currentWord.slice(currentPrefixLen + 3);
+    currentKey = currentPrefixLen + '|' + prefix + '|' + suffix;
+    currentMatches = PATTERN_MAP[currentKey];
+
+    renderTiles(currentWord, currentPrefixLen, false);
+    attachInputHandlers();
+
+    hintEl.textContent = 'Type the three missing letters, then press Enter or Submit.';
+    hintEl.classList.remove('warn');
+
+    feedbackEl.hidden = true;
+    feedbackEl.classList.remove('show');
+    stampEl.className = 'stamp';
+    solutionsEl.innerHTML = '';
+
+    submitBtn.hidden = false;
+    nextBtn.hidden = true;
+
+    updateStatsDisplay();
+  }
+
+  function handleSubmit(){
+    if (answered) return;
+    const inputs = getBlankInputs();
+    const values = inputs.map(function(i){ return i.value.toUpperCase(); });
+
+    if (values.some(function(v){ return !v; })){
+      hintEl.textContent = 'Fill in all three letters before submitting.';
+      hintEl.classList.add('warn');
+      return;
+    }
+
+    answered = true;
+    const guessMiddle = values.join('');
+    const prefix = currentWord.slice(0, currentPrefixLen);
+    const suffix = currentWord.slice(currentPrefixLen + 3);
+    const guessWord = prefix + guessMiddle + suffix;
+    const isCorrect = currentMatches.indexOf(guessWord) !== -1;
+
+    totalAttempts++; batchAttempts++;
+    if (isCorrect){ totalCorrect++; batchCorrect++; }
+
+    if (batchAttempts === 10){
+      history.push({ batch: batchNumber, correct: batchCorrect, total: 10 });
+      renderHistory();
+      batchNumber++; batchAttempts = 0; batchCorrect = 0;
+    }
+    updateStatsDisplay();
+
+    renderTiles(currentWord, currentPrefixLen, true);
+    Array.from(tilesEl.querySelectorAll('.tile.blank')).forEach(function(t){
+      t.classList.add(isCorrect ? 'filled-correct' : 'filled-wrong');
+    });
+
+    feedbackEl.hidden = false;
+    requestAnimationFrame(function(){ feedbackEl.classList.add('show'); });
+    stampEl.textContent = isCorrect ? 'MATCH CONFIRMED' : 'NO MATCH';
+    stampEl.className = 'stamp show ' + (isCorrect ? 'stamp-good' : 'stamp-bad');
+
+    const patternDisplay = prefix + '···' + suffix;
+    let solHtml = '<p class="sol-heading">Filed solution' + (currentMatches.length > 1 ? 's' : '') +
+      ' for ' + patternDisplay + ':</p><ul class="sol-list">';
+    currentMatches.forEach(function(w){
+      const isYours = w === guessWord;
+      solHtml += '<li class="' + (isYours ? 'sol-match' : '') + '">' + w + (isYours ? ' ← your answer' : '') + '</li>';
+    });
+    solHtml += '</ul>';
+    if (!isCorrect){
+      solHtml += '<p class="sol-note">Your entry, <strong>' + guessMiddle + '</strong>, does not complete a filed word.</p>';
+    }
+    solutionsEl.innerHTML = solHtml;
+
+    submitBtn.hidden = true;
+    nextBtn.hidden = false;
+    nextBtn.focus();
+  }
+
+  submitBtn.addEventListener('click', handleSubmit);
+  nextBtn.addEventListener('click', newRound);
+
+  newRound();
+})();
+</script>
+
+</body>
+</html>

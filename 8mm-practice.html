@@ -589,7 +589,7 @@
     for (let i = 0; i < 8; i++){
       const tile = document.createElement('div');
       tile.className = 'tile';
-      if (i < prefixLen || i >= prefixLen + 3){
+      if (i < prefixLen || i >= prefixLen + 3 || !word){
         tile.classList.add('revealed');
         tile.textContent = word[i] ?? '';
       } else {

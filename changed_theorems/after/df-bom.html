@@ -1,0 +1,368 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<HTML LANG="EN-US">
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="viewport" CONTENT="width=device-width, initial-scale=1.0">
+<STYLE TYPE="text/css">
+<!--
+img { margin-bottom: -4px }
+.r { font-family: "Arial Narrow";
+     font-size: x-small;
+   }
+.i { font-family: "Arial Narrow";
+     font-size: x-small;
+     color: gray;
+   }
+-->
+</STYLE>
+<STYLE TYPE="text/css">
+<!--
+  .setvar { color: red; }
+  .wff { color: blue; }
+  .class { color: #C3C; }
+  .symvar { border-bottom:1px dotted;color:#C3C}
+  .typecode { color: gray }
+  .hidden { color: gray }
+  @font-face {
+    font-family: XITSMath-Regular;
+    src: url(xits-math.woff);
+  }
+  .math { font-family: XITSMath-Regular }
+-->
+</STYLE>
+<LINK href="mmset.css" title="mmset"
+    rel="stylesheet" type="text/css">
+<LINK href="mmsetalt.css" title="mmsetalt"
+    rel="alternate stylesheet" type="text/css">
+<TITLE>df-bom - Mathbox for Zhi Wang</TITLE>
+<LINK REL="shortcut icon" HREF="favicon.ico" TYPE="image/x-icon">
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+  <TR>
+    <TD ALIGN=LEFT VALIGN=TOP WIDTH="25%"><A HREF=
+    "mmtheorems.html#sandbox:bighdr"><IMG SRC="_sandbox.gif"
+      BORDER=0
+      ALT="Users' Mathboxes"
+      TITLE="Users' Mathboxes"
+      HEIGHT=32 WIDTH=32 ALIGN=TOP STYLE="margin-bottom:0px"></A>
+    </TD>
+    <TD ALIGN=CENTER COLSPAN=2 VALIGN=TOP><FONT SIZE="+3" COLOR="#006633"><B>
+Mathbox for Zhi Wang
+      </B></FONT></TD>
+    <TD ALIGN=RIGHT VALIGN=TOP WIDTH="25%">
+      <FONT SIZE=-1 FACE=sans-serif>
+      <A HREF="cbom.html">
+      &lt; Previous</A>&nbsp;&nbsp;
+      <A HREF="bomfn.html">Next &gt;</A>
+      </FONT><FONT FACE=sans-serif SIZE=-2>
+      <BR><A HREF="mmtheorems514.html#df-bom">Nearby theorems</A>
+      </FONT>
+    </TD>
+  </TR>
+  <TR>
+    <TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP><FONT SIZE=-2
+      FACE=sans-serif>
+      <A HREF="../mm.html">Mirrors</A>&nbsp; &gt;
+      &nbsp;<A HREF="../index.html">Home</A>&nbsp; &gt;
+      &nbsp;<A HREF="mmset.html">MPE Home</A>&nbsp; &gt;
+      &nbsp;<A HREF="mmtheorems.html">Th. List</A>&nbsp; &gt;
+      &nbsp;<A HREF="mmtheorems.html#sandbox:bighdr">
+      Mathboxes</A>&nbsp; &gt;
+      &nbsp;df-bom
+      </FONT>
+    </TD>
+    <TD COLSPAN=2 ALIGN=RIGHT VALIGN=TOP>
+      <FONT SIZE=-2 FACE=sans-serif>
+<A HREF="http://metamath.tirix.org/mpests/df-bom.html">Structured version</A>&nbsp;&nbsp; <A HREF="https://expln.github.io/metamath/asrt/df-bom.html">Visualization version</A>&nbsp;&nbsp; 
+      <A HREF="../mpegif/df-bom.html">GIF version</A>
+      </FONT>
+    </TD>
+  </TR>
+</TABLE>
+<HR NOSHADE SIZE=1>
+<CENTER><B><FONT SIZE="+1">Definition <FONT COLOR="#006633">df-bom</FONT></FONT></B>&nbsp;<SPAN CLASS=r STYLE="color:#ED008E">51381</SPAN></CENTER>
+<CENTER><TABLE><TR><TD ALIGN=LEFT><B>Description: </B>Define the signed prime Omega function on nonzero rational numbers by
+       summing the nonzero prime valuations <SPAN CLASS=math>pCnt</SPAN> defined in <A HREF="df-pc.html">df-pc</A>&nbsp;<SPAN CLASS=r STYLE="color:#508D00">17064</SPAN>.  The
+       support is finite by <A HREF="pcqfi.html">pcqfi</A>&nbsp;<SPAN CLASS=r STYLE="color:#ED008E">51379</SPAN>.  Denominator factors contribute
+       negatively.  Its value is the prime-factor count of the absolute
+       numerator minus that of the positive denominator, with multiplicity; see
+       <A HREF="bomnumden.html">bomnumden</A>&nbsp;<SPAN CLASS=r STYLE="color:#ED008D">51402</SPAN>.  Its restriction to the positive integers is the prime
+       Omega function, which counts prime factors with multiplicity; see
+       <A HREF="bomzval.html">bomzval</A>&nbsp;<SPAN CLASS=r STYLE="color:#ED008D">51386</SPAN>.  Changing the sign of the input does not change the value
+       (<A HREF="bomneg.html">bomneg</A>&nbsp;<SPAN CLASS=r STYLE="color:#ED008D">51398</SPAN>), and a reciprocal prime has value minus one (<A HREF="bomrec.html">bomrec</A>&nbsp;<SPAN CLASS=r
+STYLE="color:#ED008D">51397</SPAN> and
+       <A HREF="bomprm.html">bomprm</A>&nbsp;<SPAN CLASS=r STYLE="color:#ED008D">51389</SPAN>).  Thus &quot;signed&quot; describes the denominator contributions, not
+       the sign of the input.
+<P STYLE="margin-bottom:0em">
+       The label fragment &quot;bom&quot; abbreviates &quot;big omega&quot;, a name for the prime
+       Omega function.  See &quot;Big Omega Function&quot; in M. Billal and A. Parvardi,
+       &quot;Topics in Number Theory:  An Olympiad-Oriented Approach&quot;, second
+       edition, section 3.7, p. 215 (PDF p. 217),
+       <A HREF="https://parvardi.ca/resources/topics-in-number-theory.pdf#page=217">https://parvardi.ca/resources/topics-in-number-theory.pdf#page=217</A>&nbsp;<SPAN CLASS=r
+STYLE="color:#ED008D">51389</SPAN>.
+       See also S. Sugden and D. Miller, &quot;Exploring the Fundamental Theorem of
+       Arithmetic in Excel 2007&quot;, Spreadsheets in Education 4, no. 2, Article
+       2, section 8, exercises 17-18, p. 23 (PDF p. 25),
+       <A HREF="https://sie.scholasticahq.com/article/4578.pdf#page=25">https://sie.scholasticahq.com/article/4578.pdf#page=25</A>&nbsp;<SPAN CLASS=r STYLE="color:#ED008D">51389</SPAN>.  The latter
+       explicitly distinguishes the &quot;big omega function&quot; from the &quot;little omega
+       function&quot;, which counts distinct prime factors.
+<P STYLE="margin-bottom:0em">
+       The signed prime Omega function is the &quot;classical prime Omega function&quot;
+       characterized in the opening paragraph of section 2 of C. L. Samuels,
+       Acta Arithmetica 205 (2022), no. 4, 341-370,
+       <A HREF="https://arxiv.org/abs/2111.01012v2">https://arxiv.org/abs/2111.01012v2</A>&nbsp;<SPAN CLASS=r STYLE="color:#ED008D">51389</SPAN>.  It is the unique homomorphism
+       from the nonzero rationals under multiplication to the integers under
+       addition that maps every prime to one; see <A HREF="bomuniq2.html">bomuniq2</A>&nbsp;<SPAN CLASS=r STYLE="color:#ED008D">51417</SPAN>.
+<P STYLE="margin-bottom:0em">
+       The signed prime Omega function can equivalently be obtained by
+       extending the prime Omega function first to nonzero integers by absolute
+       value, then to nonzero rationals by subtracting the denominator's value
+       from the numerator's value; see <A HREF="bomabs.html">bomabs</A>&nbsp;<SPAN CLASS=r STYLE="color:#ED008D">51399</SPAN> and <A HREF="bomdiv.html">bomdiv</A>&nbsp;<SPAN CLASS=r
+STYLE="color:#ED008D">51392</SPAN>.  This
+       construction is an application of Theorems 1 and 2 in section 2, pp.
+       4-6, of J. K. Merikoski, P. Haukkanen, and T. Tossavainen, &quot;Complete
+       additivity, complete multiplicativity, and Leibniz-additivity on
+       rationals&quot;, INTEGERS 21 (2021), A33,
+       <A HREF="https://math.colgate.edu/~integers/v33/v33.pdf">https://math.colgate.edu/~integers/v33/v33.pdf</A>&nbsp;<SPAN CLASS=r STYLE="color:#ED008D">51392</SPAN>.
+<P STYLE="margin-bottom:0em">
+       No finite value at zero can preserve complete additivity for all inputs
+       while every prime has value one: multiplying zero by a prime would
+       require the value at zero to equal itself plus one.  The prime Omega
+       function can be extended to the nonnegative integers by assigning zero
+       at zero, but this extension is not completely additive on its full
+       domain.  Additivity remains valid for nonzero inputs.  Lean 4 Mathlib's
+       ArithmeticFunction.cardFactors uses this convention; see that
+       declaration in the module Mathlib.NumberTheory.ArithmeticFunction.Misc
+       at <A HREF="https://leanprover-community.github.io/mathlib4_docs/">https://leanprover-community.github.io/mathlib4_docs/</A>&nbsp;<SPAN CLASS=r STYLE="color:#ED008D">51392</SPAN>.
+<P STYLE="margin-bottom:0em">
+       Another convention assigns infinity at zero and uses extended addition.
+       Merikoski, Haukkanen, and Tossavainen discuss this convention in section
+       2, p. 2, immediately after equation (2) of the paper cited above.  With
+       addition extended so that infinity absorbs finite values and itself, the
+       additivity law also holds when a factor is zero.  Extending the signed
+       prime Omega function in this way would require adding zero to its
+       domain, an explicit branch at zero, an enlarged codomain, and extended
+       addition.  Its current definition excludes zero.
+<P STYLE="margin-bottom:0em">
+       Wolfram Language's PrimeOmega has two factorization conventions.  With
+       the default setting on positive integers, it counts integer prime
+       factors with multiplicity, giving the prime Omega function.  With
+       GaussianIntegers -&gt; True, it counts Gaussian prime factors with
+       multiplicity instead.  The two counts can differ on the same positive
+       integer: at two the integer count is one and the Gaussian count is two.
+       Thus the Gaussian count does not extend the prime Omega function.
+       Nonreal Gaussian-integer inputs automatically use Gaussian
+       factorization.  PrimeOmega is undefined at zero.  See &quot;Details and
+       Options&quot;, &quot;Scope / Numerical Evaluation&quot;, &quot;Options / GaussianIntegers&quot;,
+       and &quot;Possible Issues&quot; in the PrimeOmega documentation,
+       <A HREF="https://reference.wolfram.com/language/ref/PrimeOmega.html">https://reference.wolfram.com/language/ref/PrimeOmega.html</A>&nbsp;<SPAN CLASS=r STYLE="color:#ED008D">51392</SPAN>.
+<P STYLE="margin-bottom:0em">
+       Another possible construction sums the absolute values of rational prime
+       valuations.  For a reduced fraction it adds the numerator and
+       denominator multiplicities rather than subtracting them.  It agrees with
+       the prime Omega function on positive integers, but fails complete
+       additivity under cancellation: a prime and its reciprocal each
+       contribute one, whereas their product has count zero.  This is a
+       comparison of constructions, not an attribution of this alternative to
+       the cited sources.
+<P STYLE="margin-bottom:0em">
+       Samuels also extends the signed prime Omega function to all nonzero
+       algebraic numbers, with rational values, in section 2, equation (2.1),
+       of the 2022 paper cited above.  For a nonzero algebraic input
+       <SPAN CLASS=math><SPAN CLASS=setvar STYLE="color:red">&#x1D465;</SPAN> &isin; (&#120120; &#8726; {0})</SPAN>, write <SPAN CLASS=math><SPAN CLASS=class STYLE="color:#C3C">&#x1D437;</SPAN> =
+(deg<SUB>AA</SUB>&lsquo;<SPAN CLASS=setvar STYLE="color:red">&#x1D465;</SPAN>)</SPAN> and
+       <SPAN CLASS=math><SPAN CLASS=class STYLE="color:#C3C">&#x1D436;</SPAN> = ((minPolyAA&lsquo;<SPAN CLASS=setvar STYLE="color:red">&#x1D465;</SPAN>)&lsquo;0)</SPAN>.  Here <SPAN CLASS=math><SPAN
+CLASS=class STYLE="color:#C3C">&#x1D437;</SPAN></SPAN> is the degree and
+       <SPAN CLASS=math><SPAN CLASS=class STYLE="color:#C3C">&#x1D436;</SPAN></SPAN> the constant coefficient of its monic minimal polynomial.  Two
+       possible definitions assign to <SPAN CLASS=math><SPAN CLASS=setvar STYLE="color:red">&#x1D465;</SPAN></SPAN>, respectively, the values
+       <SPAN CLASS=math>((&Omega;&lsquo;(( -1&uarr;<SPAN CLASS=class STYLE="color:#C3C">&#x1D437;</SPAN>) &middot; <SPAN CLASS=class STYLE="color:#C3C">&#x1D436;</SPAN>)) / <SPAN CLASS=class
+STYLE="color:#C3C">&#x1D437;</SPAN>)</SPAN> and
+       <SPAN CLASS=math>(&Sigma;<SPAN CLASS=setvar STYLE="color:red">&#x1D45D;</SPAN> &isin; {<SPAN CLASS=setvar STYLE="color:red">&#x1D45E;</SPAN> &isin; &#8473; &#8739; (<SPAN CLASS=setvar
+STYLE="color:red">&#x1D45E;</SPAN> pCnt <SPAN CLASS=class STYLE="color:#C3C">&#x1D436;</SPAN>) &ne; 0}(<SPAN CLASS=setvar STYLE="color:red">&#x1D45D;</SPAN> pCnt <SPAN CLASS=class
+STYLE="color:#C3C">&#x1D436;</SPAN>) / <SPAN CLASS=class STYLE="color:#C3C">&#x1D437;</SPAN>)</SPAN>.
+       The first uses the field norm from the field generated by the input; the
+       second sums the prime valuations of the constant coefficient directly.
+       These expressions describe the same extension, since the norm is
+       <SPAN CLASS=math>(( -1&uarr;<SPAN CLASS=class STYLE="color:#C3C">&#x1D437;</SPAN>) &middot; <SPAN CLASS=class STYLE="color:#C3C">&#x1D436;</SPAN>)</SPAN> and its sign does not affect prime
+valuations;
+       see <A HREF="pcneg.html">pcneg</A>&nbsp;<SPAN CLASS=r STYLE="color:#4F8D00">17101</SPAN>.  Both expressions use the algebraic degree <A HREF="df-dgraa.html">df-dgraa</A>&nbsp;<SPAN CLASS=r
+STYLE="color:#CB21F9">44414</SPAN> and
+       minimal polynomial <A HREF="df-mpaa.html">df-mpaa</A>&nbsp;<SPAN CLASS=r STYLE="color:#CB21F9">44415</SPAN> from Stefan O'Rear's mathbox.  They are not
+       adopted here: mathbox-independent foundations and proofs of closure,
+       rational agreement, and complete additivity remain to be supplied.  The
+       mathematical extension is unchanged under multiplication by an algebraic
+       unit, an algebraic integer whose inverse is also an algebraic integer,
+       and therefore defines a function on nonzero algebraic numbers modulo
+       algebraic units.  Theorem 2.1 treats extensions more generally.
+       Complete additivity and the prime value force the positive square root
+       of two to have value one half, so an algebraic extension cannot retain
+       an integer codomain.
+<P STYLE="margin-bottom:0em">
+       Samuels' Theorem 2.1 also characterizes rational-valued extensions on
+       nonzero algebraic numbers modulo algebraic units through weighted
+       logarithmic valuations.  In equations (1.7)-(1.8), divide each local
+       logarithmic absolute value by the logarithm of its rational prime and
+       sum with rational weights.  The weights are consistent: after a finite
+       field extension, the weights above a place sum to its weight.  Give each
+       rational prime weight minus one to extend the signed prime Omega
+       function.  Unlike the norm construction, such an extension can
+       distinguish conjugate algebraic inputs.  The example after the proof of
+       Theorem 2.3, section 5, pp. 18-19 of the cited arXiv version, uses the
+       field generated by the imaginary unit.  At its two places above five,
+       replace the norm weights minus one half by minus one third and minus two
+       thirds; keep the norm weights elsewhere and extend them by Lemma 5.1.
+       This gives a distinct completely additive extension with rational
+       values.  These alternatives are not adopted here: their algebraic
+       valuation foundations and extension proofs are outside the present
+       rational construction.
+<P STYLE="margin-bottom:0em">
+       For real-valued extensions of the signed prime Omega function to nonzero
+       algebraic numbers modulo roots of unity, see C. L. Samuels, Canadian
+       Mathematical Bulletin 69 (2026), no. 2, 609-627, section 1.2, pp.
+       611-612, Corollary 1.2 and the following &quot;Prime Omega Function&quot; example,
+       <A HREF="https://doi.org/10.4153/S0008439525101343">https://doi.org/10.4153/S0008439525101343</A>&nbsp;<SPAN CLASS=r STYLE="color:#CB21F9">44415</SPAN>.  These likewise give
+       functions on individual nonzero algebraic numbers by assigning each
+       input the value of its class.  They are unchanged under multiplication
+       by a root of unity, a number whose positive integer power is one.  This
+       condition is weaker than invariance under all algebraic units.  The
+       continuous extensions there use the Weil-height norm.  These algebraic
+       extensions are not adopted here.
+<P STYLE="margin-bottom:0em">
+       For the domain and integer-valued function property see <A HREF="bomdm.html">bomdm</A>&nbsp;<SPAN CLASS=r STYLE="color:#ED008E">51384</SPAN> and
+       <A HREF="bomf.html">bomf</A>&nbsp;<SPAN CLASS=r STYLE="color:#ED008D">51388</SPAN>.  Complete additivity on nonzero rationals is <A HREF="bommul.html">bommul</A>&nbsp;<SPAN CLASS=r
+STYLE="color:#ED008D">51391</SPAN>.
+       Examples are <A HREF="bom1.html">bom1</A>&nbsp;<SPAN CLASS=r STYLE="color:#ED008D">51395</SPAN>, <A HREF="bomprm.html">bomprm</A>&nbsp;<SPAN CLASS=r STYLE="color:#ED008D">51389</SPAN>, and <A
+HREF="bom4.html">bom4</A>&nbsp;<SPAN CLASS=r STYLE="color:#ED008D">51396</SPAN>.  For positive-integer
+       closure and characterization of primes see <A HREF="bomnncl.html">bomnncl</A>&nbsp;<SPAN CLASS=r STYLE="color:#ED008D">51390</SPAN> and <A HREF="bomnn1.html">bomnn1</A>&nbsp;<SPAN CLASS=r
+STYLE="color:#ED008D">51412</SPAN>.
+       (Contributed by Zhi Wang, 17-Oct-2026.)</TD></TR></TABLE></CENTER>
+
+<CENTER><TABLE BORDER CELLSPACING=0 BGCOLOR="#EEFFFA"
+SUMMARY="Assertion">
+<CAPTION><B>Assertion</B></CAPTION>
+<TR><TH>Ref
+</TH><TH>Expression</TH></TR>
+<TR ALIGN=LEFT><TD><FONT COLOR="#006633"><B>df-bom</B></FONT></TD><TD>
+<SPAN CLASS=math><SPAN CLASS=hidden STYLE="color:gray">&#8866; </SPAN>&Omega; = (<SPAN CLASS=setvar STYLE="color:red">&#x1D465;</SPAN> &isin; (&#8474; &#8726; {0}) &#8614; &Sigma;<SPAN CLASS=setvar
+STYLE="color:red">&#x1D45D;</SPAN> &isin; {<SPAN CLASS=setvar STYLE="color:red">&#x1D45E;</SPAN> &isin; &#8473; &#8739; (<SPAN CLASS=setvar STYLE="color:red">&#x1D45E;</SPAN> pCnt <SPAN CLASS=setvar
+STYLE="color:red">&#x1D465;</SPAN>) &ne; 0} (<SPAN CLASS=setvar STYLE="color:red">&#x1D45D;</SPAN> pCnt <SPAN CLASS=setvar STYLE="color:red">&#x1D465;</SPAN>))</SPAN></TD></TR>
+</TABLE></CENTER>
+
+
+<CENTER><A HREF="mmset.html#distinct">Distinct variable</A> group: <SPAN CLASS=math> &nbsp; <SPAN CLASS=setvar STYLE="color:red">&#x1D45E;</SPAN>,<SPAN CLASS=setvar
+STYLE="color:red">&#x1D45D;</SPAN>,<SPAN CLASS=setvar STYLE="color:red">&#x1D465;</SPAN></SPAN></CENTER>
+<HR NOSHADE SIZE=1>
+<CENTER><TABLE BORDER CELLSPACING=0 BGCOLOR="#EEFFFA"
+SUMMARY="Detailed syntax breakdown of definition">
+<CAPTION><B>Detailed syntax breakdown of Definition <FONT
+   COLOR="#006633">df-bom</FONT></B></CAPTION>
+<TR><TH>Step</TH><TH>Hyp</TH><TH>Ref
+</TH><TH>Expression</TH></TR>
+<TR ALIGN=LEFT><TD>1</TD><TD>&nbsp;</TD><TD><A HREF="cbom.html" TITLE="The signed prime Omega function on nonzero rational numbers, defined in ~ df-bom .">cbom</A>&nbsp;<SPAN CLASS=r
+STYLE="color:#ED008E">51380</SPAN></TD><TD><A NAME="1"></A>
+<SPAN CLASS=i>. 2</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">class </SPAN>&Omega;</SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>2</TD><TD>&nbsp;</TD><TD>vx</TD><TD><A NAME="2"></A>
+<SPAN CLASS=i>. . 3</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">setvar </SPAN><SPAN CLASS=setvar STYLE="color:red">&#x1D465;</SPAN></SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>3</TD><TD>&nbsp;</TD><TD><A HREF="cq.html" TITLE="Extend class notation to include the class of rationals.">cq</A>&nbsp;<SPAN CLASS=r STYLE="color:#7D8300">13117</SPAN></TD><TD><A
+NAME="3"></A>
+<SPAN CLASS=i>. . . 4</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">class </SPAN>&#8474;</SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>4</TD><TD>&nbsp;</TD><TD><A HREF="cc0.html" TITLE="Extend class notation to include the complex number 0.">cc0</A>&nbsp;<SPAN CLASS=r STYLE="color:#987A00">11240</SPAN></TD><TD><A
+NAME="4"></A>
+<SPAN CLASS=i>. . . . 5</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">class </SPAN>0</SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>5</TD><TD><A HREF="#4">4</A></TD><TD><A HREF="csn.html" TITLE="Extend class notation to include singleton.">csn</A>&nbsp;<SPAN CLASS=r STYLE="color:#E63800">4587</SPAN></TD><TD><A
+NAME="5"></A>
+<SPAN CLASS=i>. . . 4</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">class </SPAN>{0}</SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>6</TD><TD><A HREF="#3">3</A>, <A HREF="#5">5</A></TD><TD><A HREF="cdif.html" TITLE="Syntax for the difference of two classes.">cdif</A>&nbsp;<SPAN CLASS=r
+STYLE="color:#EB3000">4047</SPAN></TD><TD><A NAME="6"></A>
+<SPAN CLASS=i>. . 3</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">class </SPAN>(&#8474; &#8726; {0})</SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>7</TD><TD>&nbsp;</TD><TD>vq</TD><TD><A NAME="7"></A>
+<SPAN CLASS=i>. . . . . . . 8</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">setvar </SPAN><SPAN CLASS=setvar STYLE="color:red">&#x1D45E;</SPAN></SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>8</TD><TD><A HREF="#7">7</A></TD><TD><A HREF="cv.html" TITLE="This syntax construction states that a variable ` x ` , which has been declared to...">cv</A>&nbsp;<SPAN CLASS=r
+STYLE="color:#F70A00">1571</SPAN></TD><TD><A NAME="8"></A>
+<SPAN CLASS=i>. . . . . . 7</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">class </SPAN><SPAN CLASS=setvar STYLE="color:red">&#x1D45E;</SPAN></SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>9</TD><TD><A HREF="#2">2</A></TD><TD><A HREF="cv.html" TITLE="This syntax construction states that a variable ` x ` , which has been declared to...">cv</A>&nbsp;<SPAN CLASS=r
+STYLE="color:#F70A00">1571</SPAN></TD><TD><A NAME="9"></A>
+<SPAN CLASS=i>. . . . . . 7</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">class </SPAN><SPAN CLASS=setvar STYLE="color:red">&#x1D465;</SPAN></SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>10</TD><TD>&nbsp;</TD><TD><A HREF="cpc.html" TITLE="Extend class notation with the prime count function.">cpc</A>&nbsp;<SPAN CLASS=r STYLE="color:#508D00">17063</SPAN></TD><TD><A
+NAME="10"></A>
+<SPAN CLASS=i>. . . . . . 7</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">class </SPAN> pCnt</SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>11</TD><TD><A HREF="#8">8</A>, <A HREF="#9">9</A>, <A HREF="#10">10</A></TD><TD><A HREF="co.html"
+TITLE="Extend class notation to include the value of an operation ` F ` (such as ` + ` )...">co</A>&nbsp;<SPAN CLASS=r STYLE="color:#CA5900">7451</SPAN></TD><TD><A NAME="11"></A>
+<SPAN CLASS=i>. . . . . 6</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">class </SPAN>(<SPAN CLASS=setvar STYLE="color:red">&#x1D45E;</SPAN> pCnt <SPAN CLASS=setvar
+STYLE="color:red">&#x1D465;</SPAN>)</SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>12</TD><TD><A HREF="#11">11</A>, <A HREF="#4">4</A></TD><TD><A HREF="wne.html" TITLE="Extend wff notation to include inequality.">wne</A>&nbsp;<SPAN CLASS=r
+STYLE="color:#F11F00">2962</SPAN></TD><TD><A NAME="12"></A>
+<SPAN CLASS=i>. . . . 5</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">wff </SPAN>(<SPAN CLASS=setvar STYLE="color:red">&#x1D45E;</SPAN> pCnt <SPAN CLASS=setvar STYLE="color:red">&#x1D465;</SPAN>) &ne;
+0</SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>13</TD><TD>&nbsp;</TD><TD><A HREF="cprime.html" TITLE="Extend the definition of a class to include the set of prime numbers.">cprime</A>&nbsp;<SPAN CLASS=r
+STYLE="color:#528D00">16892</SPAN></TD><TD><A NAME="13"></A>
+<SPAN CLASS=i>. . . . 5</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">class </SPAN>&#8473;</SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>14</TD><TD><A HREF="#12">12</A>, <A HREF="#7">7</A>, <A HREF="#13">13</A></TD><TD><A HREF="crab.html"
+TITLE="Extend class notation to include the restricted class abstraction (class builder).">crab</A>&nbsp;<SPAN CLASS=r STYLE="color:#EF2700">3415</SPAN></TD><TD><A NAME="14"></A>
+<SPAN CLASS=i>. . . 4</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">class </SPAN>{<SPAN CLASS=setvar STYLE="color:red">&#x1D45E;</SPAN> &isin; &#8473; &#8739; (<SPAN CLASS=setvar
+STYLE="color:red">&#x1D45E;</SPAN> pCnt <SPAN CLASS=setvar STYLE="color:red">&#x1D465;</SPAN>) &ne; 0}</SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>15</TD><TD>&nbsp;</TD><TD>vp</TD><TD><A NAME="15"></A>
+<SPAN CLASS=i>. . . . . 6</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">setvar </SPAN><SPAN CLASS=setvar STYLE="color:red">&#x1D45D;</SPAN></SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>16</TD><TD><A HREF="#15">15</A></TD><TD><A HREF="cv.html" TITLE="This syntax construction states that a variable ` x ` , which has been declared to...">cv</A>&nbsp;<SPAN CLASS=r
+STYLE="color:#F70A00">1571</SPAN></TD><TD><A NAME="16"></A>
+<SPAN CLASS=i>. . . . 5</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">class </SPAN><SPAN CLASS=setvar STYLE="color:red">&#x1D45D;</SPAN></SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>17</TD><TD><A HREF="#16">16</A>, <A HREF="#9">9</A>, <A HREF="#10">10</A></TD><TD><A HREF="co.html"
+TITLE="Extend class notation to include the value of an operation ` F ` (such as ` + ` )...">co</A>&nbsp;<SPAN CLASS=r STYLE="color:#CA5900">7451</SPAN></TD><TD><A NAME="17"></A>
+<SPAN CLASS=i>. . . 4</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">class </SPAN>(<SPAN CLASS=setvar STYLE="color:red">&#x1D45D;</SPAN> pCnt <SPAN CLASS=setvar
+STYLE="color:red">&#x1D465;</SPAN>)</SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>18</TD><TD><A HREF="#14">14</A>, <A HREF="#17">17</A>, <A HREF="#15">15</A></TD><TD><A HREF="csu.html"
+TITLE="Extend class notation to include finite and infinite summations. (An underscore was...">csu</A>&nbsp;<SPAN CLASS=r STYLE="color:#5F8A00">15899</SPAN></TD><TD><A NAME="18"></A>
+<SPAN CLASS=i>. . 3</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">class </SPAN>&Sigma;<SPAN CLASS=setvar STYLE="color:red">&#x1D45D;</SPAN> &isin; {<SPAN CLASS=setvar STYLE="color:red">&#x1D45E;</SPAN> &isin;
+&#8473; &#8739; (<SPAN CLASS=setvar STYLE="color:red">&#x1D45E;</SPAN> pCnt <SPAN CLASS=setvar STYLE="color:red">&#x1D465;</SPAN>) &ne; 0} (<SPAN CLASS=setvar STYLE="color:red">&#x1D45D;</SPAN> pCnt
+<SPAN CLASS=setvar STYLE="color:red">&#x1D465;</SPAN>)</SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>19</TD><TD><A HREF="#2">2</A>, <A HREF="#6">6</A>, <A HREF="#18">18</A></TD><TD><A HREF="cmpt.html"
+TITLE="Extend the definition of a class to include maps-to notation for defining a function...">cmpt</A>&nbsp;<SPAN CLASS=r STYLE="color:#E14100">5191</SPAN></TD><TD><A NAME="19"></A>
+<SPAN CLASS=i>. 2</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">class </SPAN>(<SPAN CLASS=setvar STYLE="color:red">&#x1D465;</SPAN> &isin; (&#8474; &#8726; {0}) &#8614; &Sigma;<SPAN CLASS=setvar
+STYLE="color:red">&#x1D45D;</SPAN> &isin; {<SPAN CLASS=setvar STYLE="color:red">&#x1D45E;</SPAN> &isin; &#8473; &#8739; (<SPAN CLASS=setvar STYLE="color:red">&#x1D45E;</SPAN> pCnt <SPAN CLASS=setvar
+STYLE="color:red">&#x1D465;</SPAN>) &ne; 0} (<SPAN CLASS=setvar STYLE="color:red">&#x1D45D;</SPAN> pCnt <SPAN CLASS=setvar STYLE="color:red">&#x1D465;</SPAN>))</SPAN></TD></TR>
+<TR ALIGN=LEFT><TD>20</TD><TD><A HREF="#1">1</A>, <A HREF="#19">19</A></TD><TD><A HREF="wceq.html"
+TITLE="Extend wff definition to include class equality. For a general discussion of the...">wceq</A>&nbsp;<SPAN CLASS=r STYLE="color:#F70A00">1572</SPAN></TD><TD><A NAME="20"></A>
+<SPAN CLASS=i>1</SPAN>
+<SPAN CLASS=math><SPAN CLASS=typecode STYLE="color:gray">wff </SPAN>&Omega; = (<SPAN CLASS=setvar STYLE="color:red">&#x1D465;</SPAN> &isin; (&#8474; &#8726; {0}) &#8614; &Sigma;<SPAN CLASS=setvar
+STYLE="color:red">&#x1D45D;</SPAN> &isin; {<SPAN CLASS=setvar STYLE="color:red">&#x1D45E;</SPAN> &isin; &#8473; &#8739; (<SPAN CLASS=setvar STYLE="color:red">&#x1D45E;</SPAN> pCnt <SPAN CLASS=setvar
+STYLE="color:red">&#x1D465;</SPAN>) &ne; 0} (<SPAN CLASS=setvar STYLE="color:red">&#x1D45D;</SPAN> pCnt <SPAN CLASS=setvar STYLE="color:red">&#x1D465;</SPAN>))</SPAN></TD></TR>
+</TABLE></CENTER>
+<CENTER><TABLE CELLSPACING=5><TR><TD ALIGN=LEFT><FONT SIZE=-1><B>Colors of variables:</B> &nbsp; &nbsp;<SPAN CLASS=wff STYLE="color:blue;font-style:normal">wff</SPAN> <SPAN CLASS=setvar
+STYLE="color:red;font-style:normal">setvar</SPAN> <SPAN CLASS=class STYLE="color:#C3C;font-style:normal">class</SPAN></FONT></TD></TR>
+<TR><TD ALIGN=LEFT><FONT SIZE=-1><B>This definition is used by:</B> &nbsp;<A HREF="bomfn.html">bomfn</A>
+&nbsp;<SPAN CLASS=r STYLE="color:#ED008E">51382</SPAN> &nbsp;<A HREF="bomval.html">bomval</A>
+&nbsp;<SPAN CLASS=r STYLE="color:#ED008E">51383</SPAN> &nbsp;<A HREF="bomf.html">bomf</A>
+&nbsp;<SPAN CLASS=r STYLE="color:#ED008D">51388</SPAN></FONT></TD></TR></TABLE></CENTER>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD WIDTH="25%">&nbsp;</TD>
+<TD ALIGN=CENTER VALIGN=BOTTOM>
+<FONT SIZE=-2 FACE=sans-serif>
+Copyright terms:
+<A HREF="../copyright.html#pd">Public domain</A>
+</FONT></TD><TD ALIGN=RIGHT VALIGN=BOTTOM WIDTH="25%">
+<FONT SIZE=-2 FACE=sans-serif>
+<A HREF="http://validator.w3.org/check?uri=referer">
+W3C validator</A>
+</FONT></TD></TR></TABLE>
+</BODY></HTML>

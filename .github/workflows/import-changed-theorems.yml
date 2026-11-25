@@ -1,0 +1,53 @@
+name: Import changed theorem snapshot
+on:
+  push:
+    branches: [import-changed-theorems]
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and extract selected files
+        run: |
+          curl --fail --location --retry 2 'https://github.com/user-attachments/files/35406356/changed_theorems.tar.gz' -o /tmp/changed.tar.gz
+          python3 - <<'PY'
+          import tarfile, pathlib, html
+          from urllib.parse import quote
+          root = pathlib.Path('changed_theorems')
+          if root.exists():
+              raise SystemExit('Destination already exists')
+          assets = {'_sandbox.gif','mm.gif','favicon.ico','mmset.css','mmsetalt.css','xits-math.woff'}
+          excluded = {'mmset.html','mmtheoremsall.html','mmascii.html','mmdefinitions.html','index.html'}
+          pages = {'before': [], 'after': []}
+          with tarfile.open('/tmp/changed.tar.gz') as archive:
+              for member in archive:
+                  if not member.isfile(): continue
+                  parts = pathlib.PurePosixPath(member.name).parts
+                  if '20261125T101754.645456Z' not in parts: continue
+                  rel = parts[parts.index('20261125T101754.645456Z')+1:]
+                  if len(rel) == 1: version, name = 'after', rel[0]
+                  elif len(rel) == 2 and rel[0] == 'before': version, name = rel
+                  else: continue
+                  if name.startswith('.') or name in excluded: continue
+                  if not (name.endswith('.html') or name in assets): continue
+                  dest = root / version / name
+                  dest.parent.mkdir(parents=True, exist_ok=True)
+                  dest.write_bytes(archive.extractfile(member).read())
+                  if name.endswith('.html'): pages[version].append(name)
+          assert len(pages['before']) == 4 and len(pages['after']) == 337, pages
+          lines = ['<!doctype html>', '<html lang="en"><meta charset="utf-8"><title>Changed theorems</title>', '<h1>Changed theorems</h1>']
+          for version, names in pages.items():
+              lines += [f'<h2>{version.title()} ({len(names)})</h2>', '<ul>']
+              lines += [f'<li><a href="{version}/{quote(name)}">{html.escape(name[:-5])}</a></li>' for name in sorted(names)]
+              lines += ['</ul>']
+          (root / 'index.html').write_text('\n'.join(lines)+'\n', encoding='utf-8')
+          PY
+      - name: Commit snapshot
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add changed_theorems/
+          git commit -m 'Add before and after theorem HTML snapshots'
+          git push origin HEAD:import-changed-theorems

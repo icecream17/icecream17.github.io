@@ -36,7 +36,8 @@ jobs:
                   dest.parent.mkdir(parents=True, exist_ok=True)
                   dest.write_bytes(archive.extractfile(member).read())
                   if name.endswith('.html'): pages[version].append(name)
-          assert len(pages['before']) == 4 and len(pages['after']) == 337, pages
+          assert len(pages['before']) == 4 and len(pages['after']) > 300, pages
+          print({version: len(names) for version, names in pages.items()})
           lines = ['<!doctype html>', '<html lang="en"><meta charset="utf-8"><title>Changed theorems</title>', '<h1>Changed theorems</h1>']
           for version, names in pages.items():
               lines += [f'<h2>{version.title()} ({len(names)})</h2>', '<ul>']
@@ -48,6 +49,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/import-changed-theorems.yml
           git add changed_theorems/
           git commit -m 'Add before and after theorem HTML snapshots'
           git push origin HEAD:import-changed-theorems

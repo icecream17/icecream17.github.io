@@ -412,7 +412,7 @@ B('','binpal','Binary Palindrome','Its binary form reads the same backwards.',x=
 B('','fibbin','Fibbinary','Its binary form has no two adjacent 1s.',x=>(x.n&(x.n>>1))===0),
 // ---- number theory (round 2)
 B('','cubesum','Sum of Cubes','A sum of two positive cubes.',isSet(CUBESUM)),
-B('','powerdifference','Difference of Like Powers','Of the form nᵏ − (n−c)ᵏ for integers n > c ≥ 1 and k ≥ 3.',isSet(POWER_DIFFERENCES)),
+B('','powerdifference','Difference of Like Powers','Of the form nᵏ − cᵏ for integers n > c ≥ 1 and k ≥ 3.',isSet(POWER_DIFFERENCES)),
 B('','pyth','Pythagorean','The hypotenuse of an integer right triangle.',x=>hyp[x.n]===1),
 B('','foursq','Four Squares','A positive integer that cannot be written as a sum of three squares, even when zero squares are allowed.',x=>{let m=x.n;if(!m)return false;while(m%4===0)m/=4;return m%8===7}),
 B('','hcn','Highly Composite','Has more positive divisors than every smaller positive integer.',isSet(HCN)),

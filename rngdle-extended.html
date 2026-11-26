@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>RNGdle+</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f6f5f1;--card:#fff;--ink:#1c1b19;--mut:#77746b;--line:#e2dfd6;--acc:#3b5bdb;--accink:#fff;
+--c0:#8a877d;--c1:#2f9e44;--c2:#1c7ed6;--c3:#9c36b5;--c4:#e8590c;--c5:#e03131}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15161a;--card:#202228;--ink:#ecebe6;--mut:#9a98a0;--line:#31333b;--acc:#7c93ff;--accink:#10121a;
+--c0:#9a98a0;--c1:#51cf66;--c2:#4dabf7;--c3:#da77f2;--c4:#ff922b;--c5:#ff6b6b}}
+:root[data-theme="dark"]{--bg:#15161a;--card:#202228;--ink:#ecebe6;--mut:#9a98a0;--line:#31333b;--acc:#7c93ff;--accink:#10121a;--c0:#9a98a0;--c1:#51cf66;--c2:#4dabf7;--c3:#da77f2;--c4:#ff922b;--c5:#ff6b6b}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:20px 14px 60px}
+h1{margin:0;font-size:28px;letter-spacing:-.5px}h1 span{color:var(--acc)}
+.sub{color:var(--mut);margin:2px 0 16px}
+.stats{display:flex;gap:8px;margin-bottom:14px}
+.stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.stat b{display:block;font-size:20px;font-variant-numeric:tabular-nums}.stat small{color:var(--mut)}
+.roll{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 14px;text-align:center}
+.num{font:700 clamp(38px,12vw,68px)/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.08em;font-variant-numeric:tabular-nums}
+button{font:inherit;cursor:pointer}
+.go{margin-top:16px;background:var(--acc);color:var(--accink);border:0;border-radius:12px;padding:12px 32px;font-weight:700;font-size:18px}
+.go:disabled{opacity:.5}
+.got{margin:12px 0;display:flex;flex-direction:column;gap:8px}
+.b{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--col,var(--c0));border-radius:10px;padding:8px 12px}
+.b .t{flex:1;min-width:0}.b .t strong{display:block}.b .t small{color:var(--mut)}
+.ep{font-weight:700;color:var(--col);white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}.ep small{display:block;color:var(--mut);font-weight:400}
+.new{font-size:11px;background:var(--acc);color:var(--accink);border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+h2{font-size:18px;margin:26px 0 8px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.tabs button,.mini{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:3px 10px;font-size:13px}
+.tabs button.on{background:var(--ink);color:var(--bg)}
+.lock{opacity:.55}.sup{opacity:.45}.sup .t strong{text-decoration:line-through}.ser{margin:10px 0 -2px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}.lock .t strong{color:var(--mut)}
+.foot{margin-top:24px;color:var(--mut);font-size:13px}
+.foot a{color:var(--acc)}
+#pre{display:none;margin-top:10px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;font:12px ui-monospace,monospace;word-break:break-all;max-height:140px;overflow:auto}
+</style></head><body><main>
+<h1>RNG<span>dle</span>+</h1>
+<p class="sub">Roll a number from 0 to 999,999. Collect badges in series; only the best badge per series scores. EP = round(100 / chance).</p>
+<div class="stats">
+<div class="stat"><b id="sEp">0</b><small>Total EP</small></div>
+<div class="stat"><b id="sRolls">0</b><small>Rolls</small></div>
+<div class="stat"><b id="sFound">0</b><small>Badges found</small></div></div>
+<div class="roll"><div class="num" id="num">––––––</div><button class="go" id="go">Roll</button></div>
+<div class="got" id="got"></div>
+<h2>Collection <span class="tabs"><button data-f="all" class="on">All</button><button data-f="got">Found</button><button data-f="miss">Missing</button></span></h2>
+<div class="got" id="coll"></div>
+<div class="foot"><button class="mini" id="reset">Reset progress</button>
+<p id="status"></p><div id="pre"></div>
+<p>Made by AI · <a href="https://www.rngdle.com/" target="_blank" rel="noopener">Original RNGdle</a></p></div>
+</main>
+<script>
+//=== HOW TO ADD A BADGE ===========================================
+// Add one line to BADGES: B(family, id, name, description, x => boolean)
+//   family: series name ('' = a badge on its own). Within a family only the best badge scores.
+//   x = { n, s, L, d, cnt, run, u, mx, mr, p2, sum } : n = number, s = its string (NO leading zeros),
+//   L = length, d = digit array, cnt = count of each digit, run = [[len,start]] runs of equal digits,
+//   u = distinct digits, mx = max count of one digit, mr = longest run, p2 = digits seen 2+ times.
+// Counts are computed over every number 0-999999 and cached; paste the line shown at the
+// bottom of the page into PRECALC / CUTS to bake them in. EP = round(100 / chance).
+//=== BADGES_START ===================================================
+const N=1e6;
+const B=(fam,id,name,desc,fn)=>({fam:fam||id,id,name,desc,fn});
+const F=(fam,l)=>l.map(([id,name,desc,fn])=>B(fam,id,name,desc,fn));
+function ctx(n){const s=''+n,L=s.length,d=[],cnt=[0,0,0,0,0,0,0,0,0,0],run=[];let sum=0;
+ for(let i=0;i<L;i++){const v=s.charCodeAt(i)-48;d.push(v);cnt[v]++;sum+=v;if(i&&v===d[i-1])run[run.length-1][0]++;else run.push([1,i])}
+ let u=0,mx=0,p2=0,mr=0;for(const c of cnt){if(c)u++;if(c>mx)mx=c;if(c>1)p2++}for(const r of run)if(r[0]>mr)mr=r[0];
+ return{n,s,L,d,cnt,run,u,mx,mr,p2,sum,sp:null}}
+const has=t=>x=>x.s.includes(t),ends=t=>x=>x.s.endsWith(t),any=a=>x=>a.some(t=>x.s.includes(t));
+const rep=t=>x=>x.L%t.length===0&&t.repeat(x.L/t.length)===x.s;
+const isSet=S=>x=>S.has(x.n);
+const adj=(d,f)=>{for(let i=0;i<d.length-1;i++)if(!f(d[i],d[i+1]))return false;return true};
+const ord=k=>k+(k%10===1&&k!==11?'st':k%10===2&&k!==12?'nd':k%10===3&&k!==13?'rd':'th');
+// ---- number theory tables
+const spf=new Uint32Array(N),big=new Uint8Array(N),dis=new Uint8Array(N),sig=new Uint32Array(N);
+for(let i=2;i<N;i++)if(!spf[i])for(let j=i;j<N;j+=i)if(!spf[j])spf[j]=i;
+for(let i=2;i<N;i++){const p=spf[i],m=i/p;big[i]=big[m]+1;dis[i]=dis[m]+(m>1&&spf[m]===p?0:1)}
+const dc=new Uint16Array(N),phi=new Uint32Array(N),hyp=new Uint8Array(N),sq2=new Uint8Array(N);
+for(let i=1;i<N;i++)for(let j=i;j<N;j+=i){sig[j]+=i;dc[j]++}
+for(let i=0;i<N;i++)phi[i]=i;for(let i=2;i<N;i++)if(spf[i]===i)for(let j=i;j<N;j+=i)phi[j]-=phi[j]/i;
+for(let i=2;i<N;i++){const p=spf[i];hyp[i]=(p%4===1||hyp[i/p])?1:0}
+for(let a=1;a*a<N;a++)for(let b=a;a*a+b*b<N;b++)sq2[a*a+b*b]++;
+const isP=n=>n>1&&spf[n]===n;
+const P8=new Uint8Array(8e6+8).fill(1);P8[0]=P8[1]=0;for(let i=2;i*i<8e6;i++)if(P8[i])for(let j=i*i;j<8e6;j+=i)P8[j]=0;
+const isP8=n=>n>1&&P8[n]===1;
+const HCN=(()=>{const S=new Set();let b=0;for(let n=1;n<N;n++)if(dc[n]>b){b=dc[n];S.add(n)}return S})();
+const SUPER=(()=>{const S=new Set();let bs=0,bn=1;for(let n=1;n<N;n++)if(sig[n]*bn>bs*n){bs=sig[n];bn=n;S.add(n)}return S})();
+const CUBESUM=(()=>{const S=new Set();for(let a=1;a<100;a++)for(let b=a;a**3+b**3<N;b++)S.add(a**3+b**3);return S})();
+const POWER_DIFFERENCES=new Set();
+for(let k=3;2**k-1<N;k++){
+  for(let n=2;n**k-(n-1)**k<N;n++){
+    const upper=n**k;
+    for(let lower=n-1;lower>=1;lower--){
+      const difference=upper-lower**k;
+      if(difference>=N)break;
+      POWER_DIFFERENCES.add(difference);
+    }
+  }
+}
+const pm=(b,e,m)=>{let r=1;b%=m;while(e>0){if(e&1)r=r*b%m;b=b*b%m;e=Math.floor(e/2)}return r};
+const mper=n=>{let c=0;while(n>9){let p=1;while(n){p*=n%10;n=Math.floor(n/10)}n=p;c++}return c};
+const aper=n=>{let c=0;while(n>9){n=sd(n);c++}return c};
+const zig=d=>{for(let i=1;i<d.length;i++){const g=Math.sign(d[i]-d[i-1]);if(!g||(i>1&&g===Math.sign(d[i-1]-d[i-2])))return false}return true};
+const mask=m=>x=>x.d.every(v=>m>>v&1);
+const splits=s=>{const out=[];const go=(i,a)=>{if(i===s.length){out.push(a);return}for(let l=1;l<=3&&i+l<=s.length;l++){if(l>1&&s[i]==='0')break;go(i+l,[...a,+s.slice(i,i+l)])}};go(0,[]);return out};
+const SP=x=>x.sp||(x.sp=splits(x.s));
+const lad=(x,sg)=>SP(x).some(t=>{if(t.length<4)return false;const c=t[2]-2*t[1]+t[0];if(!c||Math.sign(c)!==sg)return false;for(let i=3;i<t.length;i++)if(t[i]-2*t[i-1]+t[i-2]!==c)return false;return true});
+const practical=n=>{if(n<1)return false;if(n===1)return true;let m=n,S=1;while(m>1){const p=spf[m];if(p>S+1)return false;let q=1,t=1;while(m%p===0){m/=p;q*=p;t+=q}S*=t}return true};
+const weird=n=>{if(n<2||sig[n]<=2*n)return false;const e=sig[n]-2*n,ds=[];
+ for(let i=1;i*i<=n;i++)if(n%i===0){if(i<n)ds.push(i);if(i*i!==n&&n/i<n)ds.push(n/i)}ds.sort((a,b)=>b-a);
+ const suf=new Array(ds.length+1).fill(0);for(let i=ds.length-1;i>=0;i--)suf[i]=suf[i+1]+ds[i];
+ let nodes=0,over=false;const go=(i,r)=>{if(r===0)return true;if(i>=ds.length||suf[i]<r)return false;if(++nodes>20000){over=true;return false}return(ds[i]<=r&&go(i+1,r-ds[i]))||go(i+1,r)};
+ if(go(0,e))return false;if(!over)return true;
+ if(e>3e5)return false;const dp=new Uint8Array(e+1);dp[0]=1;for(const v of ds)if(v<=e)for(let j=e;j>=v;j--)if(dp[j-v])dp[j]=1;return !dp[e]};
+const carm=n=>{if(n<561||n%2===0||dis[n]<3||dis[n]!==big[n])return false;let m=n;while(m>1){const p=spf[m];if((n-1)%(p-1))return false;m/=p}return true};
+const euler2=n=>n>2&&n%2===1&&!isP(n)&&pm(2,(n-1)/2,n)===((n%8===1||n%8===7)?1:n-1);
+const reptend=n=>{if(!isP(n)||n===2||n===5)return false;const m=n-1;let t=m;while(t>1){const q=spf[t];while(t%q===0)t/=q;if(pm(10,m/q,n)===1)return false}return true};
+const seq=f=>{const S=new Set();for(let i=0,v=f(0);v<N;v=f(++i))S.add(v);return S};
+const pw=e=>{const S=new Set();for(let i=0;i**e<N;i++)S.add(i**e);return S};
+const list=(a,b,f)=>{const S=new Set();let x=a,y=b;while(x<N){S.add(x);[x,y]=f(x,y)}return S};
+const FIB=list(0,1,(a,b)=>[b,a+b]),LUC=list(2,1,(a,b)=>[b,a+b]);
+const CAT=(()=>{const S=new Set();let c=1;for(let k=0;c<N;k++){S.add(c);c=c*2*(2*k+1)/(k+2)}return S})();
+const FAC=(()=>{const S=new Set();let f=1;for(let i=1;f<N;f*=++i)S.add(f);S.add(1);return S})();
+const PRIMOR=(()=>{const S=new Set([1]);let p=1;for(let i=2;p*i<N;i++)if(isP(i)){p*=i;S.add(p)}return S})();
+const TAXI=(()=>{const m=new Set(),S=new Set();for(let a=1;a<100;a++)for(let b=a;b<100;b++){const v=a**3+b**3;if(v<N){if(m.has(v))S.add(v);m.add(v)}}return S})();
+const DFAC=[1,1,2,6,24,120,720,5040,40320,362880];
+const sd=m=>{let t=0;while(m){t+=m%10;m=Math.floor(m/10)}return t};
+const rev=n=>+(''+n).split('').reverse().join('');
+const HAPPY=(()=>{const h=new Uint8Array(700);for(let i=1;i<700;i++){let v=i,k=0;while(v!==1&&v!==4&&k++<30)v=(''+v).split('').reduce((a,c)=>a+c*c,0);h[i]=v===1?1:0}return h})();
+const seqLen=d=>{let b=1,u=1,w=1;for(let i=1;i<d.length;i++){u=d[i]-d[i-1]===1?u+1:1;w=d[i]-d[i-1]===-1?w+1:1;b=Math.max(b,u,w)}return b};
+const scr=(d,i,k)=>{let mn=9,m=0,c=0;for(let j=0;j<k;j++){const v=d[i+j];if(v<mn)mn=v;if(m>>v&1)return false;m|=1<<v;c++}return m===(((1<<k)-1)<<mn)};
+const peak=(d,st,g)=>{const e=g>0?d:d.map(v=>-v),n=e.length;let i=0,r=false,f=false;while(i<n-1&&(st?e[i]<e[i+1]:e[i]<=e[i+1])){if(e[i]<e[i+1])r=true;i++}while(i<n-1&&(st?e[i]>e[i+1]:e[i]>=e[i+1])){if(e[i]>e[i+1])f=true;i++}return r&&f&&i===n-1};
+const terms=(s,nx)=>{for(let a=1;a<=3;a++)for(let b=1;b<=3;b++){if(a+b>s.length)continue;const t0=s.slice(0,a),t1=s.slice(a,a+b);if((a>1&&t0[0]==='0')||(b>1&&t1[0]==='0'))continue;
+ let p=+t1,pos=a+b,c=2,ok=true;const f=nx(+t0,p);if(!f)continue;while(pos<s.length){const v=f(p),sv=''+v;if(v<0||sv.length>3||!s.startsWith(sv,pos)){ok=false;break}pos+=sv.length;p=v;c++}if(ok&&c>=3)return true}return false};
+function consecutiveAt(s,start,count,whole){
+  for(let width=1;width*count<=s.length-start;width++){
+    if(width>1&&s[start]==='0')break;
+    const first=Number(s.slice(start,start+width));
+    let sequence='';
+    for(let offset=0;offset<count;offset++)sequence+=first+offset;
+    if((!whole||sequence.length===s.length)&&s.startsWith(sequence,start))return true;
+  }
+  return false;
+}
+function containsConsecutive(s,count){
+  for(let start=0;start+count<=s.length;start++){
+    if(consecutiveAt(s,start,count,false))return true;
+  }
+  return false;
+}
+const frame=(x,k)=>x.run.some(r=>r[0]===k&&r[1]>0&&r[1]+k<x.L);
+const adjRuns=(x,k,m)=>{for(let i=0;i+k<=x.run.length;i++){let ok=true;for(let j=0;j<k;j++)if(x.run[i+j][0]<m)ok=false;if(ok)return true}return false};
+const slices=(fam,id,name,sym,dg,min)=>[
+ ...Array.from({length:dg.length-min},(_,i)=>{const k=min+i;return B(fam,id+k,`${name} Slice (${k})`,`Contains ${dg.slice(0,k)}, the first ${k} digits of ${sym}.`,has(dg.slice(0,k)))}),
+ B(fam,id,name,`Exactly the first ${min} to ${dg.length} digits of ${sym}.`,x=>x.L>=min&&dg.startsWith(x.s))];
+const wordy=['Zero','One','Two','Three','Four','Five','Six','Seven','Eight','Nine'];
+const elems=['','Hydrogen','Helium','Lithium','Beryllium','Boron','Carbon','Nitrogen','Oxygen','Fluorine'];
+const MEAN=new Set([727,42,67,69,86,101,365,404,420,666,777,911,1337,1984,7734,17776,80085,86400,365365,420420,424242,666666,676767,696969,777777,911911]);
+
+// ---- other bases
+const HEX_WORDS_4=/beef|cafe|face|dead|deaf|feed|fade|deed|5eed|5afe/;
+const HEX_WORDS_5=/added|ceded|decaf|b0057|c0a57|5a1ad|1005e/;
+const hex=x=>x.hex??=x.n.toString(16);
+const multiPalindrome=s=>s.length>1&&s===[...s].reverse().join('');
+const multiRepdigit=s=>/^(.)\1+$/.test(s);
+const basePalindromes=new Uint8Array(N),baseRepdigits=new Uint8Array(N);
+for(let base=2;base<=36;base++){
+  // Generate multi-digit palindromes by reflecting each positive prefix.
+  for(let length=2;base**(length-1)<N;length++){
+    const first=base**(Math.ceil(length/2)-1);
+    for(let prefix=first;prefix<first*base;prefix++){
+      let n=prefix,tail=length%2?Math.floor(prefix/base):prefix;
+      for(let i=0;i<Math.floor(length/2);i++){
+        n=n*base+tail%base;
+        tail=Math.floor(tail/base);
+      }
+      if(n>=N)break;
+      basePalindromes[n]++;
+    }
+  }
+  for(let unit=base+1;unit<N;unit=unit*base+1){
+    for(let digit=1;digit<base&&digit*unit<N;digit++)baseRepdigits[digit*unit]=1;
+  }
+}
+const ternary=x=>x.ternary??=x.n.toString(3);
+function ternaryBalance(x){
+  const counts=[0,0,0];
+  for(const digit of ternary(x))counts[digit]++;
+  return counts[0]===counts[1]&&counts[1]===counts[2];
+}
+const REPDIGIT_FACTORS=new Set([0]);
+for(let unit=1;unit*9<N;unit=unit*10+1){
+  for(let digit=1;digit<=9;digit++){
+    const repdigit=digit*unit;
+    for(let divisor=1;divisor*divisor<=repdigit;divisor++){
+      if(repdigit%divisor===0){
+        REPDIGIT_FACTORS.add(divisor);
+        REPDIGIT_FACTORS.add(repdigit/divisor);
+      }
+    }
+  }
+}
+
+// Decimal repunits are coprime to 10, but a sufficiently long one can supply
+// any factor coprime to 10. A single repeated digit must supply the factors of 2 and 5.
+function dividesRepdigit(n){
+  return n===0||(n%5!==0&&n%16!==0)||(n%2!==0&&n%25!==0);
+}
+
+// ---- English names and rearrangements
+const SMALL_NAMES=['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
+const TENS_NAMES=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+const UNDER_THOUSAND=Array.from({length:1000},(_,n)=>{
+  const hundreds=Math.floor(n/100),rest=n%100;
+  const prefix=hundreds?SMALL_NAMES[hundreds]+'hundred':'';
+  return prefix+(rest<20?SMALL_NAMES[rest]:TENS_NAMES[Math.floor(rest/10)]+SMALL_NAMES[rest%10]);
+});
+function spellNumber(n){
+  if(n===0)return 'zero';
+  const thousands=Math.floor(n/1000);
+  const prefix=thousands?UNDER_THOUSAND[thousands]+'thousand':'';
+  return prefix+UNDER_THOUSAND[n%1000];
+}
+const englishLetters=x=>x.englishLetters??=spellNumber(x.n);
+// Index only actual primes and powers. Their signatures cannot include padding zeros.
+const sortedDigits=s=>[...s].sort().join('');
+const signature=x=>x.signature??=sortedDigits(x.s);
+const primeSignatures=new Map();
+function recordSignature(table,n){
+  const key=sortedDigits(String(n));
+  table.set(key,(table.get(key)||0)+1);
+}
+for(let n=2;n<N;n++)if(isP(n))recordSignature(primeSignatures,n);
+function powerAnagram(exponent){
+  const powers=pw(exponent),signatures=new Map();
+  for(const n of powers)if(n>=10)recordSignature(signatures,n);
+  return x=>x.L>1&&(signatures.get(signature(x))||0)>Number(powers.has(x.n));
+}
+
+const BADGES=[
+// ---- length & single digits
+...[1,2,3,4,5,6].map(k=>B('length','len'+k,k===1?'Single Digit':['','','Two','Three','Four','Five','Six'][k]+' Digits',`Exactly ${k} digit${k>1?'s':''}.`,x=>x.L===k)),
+...wordy.map((w,i)=>B('digit','dig'+i,w,`Exactly ${i}.`,x=>x.n===i)),
+B('','colossal','Colossal','Greater than 999,000.',x=>x.n>999000),B('Digit sum','maximum','Maximum','Exactly 999,999, the highest roll.',x=>x.n===999999),
+// ---- parity, divisibility, digit presence
+B('','even','Even','Divisible by two.',x=>x.n%2===0),B('','odd','Odd','Not divisible by two.',x=>x.n%2===1),
+...[['div3','Divisible by Three',3],['div7','Lucky Seven (Divisible)',7],['div9','Divisible by Nine',9],['div11','Eleven',11],['div12','Dozen',12],['div13','Baker’s Dozen',13]].map(([i,nm,k])=>B('',i,nm,`Divisible by ${k}.`,x=>x.n%k===0)),
+B('','digitsdiv3','Every Digit Divisible by 3','Uses only 0, 3, 6 and 9.',x=>x.d.every(d=>d%3===0)),
+B('','digitsdiv4','Every Digit Divisible by 4','Uses only 0, 4 and 8.',x=>x.d.every(d=>d%4===0)),
+B('','lucky7','Lucky Seven','Contains a 7.',has('7')),B('','void','Void','Contains no zeros.',x=>x.cnt[0]===0),B('','ghost','Ghost','Contains exactly one 0.',x=>x.cnt[0]===1),
+...elems.map((e,i)=>i&&B('','el'+i,`${e} (${i})`,`Contains exactly one ${i}.`,x=>x.cnt[i]===1)).filter(Boolean),
+B('','lowball','Low Ball','Only digits 0 to 4.',x=>x.d.every(v=>v<5)),B('','highroller','High Roller','Only digits 5 to 9.',x=>x.d.every(v=>v>4)),
+B('Decimal 0s and 1s','binary','Binary Soul','Only 0s and 1s.',x=>x.d.every(v=>v<2)),B('Decimal 0s and 1s','repunit','Repunit','Only 1s.',x=>x.d.every(v=>v===1)),
+B('','flush','Flush','At least two digits, all even or all odd.',x=>x.L>1&&x.d.every(v=>v%2===x.d[0]%2)),
+B('','alternator','Alternator','At least two digits, alternating between even and odd.',x=>x.L>1&&adj(x.d,(a,b)=>(a+b)%2===1)),
+// ---- sums
+B('','feather','Feather','Digits sum to less than 15.',x=>x.sum<15),B('','blackjack','Blackjack','Digits sum to exactly 21.',x=>x.sum===21),
+B('','tenner','Perfect Ten','Digits sum to exactly 10.',x=>x.sum===10),
+...F('Digit sum',[['heavy','Heavy','Digits sum to 45 or more.',x=>x.sum>=45],['heavier','Heavier','Digits sum to 50 or more.',x=>x.sum>=50],['heaviest','Heaviest','Digits sum to the maximum, 54.',x=>x.sum===54]]),
+B('','spy','Spy Number','Digit sum equals digit product.',x=>x.sum===x.d.reduce((a,b)=>a*b,1)),
+B('','balanced','Balanced','Even length; the two halves have equal digit sums.',x=>x.L%2===0&&x.d.slice(0,x.L/2).reduce((a,b)=>a+b,0)===x.d.slice(x.L/2).reduce((a,b)=>a+b,0)),
+B('Repeated blocks','echo','Echo','Even length; the two halves are identical.',x=>x.L%2===0&&x.s.slice(0,x.L/2)===x.s.slice(x.L/2)),
+B('','grounded','Grounded','First digit is smaller than the last.',x=>x.L>1&&x.d[0]<x.d[x.L-1]),B('','liftoff','Liftoff','First digit is larger than the last.',x=>x.L>1&&x.d[0]>x.d[x.L-1]),
+B('','gapone','Gap One','First and last digits differ by exactly 1.',x=>x.L>1&&Math.abs(x.d[0]-x.d[x.L-1])===1),
+B('','neighbors','Neighbors','Contains two digits that are adjacent in value.',x=>x.L>1&&x.cnt.some((c,i)=>c&&x.cnt[i+1])),
+// ---- variety
+...F('variety',[['homog','Homogeneous','Every digit is the same (2+ digits).',x=>x.L>1&&x.u===1],['duality','Duality','Exactly 2 distinct digits.',x=>x.u===2&&x.L>1],['trinity','Trinity','Exactly 3 distinct digits.',x=>x.u===3],['quartet','Quartet','Exactly 4 distinct digits.',x=>x.u===4]]),
+B('','hetero','Heterogeneous','All digits distinct (2+ digits).',x=>x.L>1&&x.u===x.L),
+B('One distinct digit','firefly','Firefly','2 distinct digits: one appears once, the other 3+ times.',x=>x.u===2&&x.mx>=3&&x.cnt.includes(1)),
+B('','zipper','Zipper','2 distinct digits that strictly alternate.',x=>x.L>1&&x.u===2&&x.d.every((v,i)=>v===x.d[i%2])),
+B('','snake','Snake Eyes','Exactly two 1s and no other repeated digit.',x=>x.cnt[1]===2&&x.mx===2&&x.p2===1),
+// ---- pairs, kinds, runs
+...F('pairs',[['pair','Pair','Some digit appears at least twice.',x=>x.mx>=2],['cpair','Contiguous Pair','Two equal digits in a row.',x=>x.mr>=2],['twopair','Two Pair','At least two distinct digits each appear at least twice.',x=>x.p2>=2],
+ ['ctwopair','Contiguous Two Pair','Two adjacent runs of different digits, each at least two digits long.',x=>adjRuns(x,2,2)],['threepair','Three Pair','At least three distinct digits each appear at least twice.',x=>x.p2>=3],
+ ['cthreepair','Contiguous Three Pair','Three adjacent pairs. Each pair differs from its neighbor, as in 112211 or 112233.',x=>adjRuns(x,3,2)],['framedpair','Framed Pair','A run of exactly two equal digits, with a different digit on each side.',x=>frame(x,2)],
+ ['frameddouble','Framed Double','Two adjacent runs of exactly two equal digits, with a different digit on each outer side.',x=>x.run.some((r,i)=>x.run[i+1]&&r[0]===2&&x.run[i+1][0]===2&&r[1]>0&&x.run[i+1][1]+2<x.L)]]),
+...F('Repeated digits',[['kind3','Three of a Kind','A digit appears at least three times.',x=>x.mx>=3],['kind4','Four of a Kind','A digit appears at least four times.',x=>x.mx>=4],['kind5','Five of a Kind','A digit appears at least five times.',x=>x.mx>=5],
+ ['framed3','Framed Triple','Exactly three equal digits in a row, with a different digit on both sides.',x=>frame(x,3)],['framed4','Framed Quad','Exactly four equal digits in a row, framed.',x=>frame(x,4)]]),
+...F('Repeated digits',[['run3','Contiguous Trips','At least three equal digits in a row.',x=>x.mr>=3],['run4','Contiguous Quads','At least four equal digits in a row.',x=>x.mr>=4],['run5','Contiguous Fives','At least five equal digits in a row.',x=>x.mr>=5],['run6','Contiguous Sixes','Six equal digits in a row.',x=>x.mr>=6]]),
+...F('boat',[['fullhouse','Full House','One digit appears at least three times and a different digit appears at least twice.',x=>x.cnt.some((c,i)=>c>=3&&x.cnt.some((e,j)=>j!==i&&e>=2))],
+ ['cfullhouse','Contiguous Full House','Two adjacent runs of different digits, one at least three digits long and the other at least two.',x=>x.run.some((r,i)=>x.run[i+1]&&((r[0]>=3&&x.run[i+1][0]>=2)||(r[0]>=2&&x.run[i+1][0]>=3)))]]),
+...F('hop',[['hop2','Hopscotch','A digit repeats two places later.',x=>x.d.some((v,i)=>v===x.d[i+2])],['hop3','Double Hop','The same digit at every other position three times.',x=>x.d.some((v,i)=>v===x.d[i+2]&&v===x.d[i+4])]]),
+...F('Repeated blocks',[['miniecho','Mini Echo','An adjacent 2-digit repeat (abab).',x=>/(\d)(\d)\1\2/.test(x.s)],['rhyme','Rhyme','The same 2-3 digit chunk appears twice without overlap.',x=>{for(let l=2;l<=3;l++)for(let i=0;i+2*l<=x.L;i++)if(x.s.indexOf(x.s.substr(i,l),i+l)>0)return true;return false}]]),
+...F('bookends',[['bookends','Bookends','Last two digits equal the first two (4+ digits).',x=>x.L>=4&&x.s.slice(-2)===x.s.slice(0,2)],['mirrorbook','Mirror Bookends','Last two digits reversed equal the first two (4+ digits).',x=>x.L>=4&&x.s.slice(-2)===x.s[1]+x.s[0]],
+ ['pairedbook','Paired Bookends','With at least four digits, the first two are equal and the last two are equal to a different digit.',x=>x.L>=4&&x.s[0]===x.s[1]&&x.s[x.L-1]===x.s[x.L-2]&&x.s[0]!==x.s[x.L-1]]]),
+...F('palindrome',[['pocket','Pocket Mirror','Contains a 4 or 5 digit palindrome.',x=>{for(let l=4;l<=5;l++)for(let i=0;i+l<=x.L;i++){const t=x.s.substr(i,l);if(t===[...t].reverse().join(''))return true}return false}],['pal','Palindrome','Reads the same backwards.',x=>x.s===[...x.s].reverse().join('')]]),
+B('','strobo','Strobogrammatic','Reads the same after a 180° rotation, using 0, 1 and 8 as fixed digits and swapping 6 with 9.',x=>x.d.every(v=>v!==2&&v!==3&&v!==4&&v!==5&&v!==7)&&x.s===[...x.s].reverse().map(c=>c==='6'?'9':c==='9'?'6':c).join('')),
+// ---- shapes & progressions
+...F('Monotone digits',[['asc','Ascension','At least two digits, strictly increasing from left to right.',x=>x.L>1&&adj(x.d,(a,b)=>a<b)],['dec','Decay','At least two digits, strictly decreasing from left to right.',x=>x.L>1&&adj(x.d,(a,b)=>a>b)],['steps','Steps','At least two digits, increasing or staying equal at each step.',x=>x.L>1&&adj(x.d,(a,b)=>a<=b)],['slopes','Slopes','At least two digits, decreasing or staying equal at each step.',x=>x.L>1&&adj(x.d,(a,b)=>a>=b)]]),
+...F('Peaks and valleys',[['mountain','Mountain','Digits strictly rise then strictly fall.',x=>peak(x.d,1,1)],['valley','Valley','Digits strictly fall then strictly rise.',x=>peak(x.d,1,-1)],['mesa','Mesa','Digits rise then fall; flat stretches allowed.',x=>peak(x.d,0,1)],['canyon','Canyon','Digits fall then rise; flat stretches allowed.',x=>peak(x.d,0,-1)]]),
+...F('hills',[['hills','Hills','Digits strictly alternate rising and falling (3+ digits).',x=>x.L>2&&zig(x.d)],['roller','Rollercoaster','Strictly alternating for 5 moves in a row: up, down, up, down, up (or the reverse).',x=>x.L>=6&&zig(x.d)],
+ ['dunes','Dunes','Digits alternate rising and falling; flat stretches allowed (3+ digits).',x=>{if(x.L<3)return false;const g=[];for(let i=1;i<x.L;i++){const v=Math.sign(x.d[i]-x.d[i-1]);if(v)g.push(v)}return g.length>1&&g.every((v,i)=>!i||v!==g[i-1])}]]),
+...F('Consecutive digits',[
+ ['seq3','Sequence (3)','Contains a run of at least three digits stepping up or down by 1.',x=>seqLen(x.d)>=3],
+ ['seq4','Sequence (4)','Contains a run of at least four digits stepping up or down by 1.',x=>seqLen(x.d)>=4],
+ ['straight','Straight','Contains a run of at least five digits stepping up or down by 1.',x=>seqLen(x.d)>=5],
+ ['seq6','Sequence (6)','All six digits step up by 1 or all six step down by 1.',x=>seqLen(x.d)>=6],
+ ['cascade','Cascade','At least two digits, each increasing by exactly 1.',x=>x.L>1&&adj(x.d,(a,b)=>b-a===1)],
+ ['waterfall','Waterfall','At least two digits, each decreasing by exactly 1.',x=>x.L>1&&adj(x.d,(a,b)=>a-b===1)],
+ ['royal','Royal Flush','Contains 56789.',has('56789')],
+]),
+B('','sflush','Straight Flush','Contains 13579, 97531, 02468 or 86420.',any(['13579','97531','02468','86420'])),
+...F('Digit spacing',[
+ ['evensp','Even Spacing','At least three digits with the same signed difference at every step.',x=>x.L>2&&adj(x.d,(a,b)=>b-a===x.d[1]-x.d[0])],
+ ['evenabs','Even Spacing (Absolute)','At least three digits with the same absolute difference at every step.',x=>x.L>2&&adj(x.d,(a,b)=>Math.abs(b-a)===Math.abs(x.d[1]-x.d[0]))],
+]),
+B('','turtle','Turtle','At least two digits, with adjacent digits differing by at most 1.',x=>x.L>1&&adj(x.d,(a,b)=>Math.abs(b-a)<=1)),
+...F('Scrambles',[
+ ['scramble','Scramble','At least two distinct digits that sort into consecutive values.',x=>x.L>1&&scr(x.d,0,x.L)],
+ ['miniscr','Mini Scramble','Contains a block of 3–5 distinct digits that sort into consecutive values.',x=>{for(let k=3;k<=Math.min(5,x.L);k++)for(let i=0;i+k<=x.L;i++)if(scr(x.d,i,k))return true;return false}],
+]),
+B('','metronome','Metronome','Splits into at least three terms of 1–3 digits with a fixed nonzero difference.',x=>terms(x.s,(a,b)=>b!==a&&(v=>v+b-a))),
+B('','crescendo','Crescendo','Splits into at least three positive terms of 1–3 digits, each multiplied by the same integer of at least 2.',x=>terms(x.s,(a,b)=>a>0&&b%a===0&&b/a>=2&&(v=>v*(b/a)))),
+...[2,3,4].flatMap(count=>[
+  B('Consecutive numbers','con'+count,`${count} Consecutive Numbers`,`Splits into ${count} consecutive increasing integers, each written without leading zeros.`,x=>consecutiveAt(x.s,0,count,true)),
+  B('Consecutive numbers','con'+count+'c',`${count} Consecutive Numbers (Contains)`,`Contains ${count} consecutive increasing integers written back to back, without leading zeros.`,x=>containsConsecutive(x.s,count)),
+]),
+// ---- endings
+...F('Zero endings and runs',[['clean','Clean','Ends in 0.',ends('0')],['void2','Deep Void','Contains 00.',has('00')],['century','Century','Ends in 00.',ends('00')],['semicent','Semi-Century','Ends in 50.',ends('50')],
+ ['void3','Deep Void (3)','Contains 000.',has('000')],['millennium','Millennium','Ends in 000.',ends('000')],['semimill','Semi-Millennium','Ends in 500.',ends('500')],['void4','Deep Void (4)','Contains 0000.',has('0000')],['epoch','Epoch','Ends in 0000.',ends('0000')],['semiepoch','Semi-Epoch','Ends in 5000.',ends('5000')],
+ ['void5','Deep Void (5)','Contains 00000.',has('00000')],['eon','Eon','Ends in 00000.',ends('00000')],['semieon','Semi-Eon','Ends in 50000.',ends('50000')]]),
+...F('Endings in 5',[
+ ['semiclean','Semi-Clean','Ends in 5.',ends('5')],
+ ['quarter','Quarter-Century','Ends in 25.',ends('25')],
+ ['threeq','Three-Quarter Century','Ends in 75.',ends('75')],
+]),
+...F('nines',[['nine2','Double Nine','Ends in 99.',ends('99')],['nine3','Triple Nine','Ends in 999.',ends('999')],['nine4','Quad Nine','Ends in 9999.',ends('9999')],['nine5','Quint Nine','Ends in 99999.',ends('99999')]]),
+// ---- constants
+...slices('pi','pi','Pi','π','314159',3),...slices('e','e','Euler’s Number','e','271828',3),...slices('tau','tau','Tau','τ','628318',4),...slices('phi','phi','Golden Ratio','φ','161803',4),...slices('root2','root2','Root Two','√2','141421',4),
+// ---- memes
+...F('nice',[['nice','Nice','Contains 69.',has('69')],['nice4','Very Nice','Contains 6969.',has('6969')],['nicex','Exact Nice','Exactly 69, 6969 or 696969.',rep('69')]]),
+...F('botanist',[['bot','Botanist','Contains 420.',has('420')],['botx','Exact Botanist','Exactly 420 or 420420.',rep('420')]]),
+...F('meaning',[['mean','Meaning of Life','Contains 42.',has('42')],['mean4','Deeper Meaning','Contains 4242.',has('4242')],['meanx','Exact Meaning','Exactly 42, 4242 or 424242.',rep('42')]]),
+...F('wysi',[['wysi','When You See It','Contains 727.',has('727')],['wysi4','WYSI Twice','Contains 7272 or 2727.',any(['7272','2727'])],['wysix','Exact WYSI','Exactly 727 or 727727.',rep('727')]]),
+B('','exactmeme','Exact Meme','Exactly a famous meme number (42, 69, 420, 1337, 1984, 7734, 80085…).',isSet(MEAN)),
+...F('sixseven',[['s67','Six-Seven','Contains 67.',has('67')],['s6767','6767','Contains 6767.',has('6767')],['s67x','Exact Six-Seven','Exactly 67, 6767 or 676767.',rep('67')]]),
+...F('jackpot',[['jp3','Jackpot','Contains 777.',has('777')],['jp4','Jackpot Four','Contains 7777.',has('7777')],['jp5','Jackpot Five','Contains 77777.',has('77777')],['jp6','Jackpot Six','Exactly 777777.',x=>x.n===777777],['jpx','Exact Jackpot','Exactly 777.',x=>x.n===777]]),
+...F('devil',[['devil','Devil','Contains 666.',has('666')],['devilx','Exact Devil','Exactly 666 or 666666.',rep('666')]]),
+...F('leet',[['leet','Leet','Contains 1337.',has('1337')],['leetx','Exact Leet','Exactly 1337.',x=>x.n===1337]]),
+...F('hell',[['hell','Hell','Contains 7734 (hELL upside down).',has('7734')],['hellx','Exact Hell','Exactly 7734.',x=>x.n===7734]]),
+B('','hello','Hello','Contains 07734 (hELLO upside down).',has('07734')),
+...F('boob',[['boob','Boob','Contains 8008.',has('8008')],['boob85','80085','Contains 80085.',has('80085')],['boob58','58008','Contains 58008.',has('58008')],['boobx','Exact Boob','Exactly 8008, 58008 or 80085.',isSet(new Set([8008,58008,80085]))]]),
+...F('emergency',[['em','Emergency','Contains 911.',has('911')],['emx','Exact Emergency','Exactly 911 or 911911.',rep('911')]]),
+...F('error',[['err','Error 404','Contains 404.',has('404')],['errx','Not Found','Exactly 404.',x=>x.n===404]]),
+...F('orientation',[['ori','Orientation','Contains 101.',has('101')],['orix','Exact Orientation','Exactly 101.',x=>x.n===101]]),
+...F('calendar',[['cal','Calendar','Contains 365.',has('365')],['always','Always','Exactly 247365 or 365247 (24/7/365).',isSet(new Set([247365,365247]))],['calx','Exact Calendar','Exactly 365 or 365365.',rep('365')]]),
+...F('eightysix',[['e86','Eighty-Six','Contains 86.',has('86')],['e86x','Exact Eighty-Six','Exactly 86, 8686 or 868686.',rep('86')]]),
+...F('brother',[['bb','Big Brother','Contains 1984.',has('1984')],['orwell','Orwellian','Exactly 1984.',x=>x.n===1984]]),
+B('','agent','Secret Agent','Contains 007.',has('007')),
+...F('ultimeme',[['funny2','Funny Numbers','Contains both 69 and 420.',x=>x.s.includes('69')&&x.s.includes('420')],['funny1','Funny Number','Exactly 69420 or 42069.',isSet(new Set([69420,42069]))]]),
+B('','cyclic','Cyclic','Exactly 142857, the cyclic number.',x=>x.n===142857),
+// ---- powers & famous sequences
+...Array.from({length:18},(_,i)=>{const e=i+2,S=pw(e);return B('power','pow'+e,`${ord(e)} Power`,`Of the form n^${e}.`,isSet(S))}),
+B('power','ouro','Ouroboros','Of the form n^n.',isSet(seq(i=>i**i))),
+...[[2,'Two'],[3,'Three'],[5,'Five'],[7,'Seven'],[10,'Ten']].map(([b,nm])=>B('','base'+b,`Power of ${nm}`,`Of the form ${b}^n.`,isSet(seq(i=>b**i)))),
+B('','fib','Fibonacci Number','In the Fibonacci sequence.',isSet(FIB)),B('','lucas','Lucas Number','In the Lucas sequence.',isSet(LUC)),B('','catalan','Catalan Number','A Catalan number.',isSet(CAT)),
+B('','factorial','Factorial','Of the form n!.',isSet(FAC)),B('','primorial','Primorial','A product of the first k primes, including 1 for the empty product.',isSet(PRIMOR)),
+B('','tri','Triangular','Of the form n(n+1)/2.',isSet(seq(i=>i*(i+1)/2))),B('','pronic','Pronic Number','Of the form n²+n.',isSet(seq(i=>i*i+i))),
+B('','penta','Pentagonal','Of the form n(3n-1)/2.',isSet(seq(i=>i*(3*i-1)/2))),B('','hexa','Hexagonal','Of the form n(2n-1).',isSet(seq(i=>i*(2*i-1)))),
+B('','tetra','Tetrahedral','Of the form n(n+1)(n+2)/6.',isSet(seq(i=>i*(i+1)*(i+2)/6))),B('','taxi','Taxicab','A sum of two positive cubes in 2+ ways (1729…).',isSet(TAXI)),
+B('','narc','Narcissistic','Digits to the power of the digit count sum to the number.',x=>x.d.reduce((a,v)=>a+v**x.L,0)===x.n),
+B('','factorion','Factorion','Sum of the digit factorials equals the number.',x=>x.d.reduce((a,v)=>a+DFAC[v],0)===x.n),
+B('','auto','Automorphic','Its square ends in the number itself.',x=>(x.n*x.n)%(10**x.L)===x.n),
+B('','happy','Happy Number','Repeated digit-square sums reach 1.',x=>HAPPY[x.d.reduce((a,v)=>a+v*v,0)]===1||x.n===1),
+B('','harshad','Harshad Number','Divisible by its digit sum.',x=>x.n>0&&x.n%x.sum===0),
+B('','smith','Smith Number','A composite number whose digit sum equals those of its prime factors added together, counting repeated factors.',x=>{if(x.n<4||isP(x.n))return false;let t=0,m=x.n;while(m>1){const p=spf[m];t+=sd(p);m/=p}return t===x.sum}),
+...F('prime',[['prime','Prime Number','Has exactly two factors.',x=>isP(x.n)],['mersenne','Mersenne Prime','A prime of the form 2^p-1.',isSet(new Set([3,7,31,127,8191,131071,524287]))],['fermat','Fermat Prime','A prime of the form 2^(2^k)+1.',isSet(new Set([3,5,17,257,65537]))],['wilson','Wilson Prime','5, 13 or 563: (p-1)!+1 is divisible by p².',isSet(new Set([5,13,563]))]]),
+B('','twin','Twin Prime','A prime exactly 2 away from another prime.',x=>isP(x.n)&&(isP8(x.n-2)||isP8(x.n+2))),
+B('','cousin','Cousin Prime','A prime exactly 4 away from another prime.',x=>isP(x.n)&&(isP8(x.n-4)||isP8(x.n+4))),
+B('','sexy','Sexy Prime','A prime exactly 6 away from another prime.',x=>isP(x.n)&&(isP8(x.n-6)||isP8(x.n+6))),
+B('','safe','Safe Prime','A prime p where (p−1)/2 is also prime.',x=>isP(x.n)&&isP((x.n-1)/2)),
+...F('Cunningham chain',[['sophie','Sophie Germain Prime','A prime p where 2p+1 is also prime.',x=>isP(x.n)&&isP8(2*x.n+1)],
+ ['cunn3','Cunningham Chain (3)','p, 2p+1 and 4p+3 are all prime.',x=>isP(x.n)&&isP8(2*x.n+1)&&isP8(4*x.n+3)],['cunn4','Cunningham Chain (4)','p, 2p+1, 4p+3 and 8p+7 are all prime.',x=>isP(x.n)&&isP8(2*x.n+1)&&isP8(4*x.n+3)&&isP8(8*x.n+7)]]),
+...F('primedigits',[['emirp','Emirp','A prime whose reversal is a different prime.',x=>isP(x.n)&&rev(x.n)!==x.n&&isP(rev(x.n))],['palprime','Palindromic Prime','A prime that reads the same backwards.',x=>isP(x.n)&&x.s===[...x.s].reverse().join('')]]),
+B('','reptend','Full Reptend Prime','A prime p where 1/p repeats with period p-1.',x=>reptend(x.n)),
+B('','twinsand','Twin Sandwich','Sits between twin primes: n-1 and n+1 are both prime.',x=>isP(x.n-1)&&isP(x.n+1)),
+B('','terminating','Terminating Decimal','1/n terminates (n = 2^a·5^b).',x=>{let m=x.n;if(m<1)return false;while(m%2===0)m/=2;while(m%5===0)m/=5;return m===1}),
+B('','sqfree','Square-Free','A positive roll with no repeated prime factor.',x=>x.n>0&&dis[x.n]===big[x.n]),
+B('','ppower','Prime Power','A prime raised to an integer power of at least 2.',x=>x.n>3&&dis[x.n]===1&&big[x.n]>=2),
+B('','semi','Semiprime','A product of exactly two primes, which may be equal.',x=>big[x.n]===2),
+B('','sphenic','Sphenic','A product of three distinct primes.',x=>big[x.n]===3&&dis[x.n]===3),
+...F('aliquot',[['deficient','Deficient','Proper divisors sum to less than the number.',x=>x.n>0&&sig[x.n]<2*x.n],['abundant','Abundant','Proper divisors sum to more than the number.',x=>x.n>0&&sig[x.n]>2*x.n],['perfect','Perfect Number','Proper divisors sum to the number.',isSet(new Set([6,28,496,8128]))]]),
+// ---- culture (round 2)
+...F('y2k',[['y2k','Y2K','Contains 2000.',has('2000')],['y2kx','Exact Y2K','Exactly 2000.',x=>x.n===2000]]),
+...F('moon',[['moon','Moon Landing','Contains 1969.',has('1969')],['moonx','Exact Moon Landing','Exactly 1969.',x=>x.n===1969]]),
+...F('f451',[['f451','Fahrenheit 451','Contains 451.',has('451')],['f451x','Exact Fahrenheit 451','Exactly 451.',x=>x.n===451]]),
+...F('area51',[['a51','Area 51','Contains 51.',has('51')],['a51x','Exact Area 51','Exactly 51.',x=>x.n===51]]),
+...F('konami',[['konami','Up Up Down Down','Contains 8822, the first four directions of the Konami Code on a numpad.',has('8822')],['konamix','Konami Code','Exactly 882246, the first six directions of the Konami Code on a numpad.',x=>x.n===882246]]),
+B('','lightspeed','Speed of Light','Exactly 299792, the speed of light rounded to the nearest km/s.',x=>x.n===299792),
+...F('avogadro',[['avo','Avogadro','Contains 6022.',has('6022')],['avox','Exact Avogadro','Exactly 6022, 60221 or 602214.',isSet(new Set([6022,60221,602214]))]]),
+...F('abszero',[['abs0','Absolute Zero','Contains 273, from the rounded magnitude of absolute zero in °C (−273 °C).',has('273')],['abs0x','Exact Absolute Zero','Exactly 273, the rounded magnitude of absolute zero in °C.',x=>x.n===273]]),
+B('','boil','Boiling Point','Contains 373 or 212, the rounded boiling point of water in kelvin or °F at standard atmospheric pressure.',any(['373','212'])),
+// ---- digit patterns (round 2)
+B('Repeated blocks','dstair','Double Staircase','At least four digits split into identical halves, each strictly increasing (e.g. 123123).',x=>{if(x.L<4||x.L%2)return false;const h=x.L/2;return x.s.slice(0,h)===x.s.slice(h)&&adj(x.d.slice(0,h),(a,b)=>a<b)}),
+B('','sandwich','Sandwich','At least three digits. The first and last match, and none of the middle digits matches them.',x=>x.L>=3&&x.d[0]===x.d[x.L-1]&&x.d.slice(1,-1).every(v=>v!==x.d[0])),
+B('','cshift','Cyclic Shift','Two different halves, with the second formed by rotating the first one place left or right.',x=>{if(x.L%2)return false;const h=x.L/2,A=x.s.slice(0,h),C=x.s.slice(h);return A!==C&&(C===A.slice(1)+A[0]||C===A[h-1]+A.slice(0,-1))}),
+B('','rotdiv','Rotational','For a positive roll, rotating the digits one place left or right gives a different multiple of the roll. A leading zero in the result is dropped.',x=>{if(x.n<1||x.L<2)return false;const l=+(x.s.slice(1)+x.s[0]),r=+(x.s[x.L-1]+x.s.slice(0,-1));return(l!==x.n&&l%x.n===0)||(r!==x.n&&r%x.n===0)}),
+...F('Mirrored sums',[['sumpairs','Sum Pairs','Digits mirrored across the middle always add to the same total (4+ digits).',x=>x.L>=4&&x.d.every((v,i)=>v+x.d[x.L-1-i]===x.d[0]+x.d[x.L-1])],['complement','Complement','An even number of digits, with every mirrored pair adding to 9 (e.g. 123678).',x=>x.L%2===0&&x.d.every((v,i)=>v+x.d[x.L-1-i]===9)]]),
+B('One distinct digit','oddone','Odd One Out','Exactly one digit differs from all the others (3+ digits).',x=>x.L>=3&&x.u===2&&x.cnt.includes(1)),
+B('','almostpal','Almost Palindrome','At least three digits, with exactly one mismatched pair across the center.',x=>{if(x.L<3)return false;let m=0;for(let i=0;i<x.L>>1;i++)if(x.d[i]!==x.d[x.L-1-i])m++;return m===1}),
+B('','almostecho','Almost Echo','The two halves differ in exactly one digit (4+ digits).',x=>{if(x.L%2||x.L<4)return false;const h=x.L/2;let m=0;for(let i=0;i<h;i++)if(x.d[i]!==x.d[i+h])m++;return m===1}),
+B('','primedig','Prime Digits','Only the digits 2, 3, 5 and 7.',mask(0b10101100)),B('','compdig','Composite Digits','Only the digits 4, 6, 8 and 9.',mask(0b1101010000)),
+B('','cubedig','Cubic Digits','Only the digits 0, 1 and 8.',mask(0b100000011)),B('','sqdig','Square Digits','Only the digits 0, 1, 4 and 9.',mask(0b1000010011)),
+B('','halfdiv','Half Divisor','A positive roll with an even number of digits, divisible by the sum of its two numeric halves.',x=>{if(x.L%2||x.n<1)return false;const h=x.L/2,s=+x.s.slice(0,h)+ +x.s.slice(h);return s>0&&x.n%s===0}),
+...F('Changing steps',[['ladder','Ladder','Splits into at least four terms of 1–3 digits. The signed differences between consecutive terms increase by a fixed amount.',x=>lad(x,1)],['ladderdown','Ladder Down','Splits into at least four terms of 1–3 digits. The signed differences between consecutive terms decrease by a fixed amount.',x=>lad(x,-1)]]),
+B('','fibchain','Fibonacci Chain','Splits into at least four terms of 1–3 digits. From the third term on, each is the sum of the previous two.',x=>SP(x).some(t=>t.length>=4&&t.every((v,i)=>i<2||v===t[i-1]+t[i-2]))),
+B('','twotriples','Two Triples','Two different digits, each appearing exactly three times.',x=>x.L===6&&x.cnt.filter(c=>c===3).length===2),
+B('','heavymetal','Heavy Metal','Exactly three 6s and every other digit is 0.',x=>x.L>=3&&x.cnt[6]===3&&x.cnt[0]===x.L-3),
+B('','sqprod','Square Product','The digit product is a perfect square (and not zero).',x=>{const p=x.d.reduce((a,b)=>a*b,1);if(!p)return false;const r=Math.round(Math.sqrt(p));return r*r===p}),
+...F('persist',[['per3','Persistent','Multiplying digits repeatedly takes 3+ steps to reach one digit.',x=>mper(x.n)>=3],['per5','Tenacious','Multiplicative persistence of 5 or more.',x=>mper(x.n)>=5],['per7','Relentless','Multiplicative persistence of 7 or more.',x=>mper(x.n)>=7]]),
+B('','aper3','Root Climber','Adding digits repeatedly takes 3+ steps to reach one digit.',x=>aper(x.n)>=3),
+B('','binpal','Binary Palindrome','Its binary form reads the same backwards.',x=>{const b=x.n.toString(2);return b===[...b].reverse().join('')}),
+B('','fibbin','Fibbinary','Its binary form has no two adjacent 1s.',x=>(x.n&(x.n>>1))===0),
+// ---- number theory (round 2)
+B('','cubesum','Sum of Cubes','A sum of two positive cubes.',isSet(CUBESUM)),
+B('','powerdifference','Difference of Like Powers','Of the form nᵏ − (n−c)ᵏ for integers n > c ≥ 1 and k ≥ 3.',isSet(POWER_DIFFERENCES)),
+B('','pyth','Pythagorean','The hypotenuse of an integer right triangle.',x=>hyp[x.n]===1),
+B('','foursq','Four Squares','A positive integer that cannot be written as a sum of three squares, even when zero squares are allowed.',x=>{let m=x.n;if(!m)return false;while(m%4===0)m/=4;return m%8===7}),
+B('','hcn','Highly Composite','Has more positive divisors than every smaller positive integer.',isSet(HCN)),
+B('','super','Superabundant','Its ratio of divisor sum to the roll exceeds that of every smaller positive integer.',isSet(SUPER)),
+B('','weird','Weird Number','Abundant, but no subset of its distinct proper divisors sums to it.',x=>weird(x.n)),
+B('','practical','Practical Number','For a positive roll n, every smaller positive integer k < n is the sum of distinct divisors of n.',x=>practical(x.n)),
+B('','carmichael','Carmichael Number','A composite that passes the Fermat primality test for every base coprime to it.',x=>carm(x.n)),
+B('','euler2','Euler Pseudoprime','An odd composite that passes the Euler–Jacobi primality test in base 2.',x=>euler2(x.n)),
+B('','revdiv','Reverse Divisible','A multiple of its own reversal (no trailing zero, not a palindrome).',x=>{const r=rev(x.n);return x.n%10!==0&&r!==x.n&&r>0&&x.n%r===0}),
+B('','digdiv','Digit Divisor','A positive roll divisible by each of its nonzero digits.',x=>x.n>0&&x.d.every(v=>v===0||x.n%v===0)),
+B('','sqtwice','Twice Squared','A sum of two positive squares in 2+ different ways.',x=>sq2[x.n]>=2),
+B('','totsq','Totient Square','Euler’s totient φ(n) is a perfect square.',x=>{if(x.n<1)return false;const r=Math.round(Math.sqrt(phi[x.n]));return r*r===phi[x.n]}),
+B('','powerful','Powerful Number','Every prime factor appears at least squared.',x=>{if(x.n<1)return false;let m=x.n;while(m>1){const p=spf[m];let e=0;while(m%p===0){m/=p;e++}if(e<2)return false}return true}),
+B('','humble','Humble Number','Only prime factors 2, 3, 5 and 7.',x=>{if(x.n<1)return false;let m=x.n;for(const p of[2,3,5,7])while(m%p===0)m/=p;return m===1}),
+B('','rough','Rough Number','Greater than 1, with every prime factor at least 100.',x=>x.n>1&&spf[x.n]>=100),
+// ---- other bases
+...F('hex words',[
+ ['hexwords','Hex Words','Hexadecimal contains a word (e.g. CAFE, DECAF or 5EED).',x=>HEX_WORDS_4.test(hex(x))||HEX_WORDS_5.test(hex(x))],
+ ['hexwordx','Exact Hex Word','The whole hexadecimal representation is a word from the Hex Words list.',x=>(hex(x).length===4&&HEX_WORDS_4.test(hex(x)))||HEX_WORDS_5.test(hex(x))],
+ ['hexword5','Five-Letter Hex Word','The entire hexadecimal representation is one of the five-character Hex Words (e.g. DECAF).',x=>HEX_WORDS_5.test(hex(x))],
+]),
+B('','hexalpha','All-Letter Hex','Every hexadecimal digit is A through F.',x=>/^[a-f]+$/.test(hex(x))),
+B('','hexnums','All-Number Hex','Every hexadecimal digit is 0 through 9.',x=>/^\d+$/.test(hex(x))),
+...[3,4,5,6,7,8,9].map(base=>B('',`palbase${base}`,`Base ${base} Palindrome`,
+  `Its base-${base} representation has at least two digits and reads the same backwards.`,x=>multiPalindrome(x.n.toString(base)))),
+...F('hex mirrors',[
+ ['hexpal','Hex Palindrome','The entire hexadecimal representation has at least two digits and reads the same backwards.',x=>multiPalindrome(hex(x))],
+ ['hexrep','Hex Repdigit','The hexadecimal form has two or more digits and they are all the same.',x=>multiRepdigit(hex(x))],
+]),
+...F('base mirrors',[
+ ['basepal3','Base-N Palindrome','A multi-digit palindrome in at least three bases from 2 to 36, or a multi-digit repdigit in any of those bases.',x=>basePalindromes[x.n]>=3||baseRepdigits[x.n]===1],
+ ['baserep','Base-N Repdigit','A multi-digit repdigit in any base from 2 to 36.',x=>baseRepdigits[x.n]===1],
+ ...[4,5,6,7].map(k=>['basepal'+k,`Base-N Palindrome (${k})`,`A multi-digit palindrome in at least ${k} bases from 2 to 36.`,x=>basePalindromes[x.n]>=k]),
+]),
+B('','ternbalance','Ternary Balance','Base 3 has equal counts of 0, 1 and 2.',ternaryBalance),
+B('','tern01','Ternary 0/1','Every digit in base 3 is 0 or 1.',x=>!ternary(x).includes('2')),
+B('','binecho','Binary Echo','Its entire binary representation consists of at least two copies of a shorter block.',x=>{const bits=x.n.toString(2);return (bits+bits).slice(1,-1).includes(bits)}),
+...F('Repdigit factors',[
+ ['repdigitunlimited','Repdigit Factor (Any Length)','Zero, or a divisor of a positive decimal repdigit of any length.',x=>dividesRepdigit(x.n)],
+ ['repdigitfactor','Repdigit Factor','Zero, or a divisor of a positive decimal repdigit with up to six digits.',isSet(REPDIGIT_FACTORS)],
+ ['notrepdigitfactor','Non-Repdigit Factor','A positive roll that divides no positive decimal repdigit, regardless of length.',x=>!dividesRepdigit(x.n)],
+]),
+// ---- names and rearrangements
+B('','vowelcollector','Vowel Collector','Its US English name contains all five vowels A, E, I, O and U.',x=>[...'aeiou'].every(v=>englishLetters(x).includes(v))),
+B('','norepeats','No Repeats','Its US English name has no repeated letters. Spaces and hyphens are ignored.',x=>new Set(englishLetters(x)).size===englishLetters(x).length),
+B('','longname','Long Name','Its US English name has at least 54 letters. Spaces and hyphens are ignored.',x=>englishLetters(x).length>=54),
+B('','primepermutations','Prime Permutations','Its digits can form at least three distinct primes without leading zeros. The roll can be one of them.',x=>primeSignatures.get(signature(x))>=3),
+...F('power anagrams',[
+ ['squareanagram','Square Anagram','Its digits can be rearranged into a different perfect square without leading zeros.',powerAnagram(2)],
+ ['cubeanagram','Cube Anagram','Its digits can be rearranged into a different perfect cube without leading zeros.',powerAnagram(3)],
+ ...Array.from({length:16},(_,i)=>{
+   const exponent=i+4;
+   return [`poweranagram${exponent}`,`${ord(exponent)} Power Anagram`,
+     `Its digits can be rearranged into a different perfect ${ord(exponent)} power without leading zeros.`,powerAnagram(exponent)];
+ }),
+]),
+];
+const rarity=c=>c>0.1?0:c>0.01?1:c>0.001?2:c>1e-4?3:c>1e-5?4:5;
+const RNAME=['Common','Uncommon','Rare','Epic','Anomaly','Mythic'];
+const epOf=(counts,id)=>counts[id]?Math.round(100/(counts[id]/N)):0;
+// Pass 1: counts. Pass 2: total EP per number (family de-dup) for roll-rarity cutoffs.
+function tally(list,counts,from,to){for(let n=from;n<to;n++){const x=ctx(n);for(const b of list)if(b.fn(x))counts[b.id]=(counts[b.id]||0)+1}}
+function score(hits,ep){const best={};for(const b of hits){const e=ep[b.id]||0;if(e>(best[b.fam]||0))best[b.fam]=e}let t=0;for(const k in best)t+=best[k];return{best,total:t}}
+function singleDigitCap(list,ep){
+  let max=0;
+  for(let n=2;n<=9;n++){
+    const x=ctx(n);
+    max=Math.max(max,score(list.filter(b=>b.fn(x)),ep).total);
+  }
+  return 2*max;
+}
+const cappedTotal=(n,total,cap)=>n<2?Math.min(total,cap):total;
+function scoreRange(list,ep,out,from,to){
+  const cap=from<2?singleDigitCap(list,ep):Infinity;
+  for(let n=from;n<to;n++){
+    const x=ctx(n);
+    out[n]=cappedTotal(n,score(list.filter(b=>b.fn(x)),ep).total,cap);
+  }
+}
+function cutsOf(out){const a=Float64Array.from(out).sort();return[.01,.5,.75,.9,.95,.99].map(p=>a[Math.floor(p*(a.length-1))])}
+//=== BADGES_END =====================================================
+// Pre-calculated counts out of 1,000,000 and roll-rarity cutoffs (auto-filled; missing entries are computed on load).
+const PRECALC={"len1":10,"len2":90,"len3":900,"len4":9000,"len5":90000,"len6":900000,"dig0":1,"dig1":1,"dig2":1,"dig3":1,"dig4":1,"dig5":1,"dig6":1,"dig7":1,"dig8":1,"dig9":1,"colossal":999,"maximum":1,"even":500000,"odd":500000,"div3":333334,"div7":142858,"div9":111112,"div11":90910,"div12":83334,"div13":76924,"lucky7":468559,"void":597870,"ghost":323848,"el1":354294,"el2":354294,"el3":354294,"el4":354294,"el5":354294,"el6":354294,"el7":354294,"el8":354294,"el9":354294,"lowball":15625,"highroller":19530,"binary":64,"repunit":6,"flush":35145,"alternator":35145,"feather":37500,"blackjack":39662,"tenner":2997,"heavy":5005,"heavier":210,"heaviest":1,"spy":99,"balanced":51036,"echo":999,"grounded":399996,"liftoff":499995,"gapone":188887,"neighbors":896109,"homog":45,"duality":4617,"trinity":79056,"quartet":344736,"hetero":168561,"firefly":1215,"zipper":405,"snake":47139,"pair":831429,"cpair":402129,"twopair":265518,"ctwopair":25272,"threepair":9720,"cthreepair":729,"framedpair":227448,"frameddouble":6561,"kind3":149886,"kind4":11853,"kind5":504,"framed3":15309,"framed4":729,"run3":35919,"run4":2700,"run5":180,"run6":9,"fullhouse":41715,"cfullhouse":3321,"hop2":335700,"hop3":18810,"miniecho":27000,"rhyme":53406,"bookends":9990,"mirrorbook":9990,"pairedbook":8991,"pocket":47088,"pal":1999,"strobo":199,"asc":456,"dec":837,"steps":4995,"slopes":7992,"mountain":16992,"valley":23817,"mesa":63762,"canyon":84432,"hills":136950,"roller":114381,"dunes":285090,"seq3":58287,"seq4":3860,"seq6":9,"cascade":30,"waterfall":35,"evensp":116,"evenabs":1099,"turtle":2773,"scramble":4401,"miniscr":172077,"metronome":5847,"crescendo":161,"straight":220,"sflush":69,"royal":20,"con2":998,"con2c":387897,"con3":97,"con3c":29234,"con4":8,"con4c":1900,"clean":100000,"void2":35919,"century":9999,"semicent":10000,"quarter":10000,"threeq":10000,"void3":2700,"millennium":999,"semimill":1000,"void4":180,"epoch":99,"semiepoch":100,"void5":9,"eon":9,"semieon":10,"semiclean":100000,"nine2":10000,"nine3":1000,"nine4":100,"nine5":10,"pi3":3999,"pi4":300,"pi5":20,"pi":4,"e3":3999,"e4":300,"e5":20,"e":4,"tau4":300,"tau5":20,"tau":3,"phi4":300,"phi5":20,"phi":3,"root24":299,"root25":20,"root2":3,"nice":49401,"nice4":299,"nicex":3,"bot":3999,"botx":2,"mean":49401,"mean4":299,"meanx":3,"wysi":3979,"wysi4":560,"wysix":2,"exactmeme":26,"s67":49401,"s6767":299,"s67x":3,"jp3":3700,"jp4":280,"jp5":19,"jp6":1,"jpx":1,"devil":3700,"devilx":2,"leet":300,"leetx":1,"hell":300,"hellx":1,"hello":9,"boob":300,"boob85":20,"boob58":20,"boobx":3,"em":3999,"emx":2,"err":3979,"errx":1,"ori":3979,"orix":1,"cal":3999,"always":2,"calx":2,"e86":49401,"e86x":3,"bb":300,"orwell":1,"agent":2889,"funny2":60,"funny1":2,"cyclic":1,"pow2":1000,"pow3":100,"pow4":32,"pow5":16,"pow6":10,"pow7":8,"pow8":6,"pow9":5,"pow10":4,"pow11":4,"pow12":4,"pow13":3,"pow14":3,"pow15":3,"pow16":3,"pow17":3,"pow18":3,"pow19":3,"ouro":7,"base2":20,"base3":13,"base5":9,"base7":8,"base10":6,"fib":30,"lucas":29,"catalan":13,"factorial":9,"primorial":8,"tri":1414,"pronic":1000,"penta":817,"hexa":708,"tetra":181,"taxi":43,"narc":21,"factorion":4,"auto":12,"happy":143070,"harshad":95427,"smith":29928,"prime":78498,"mersenne":7,"fermat":5,"wilson":3,"twin":16337,"cousin":16287,"sexy":29872,"safe":4324,"sophie":7746,"cunn3":1187,"cunn4":159,"emirp":11184,"palprime":113,"reptend":29500,"twinsand":8169,"terminating":99,"sqfree":607926,"ppower":236,"semi":210035,"sphenic":206964,"deficient":752451,"abundant":247544,"perfect":4,"y2k":300,"y2kx":1,"moon":300,"moonx":1,"f451":3999,"f451x":1,"a51":49401,"a51x":1,"konami":300,"konamix":1,"lightspeed":1,"avo":300,"avox":3,"abs0":3999,"abs0x":1,"boil":7956,"dstair":120,"sandwich":66420,"cshift":1863,"rotdiv":8,"sumpairs":5585,"complement":999,"oddone":1458,"almostpal":42930,"almostecho":25920,"primedig":5460,"compdig":5460,"cubedig":729,"sqdig":4096,"halfdiv":6631,"ladder":13830,"ladderdown":2977,"fibchain":119,"twotriples":810,"heavymetal":20,"sqprod":57240,"per3":222224,"per5":31592,"per7":2450,"aper3":194445,"binpal":2000,"fibbin":17711,"cubesum":4354,"pyth":721371,"foursq":166664,"hcn":38,"super":31,"weird":1765,"practical":97384,"carmichael":43,"euler2":114,"revdiv":6,"digdiv":29950,"sqtwice":112267,"totsq":9060,"powerful":2026,"humble":1272,"rough":120759,"hexwords":269,"hexwordx":17,"hexword5":7,"hexalpha":8034,"hexnums":100000,"hexpal":4145,"hexrep":59,"basepal3":2814,"baserep":1821,"basepal4":271,"basepal5":69,"basepal6":6,"basepal7":2,"ternbalance":24284,"tern01":8192,"binecho":1048,"repdigitfactor":270,"vowelcollector":968548,"norepeats":16,"longname":6237,"primepermutations":617029,"squareanagram":145819,"poweranagram4":4749,"poweranagram5":1845,"cubeanagram":17692,"poweranagram6":818,"poweranagram9":303,"poweranagram7":984,"poweranagram8":644,"poweranagram10":64,"poweranagram13":23,"poweranagram11":76,"poweranagram12":196,"poweranagram14":119,"poweranagram15":119,"poweranagram16":29,"poweranagram17":299,"poweranagram18":179,"poweranagram19":179,"digitsdiv3":4096,"digitsdiv4":729,"repdigitunlimited":830001,"powerdifference":8472,"palbase3":2097,"palbase4":1996,"palbase5":2219,"palbase6":2061,"palbase7":2809,"palbase8":2456,"palbase9":2090,"notrepdigitfactor":169999};
+const CUTS=[3656,10427,20237,41015,66235,341317];
+
+(()=>{
+const $=id=>document.getElementById(id);
+const KEY='rngdle+v2';
+let st={rolls:0,ep:0,found:{}};
+try{Object.assign(st,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
+let cache={};try{cache=JSON.parse(localStorage.getItem(KEY+'c')||'{}')}catch(e){}
+const counts={...(cache.counts||{}),...PRECALC};
+let cuts=CUTS||cache.cuts||null;
+const ep={};let digitCap;
+function refresh(){
+  for(const b of BADGES)ep[b.id]=epOf(counts,b.id);
+  digitCap=singleDigitCap(BADGES,ep);
+}
+refresh();
+const tierCol=i=>`var(--c${i})`;
+const fmt=x=>x.toLocaleString('en-US');
+const esc=t=>t.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const chance=id=>counts[id]/N;
+const oddsTxt=id=>{if(!counts[id])return'';const r=N/counts[id];return'1 in '+fmt(r>=10?Math.round(r):+r.toFixed(1))};
+function row(b,extra,cls){
+  const e=ep[b.id],t=rarity(chance(b.id));
+  return `<div class="b ${cls||''}" style="--col:${tierCol(t)}"><div class="t"><strong>${esc(b.name)}${extra||''}</strong><small>${esc(b.desc)}</small></div><div class="ep">${e?(cls==='sup'?'+0':'+'+fmt(e))+' EP':'…'}<small>${RNAME[t]} · ${oddsTxt(b.id)}</small></div></div>`;
+}
+let filt='all';
+function render(){
+  $('sEp').textContent=fmt(st.ep);$('sRolls').textContent=fmt(st.rolls);
+  const got=BADGES.filter(b=>st.found[b.id]).length;$('sFound').textContent=got+' / '+BADGES.length;
+  const fams={};for(const b of BADGES)(fams[b.fam]=fams[b.fam]||[]).push(b);
+  const groups=Object.values(fams).map(g=>g.slice().sort((a,b)=>ep[a.id]-ep[b.id])).filter(g=>filt==='all'||g.some(b=>!!st.found[b.id]===(filt==='got')));
+  groups.sort((a,b)=>ep[a[0].id]-ep[b[0].id]);
+  $('coll').innerHTML=groups.map(g=>{const f=g.filter(b=>st.found[b.id]),multi=g.length>1;
+    const list=g.filter(b=>filt==='all'||!!st.found[b.id]===(filt==='got'));
+    return (multi?`<div class="ser">${esc(g[0].fam)} series · ${f.length}/${g.length}</div>`:'')+list.map(b=>row(b,st.found[b.id]?` <small>×${st.found[b.id]}</small>`:'',st.found[b.id]?'':'lock')).join('')}).join('')||'<p class="sub">Nothing here.</p>';
+}
+let busy=false,ready=false;
+function roll(){
+  if(busy||!ready)return;busy=true;$('go').disabled=true;$('got').innerHTML='';
+  const n=Math.floor(Math.random()*N);let t=0;
+  const iv=setInterval(()=>{$('num').textContent=Math.floor(Math.random()*N);if(++t>=12){clearInterval(iv);reveal(n)}},45);
+}
+const RN=['Trash','Common','Uncommon','Rare','Epic','Anomaly','Mythic'],RC=[5,0,1,2,3,4,5];
+function reveal(n){
+  const x=ctx(n);$('num').textContent=n;
+  const hits=BADGES.filter(b=>b.fn(x)),{best,total:uncapped}=score(hits,ep),used={};
+  const total=cappedTotal(n,uncapped,digitCap);
+  hits.sort((a,b)=>ep[b.id]-ep[a.id]);
+  const html=hits.map(b=>{const first=!used[b.fam]&&ep[b.id]===best[b.fam];if(first)used[b.fam]=1;const fresh=!st.found[b.id];st.found[b.id]=(st.found[b.id]||0)+1;
+    return row(b,fresh?'<span class="new">NEW</span>':'',first?'':'sup')}).join('');
+  let rar='';if(cuts){let i=0;while(i<6&&total>cuts[i])i++;rar=` · <span style="color:${tierCol(RC[i])}">${RN[i]}</span> roll`}
+  st.rolls++;st.ep+=total;save();
+  const capNotice=total<uncapped?`<p class="sub" style="text-align:center">EP cap for ${n}: −${fmt(uncapped-total)} EP. All badges still count toward your collection.</p>`:'';
+  $('got').innerHTML=`<p class="sub" style="text-align:center">Roll total: <b>${fmt(total)} EP</b>${rar}</p>`+capNotice+(html||'<p class="sub" style="text-align:center">No badges.</p>')+
+    (hits.some(b=>used[b.fam]&&ep[b.id]!==best[b.fam])?'<p class="sub" style="text-align:center">Dimmed badges are covered by a higher badge in the same series.</p>':'');
+  render();busy=false;$('go').disabled=false;
+}
+$('go').onclick=roll;
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{filt=b.dataset.f;document.querySelectorAll('.tabs button').forEach(y=>y.classList.toggle('on',y===b));render()});
+$('reset').onclick=()=>{if(confirm('Reset all progress?')){st={rolls:0,ep:0,found:{}};save();$('got').innerHTML='';$('num').textContent='–';render()}};
+// Fill in anything missing from PRECALC / CUTS (one-time, cached).
+const missing=BADGES.filter(b=>!(b.id in counts)),needCuts=!cuts||missing.length>0;
+render();
+if(!missing.length&&!needCuts){ready=true}else{
+  $('go').disabled=true;const c={},out=new Float64Array(N);let n=0,phase=1;const CH=20000;
+  const step=()=>{
+    if(phase===1){if(missing.length)tally(missing,c,n,Math.min(n+CH,N));n+=CH;if(n>=N){for(const b of missing)counts[b.id]=c[b.id]||0;refresh();render();phase=2;n=0}}
+    else{scoreRange(BADGES,ep,out,n,Math.min(n+CH,N));n+=CH;if(n>=N){cuts=cutsOf(out);
+      try{localStorage.setItem(KEY+'c',JSON.stringify({counts:Object.fromEntries(BADGES.map(b=>[b.id,counts[b.id]])),cuts}))}catch(e){}
+      $('status').textContent='';$('go').disabled=false;ready=true;
+      $('pre').style.display='block';$('pre').textContent='PRECALC: '+BADGES.map(b=>`${b.id}:${counts[b.id]}`).join(',')+'  |  CUTS: ['+cuts.join(',')+']';return}}
+    $('status').textContent=`Pre-calculating odds (pass ${phase}/2)… ${Math.min(100,Math.round(n/N*100))}%`;setTimeout(step,0)};
+  step();
+}
+})();
+</script></body></html>

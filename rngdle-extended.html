@@ -457,6 +457,7 @@ B('','binecho','Binary Echo','Its entire binary representation consists of at le
 ]),
 // ---- names and rearrangements
 B('','vowelcollector','Vowel Collector','Its US English name contains all five vowels A, E, I, O and U.',x=>[...'aeiou'].every(v=>englishLetters(x).includes(v))),
+B('','missingvowel','Missing Vowel','Greater than 1,000; its US English name is missing at least one of A, E, I, O and U.',x=>x.n>1000&&[...'aeiou'].some(v=>!englishLetters(x).includes(v))),
 B('','norepeats','No Repeats','Its US English name has no repeated letters. Spaces and hyphens are ignored.',x=>new Set(englishLetters(x)).size===englishLetters(x).length),
 B('','longname','Long Name','Its US English name has at least 54 letters. Spaces and hyphens are ignored.',x=>englishLetters(x).length>=54),
 B('','primepermutations','Prime Permutations','Its digits can form at least three distinct primes without leading zeros. The roll can be one of them.',x=>primeSignatures.get(signature(x))>=3),
